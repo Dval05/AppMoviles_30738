@@ -1,0 +1,66 @@
+INFORME TÉCNICO DETALLADO DE IMPLEMENTACIÓN: SISTEMA DE GESTIÓN DE NÓMINA PARA CHOFERES
+
+Este informe técnico detalla de manera exhaustiva la arquitectura, el diseño y la lógica de programación aplicada en el desarrollo de la aplicación móvil para el cálculo de nómina semanal. La solución se ha construido bajo estándares modernos de desarrollo en Flutter, asegurando escalabilidad, mantenibilidad y una experiencia de usuario robusta mediante el patrón MVC y la metodología Atomic Design.
+
+1. ESTRUCTURACIÓN DEL PROYECTO (Carpeta lib/)
+La arquitectura del software se fundamenta en el patrón MVC (Modelo-Vista-Controlador), el cual permite una separación clara entre la lógica de datos, el procesamiento de reglas de negocio y la interfaz de usuario. La estructura de carpetas en 'lib/' se organizó estratégicamente para facilitar el mantenimiento y la navegación del código:
+- /models: Contiene las clases que representan las entidades de datos y su lógica intrínseca de cálculo individual.
+- /controllers: Alberga el cerebro de la aplicación, gestionando el estado global, la persistencia temporal de los datos y la comunicación entre modelos y vistas.
+- /views: Contiene las pantallas principales (layouts) de alto nivel que el usuario final visualiza e interactúa.
+- /widgets: Organizado bajo "Atomic Design" en las subcarpetas: /atomos, /moleculas y /organismos.
+Esta segmentación asegura que cada componente tenga una única responsabilidad (Single Responsibility Principle), facilitando la identificación de errores y la futura expansión del sistema sin afectar otras áreas.
+
+2. IMPLEMENTACIÓN DEL MODELO (lib/models/driver_model.dart)
+La entidad 'Driver' es el núcleo de información del sistema. Se implementó como una clase inteligente capaz de procesar sus propios resultados financieros a partir de los datos ingresados.
+- Atributos esenciales: Nombre del chofer, registro de horas trabajadas por día durante seis días (Lista de dobles), sueldo base por hora, y banderas lógicas para el estado de actividad y la recepción de bonos.
+- Lógica de Autocálculo: Mediante el uso de 'getters' calculados, el modelo provee automáticamente:
+    * 'totalWeeklyHours': Utiliza métodos de reducción de listas para sumar dinámicamente las horas de la jornada semanal de 6 días.
+    * 'weeklySalary': Integra la regla de negocio donde se calcula el sueldo base (horas * sueldo) y se añade un bono fijo de $50.00 si la condición 'receivesBonus' es verdadera.
+Esta implementación garantiza que los cálculos de nómina sean consistentes y centralizados en la entidad de datos, evitando errores de cálculo en la interfaz.
+
+3. IMPLEMENTACIÓN DEL CONTROLADOR (lib/controllers/payroll_controller.dart)
+El 'PayrollController' actúa como el orquestador global de la nómina. Su función primordial es persistir la lista de choferes y garantizar el cumplimiento de las normativas de la empresa.
+- Reglas de Negocio Implementadas:
+    * Restricción de Registro: El método 'addDriver' contiene una validación estricta que impide registrar más de los 5 choferes requeridos por el sistema, asegurando el cumplimiento de los límites técnicos del proyecto.
+    * Análisis de Desempeño (Lunes): Se implementó el método 'getDriverWithMostMondayHours', el cual ejecuta un algoritmo de búsqueda de máximo comparando el índice 0 de la lista de horas de cada objeto Driver registrado para identificar el nombre del chofer más productivo al inicio de la semana.
+    * Consolidación Presupuestaria: El método 'calculateTotalGeneral' permite a la empresa conocer el costo total de la nómina mediante una agregación de los salarios individuales calculados previamente en el modelo.
+
+4. IMPLEMENTACIÓN DE LAS VISTAS Y NAVEGACIÓN (lib/views/)
+Se desarrollaron dos interfaces fundamentales que gestionan el flujo de trabajo del usuario de manera fluida y profesional:
+
+A. Registro de Choferes (payroll_input_view.dart): Es la interfaz de entrada de datos. Implementa un sistema de validación en tiempo real mediante un GlobalKey<FormState>. Gestiona la lógica de "Limpiar" para reiniciar el estado de la interfaz de usuario y la persistencia de los datos en el controlador compartido. Además, contiene los botones de acción para registrar, limpiar y navegar.
+
+B. Reporte de Nómina (payroll_report_view.dart): Es la interfaz de salida y resultados. Utiliza componentes visuales avanzados como Cards y ListViews para mostrar la nómina final de forma ordenada. Presenta el resumen general (Total pagado y chofer con más horas el lunes) y el detalle por cada chofer.
+
+Implementación de Rutas en Flutter (push, pop, pushNamed):
+- pushNamed: Para transicionar entre la pantalla de registro y el reporte, se utilizó 'Navigator.pushNamed(context, "/report")'. Esta función es la preferida para una navegación desacoplada, ya que utiliza el nombre de la ruta definido en el archivo principal (main.dart), permitiendo que la navegación sea más legible y fácil de gestionar a medida que la aplicación crece.
+- pop: En la vista de reporte (payroll_report_view.dart), se implementó un botón de retorno que invoca 'Navigator.pop(context)'. Esta instrucción destruye la pantalla actual de la pila de navegación y regresa al usuario a la pantalla de registro de forma eficiente, manteniendo la integridad de los datos ya registrados en el controlador compartido.
+- push: Aunque se priorizó el uso de rutas nombradas (pushNamed), el sistema de navegación de Flutter funciona internamente apilando vistas (push). Esto asegura que el flujo de información sea coherente y que el usuario mantenga un historial de navegación lógico.
+
+5. IMPLEMENTACIÓN DEL PAQUETE WIDGET: ATOMOS (lib/widgets/atomos/)
+Los átomos representan los bloques fundamentales de construcción visual que no pueden ser desglosados más.
+- CustomTextField: Se dotó de gran robustez mediante 'TextInputFormatters'. Se implementó un filtrado por expresiones regulares (RegExp) que bloquea físicamente la entrada de números en el campo de nombre (permitiendo solo letras y espacios) y bloquea letras en los campos de sueldo y horas, garantizando la integridad de los datos antes de ser procesados por la aplicación.
+- CustomButton, CustomLabel, CustomCheckbox y CustomRadioButton: Estos componentes garantizan que todos los controles de la aplicación tengan un estilo visual uniforme (fuentes, colores, tamaños), permitiendo realizar cambios de diseño globales editando un solo archivo.
+
+6. IMPLEMENTACIÓN DEL PAQUETE WIDGET: MOLECULAS (lib/widgets/moleculas/)
+La molécula principal es 'DailyHoursInput', la cual combina múltiples átomos para una funcionalidad específica y repetitiva.
+- Implementación: Agrupa seis instancias de 'CustomTextField' organizadas en una cuadrícula proporcional para los seis días laborales (Lunes a Sábado).
+- Validación de Negocio Crítica: Cada campo de esta molécula posee un validador que restringe el ingreso de datos al rango estricto de [0.0 - 24.0] horas. Si un usuario intenta registrar una jornada superior a las 24 horas diarias, el sistema muestra inmediatamente un mensaje de error visual ("0-24 h"), cumpliendo con la lógica física y legal de la jornada de trabajo diaria.
+
+7. IMPLEMENTACIÓN DEL PAQUETE WIDGET: ORGANISMOS (lib/widgets/organismos/)
+El organismo 'DriverForm' es la pieza que ensambla la lógica completa de entrada para un chofer.
+- Composición: Ensambla los átomos de selección (CheckBox para activo/bono y RadioButtons para tipo de jornada) con las moléculas de entrada de texto (nombre, sueldo y cuadrícula de horas).
+- Propósito: Actúa como una unidad funcional independiente que puede ser insertada en cualquier vista. Se encarga de la disposición espacial de los elementos y de asegurar que el estado de todos los componentes secundarios sea validado y transmitido correctamente al controlador de la aplicación al momento del registro mediante el formulario.
+
+8. IMPLEMENTACIÓN DEL MAIN (lib/main.dart)
+El punto de entrada de la aplicación orquesta el ecosistema completo de Flutter y el flujo de navegación.
+- Gestión de Estado Persistente: El controlador 'PayrollController' se instancia en el estado de la clase principal ('MyApp') para que su vida útil cubra toda la sesión de la aplicación, permitiendo que los datos registrados en la vista de entrada fluyan hacia la vista de reporte sin interrupciones.
+- Definición de Rutas: Se definió el mapa de 'routes', vinculando los nombres '/' para la entrada y '/report' para el reporte. Se configuró el tema de la aplicación usando Material 3 con un esquema de colores 'fromSeed' para lograr una interfaz moderna, clara y profesional.
+
+CONCLUSIÓN DE VALIDACIONES INTEGRADAS:
+La integridad del sistema de nómina se garantiza mediante:
+1. Bloqueo de caracteres no permitidos en nombres (solo letras y espacios) y valores numéricos (solo números/puntos).
+2. Validación de horas diarias estrictamente en el rango de 0 a 24 horas por día mediante lógica de validadores de formulario.
+3. Validación de sueldo por hora como un número real positivo mayor a cero.
+4. Límite técnico de 5 registros máximo controlado centralizadamente por la lógica del controlador.
+Todo esto se logró mediante la combinación de validadores en los widgets y la lógica de control en el controlador, cumpliendo satisfactoriamente con todos los requisitos técnicos y reglas de negocio del proyecto.
