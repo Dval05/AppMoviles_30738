@@ -497,7 +497,7 @@ class _Ejercicio10CardState extends State<Ejercicio10Card> {
               children: [
                 StyledButton(
                   onPressed: calcular,
-                  text: 'Calcular Descuento',
+                  text: 'Calcule Descuento',
                   icon: Icons.local_offer,
                 ),
                 const SizedBox(width: 10),

@@ -1,0 +1,469 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb,textcomp,textpos,mathtools}
+\usepackage{setspace}
+\usepackage{subcaption,caption}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{booktabs,array,tabularx}
+\usepackage{xurl}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{tcolorbox}
+\usepackage{multicol}
+\tcbuselibrary{listings,skins,breakable}
+
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codeframe}{RGB}{200,200,200}
+\definecolor{verdeC}{RGB}{65,199,23}
+\definecolor{verdeO}{RGB}{28,168,31}
+
+\tcbset{colback=codebg,colframe=codeframe,arc=6pt,boxrule=0.8pt,breakable,left=6pt,right=6pt,top=6pt,bottom=6pt}
+
+\lstset{language=Java,basicstyle=\ttfamily\small,keywordstyle=\color{blue},commentstyle=\color{green!50!black},stringstyle=\color{red},showstringspaces=false,tabsize=2,breaklines=true,xleftmargin=15pt,framexleftmargin=15pt,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1}
+
+\setlength{\headheight}{14.5pt}
+
+\begin{document}
+
+% ═══════════════ PORTADA ═══════════════
+\begin{titlepage}
+\thispagestyle{empty}
+\newgeometry{left=2cm, right=1cm, top=2cm, bottom=2cm}
+\begin{tikzpicture}[overlay, fill opacity=0.7]
+    \fill[verdeC] (15,-27) rectangle (18,4);
+      \rotatebox{-90}{\fill[verdeO] (0,-9) rectangle (2,20);}
+\end{tikzpicture}
+\begin{spacing}{1.5}
+{\huge \bfseries UNIVERSIDAD DE LAS FUERZAS ARMADAS}\\[10pt]
+\centering
+\end{spacing}
+\vspace{1cm}
+\begin{minipage}{2cm}
+\hspace{0.5cm}\rotatebox{90}{\huge INGENIERIA EN SOFTWARE}
+\end{minipage}\hfill
+\begin{minipage}{9cm}
+    \includegraphics[scale=0.5]{ImagenesTarea/1.png}
+\end{minipage}\hfill
+\begin{minipage}{3cm}
+\hspace{1cm}
+\vspace{1.cm}
+\begin{spacing}{4}
+ {\color{white}\fontsize{60}{70}\selectfont\bfseries 2\\0\\2\\6}
+\end{spacing}
+\end{minipage}
+
+\vspace{5cm}
+\begin{flushleft}
+{\LARGE
+\textbf{Estudiantes:}\\
+\hspace{1cm} Andrade Lucio Danna Valentina\\
+\hspace{1cm} Lainez Ricardo\\
+\hspace{1cm} Santi Jeancarlo\\
+\hspace{1cm} Tufiño Erick\\[10pt]
+\textbf{Asignatura:} Desarrollo de Aplicaciones Móviles\\
+\textbf{Tema:} Tarea 1 -- Aplicación Móvil con MVC y Atomic Design\\
+\textbf{NRC:} 30738\\
+\textbf{Docente:} Doris Karina Chicaiza Angamarca\\
+\textbf{Fecha:} 12/05/2026\\}
+\end{flushleft}
+\end{titlepage}
+\restoregeometry
+\newpage
+
+\vspace{-2cm}
+\begin{minipage}[t]{0.6\textwidth}
+  \raggedright
+  \textbf{\LARGE Informe Tarea 1 -- App Móviles}
+\end{minipage}
+\begin{minipage}[ht]{0.3\textwidth}
+  \raggedleft
+  \includegraphics[width=0.7\textwidth]{ImagenesTarea/selloCarrera.jpeg}
+\end{minipage}\vspace{-1cm}
+\vspace{1cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Tarea 1 -- Desarrollo de Aplicaciones Móviles}}
+\fancyhead[R]{\small\textit{Andrade, Lainez, Santi, Tufiño}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\tableofcontents
+\newpage
+
+% ═══════════════ 1. INTRODUCCIÓN ═══════════════
+\section{Introducción}
+
+El presente informe documenta el desarrollo de la \textbf{Tarea 1} de la asignatura de Desarrollo de Aplicaciones Móviles. Se implementaron cinco ejercicios de lógica y cálculo dentro de una aplicación Flutter, utilizando el patrón arquitectónico \textbf{MVC (Modelo--Vista--Controlador)} y el paradigma de diseño \textbf{Atomic Design} para la construcción de la interfaz de usuario.
+
+La aplicación cuenta con un \textbf{menú lateral (Drawer)} que permite navegar entre los cinco ejercicios. Cada ejercicio incluye validaciones de entrada, cálculos correctos y presentación clara de resultados.
+
+% ═══════════════ 2. OBJETIVOS ═══════════════
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Desarrollar una aplicación móvil en Flutter que implemente cinco ejercicios de lógica y cálculo, aplicando el patrón arquitectónico MVC, el paradigma Atomic Design y navegación mediante menú lateral (Drawer).
+
+\subsection{Objetivos Específicos}
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item Aplicar el patrón MVC separando la lógica de negocio, validaciones e interfaz gráfica.
+    \item Implementar Atomic Design para crear componentes reutilizables (átomos, moléculas, organismos).
+    \item Desarrollar los ejercicios 5, 6, 8, 9 y 10 con validaciones completas de entrada.
+    \item Implementar navegación mediante Drawer y Navigator entre pantallas.
+    \item Diseñar una interfaz de usuario clara, funcional y coherente en colores.
+\end{itemize}
+
+% ═══════════════ 3. MARCO TEÓRICO ═══════════════
+\section{Marco Teórico}
+
+\textbf{Flutter} es un framework de código abierto desarrollado por Google para crear aplicaciones multiplataforma desde una sola base de código en el lenguaje Dart.
+
+\textbf{Patrón MVC (Modelo--Vista--Controlador):} Arquitectura de software que separa una aplicación en tres componentes: el \textit{Modelo} gestiona los datos y la lógica de negocio; la \textit{Vista} presenta la interfaz de usuario; y el \textit{Controlador} actúa como intermediario, validando las entradas y coordinando la comunicación entre Modelo y Vista.
+
+\textbf{Atomic Design:} Metodología propuesta por Brad Frost que estructura las interfaces en cinco niveles jerárquicos: \textit{Átomos} (elementos básicos como botones y campos de texto), \textit{Moléculas} (combinaciones de átomos), \textit{Organismos} (secciones complejas), \textit{Templates} y \textit{Páginas}.
+
+\textbf{Drawer (Menú Lateral):} Componente de Material Design que proporciona un panel de navegación deslizable desde el borde de la pantalla. En Flutter se implementa mediante el widget \texttt{Drawer} dentro de un \texttt{Scaffold}.
+
+\textbf{Validación de Datos:} Proceso de verificación de entradas del usuario para garantizar la integridad de los datos antes de procesarlos. Incluye verificación de campos vacíos, tipos de datos incorrectos y rangos inválidos.
+
+\newpage
+
+% ═══════════════ 4. DESARROLLO ═══════════════
+\section{Desarrollo}
+
+\subsection{Requisitos Previos}
+\begin{itemize}
+    \item Flutter SDK 3.x instalado y configurado.
+    \item Editor de código (VS Code o Android Studio).
+    \item Emulador o dispositivo físico / navegador Chrome para pruebas.
+    \item Repositorio GitHub: \url{https://github.com/Dval05/AppMoviles_30738/tree/main/p1/Tareas/pry_tarea1p1}
+\end{itemize}
+
+\subsection{Estructura del Proyecto}
+\begin{tcolorbox}[title=Estructura MVC del Proyecto]
+\begin{lstlisting}[language=bash]
+lib/
+  main.dart                    # Punto de entrada + Drawer
+  model/
+    model_tarea.dart           # Modelos de datos y lógica
+  controller/
+    controller_tarea.dart      # Validaciones y coordinación
+  view/
+    view_tarea.dart            # UI con Atomic Design
+\end{lstlisting}
+\end{tcolorbox}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l|l|X}
+\rowcolor{codeframe} \textbf{Capa} & \textbf{Archivo} & \textbf{Responsabilidad} \\ \hline
+\textbf{Model} & \texttt{model\_tarea.dart} & Datos y lógica de negocio pura. \\ \hline
+\textbf{View} & \texttt{view\_tarea.dart} & Interfaz con Atomic Design. \\ \hline
+\textbf{Controller} & \texttt{controller\_tarea.dart} & Validación y coordinación. \\
+\end{tabularx}
+\caption{Distribución de responsabilidades MVC.}
+\end{table}
+
+\subsection{Menú Principal}
+La aplicación utiliza un \textbf{Drawer} como sistema de navegación principal. Incluye un encabezado \texttt{UserAccountsDrawerHeader} y opciones \texttt{ListTile} para cada ejercicio. La pantalla de inicio muestra tarjetas de acceso rápido a cada ejercicio.
+
+\begin{figure}[H]
+    \centering
+    %\includegraphics[width=0.4\linewidth]{ImagenesTarea/menu_lateral.png}
+    \fbox{\parbox{0.4\textwidth}{\centering\vspace{2.5cm}\textbf{CAPTURA: Menú Lateral}\\\textit{Pegar captura aquí}\vspace{2.5cm}}}
+    \caption{Menú lateral (Drawer) con navegación a los 5 ejercicios.}
+    \label{fig:menu}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    %\includegraphics[width=0.4\linewidth]{ImagenesTarea/pantalla_inicio.png}
+    \fbox{\parbox{0.4\textwidth}{\centering\vspace{2.5cm}\textbf{CAPTURA: Pantalla Inicio}\\\textit{Pegar captura aquí}\vspace{2.5cm}}}
+    \caption{Pantalla principal con accesos directos.}
+    \label{fig:inicio}
+\end{figure}
+
+\newpage
+
+% ─── EJERCICIO 5 ───
+\subsection{Ejercicio 5: Conversor de Unidades de Longitud}
+Se ingresa una medida en metros y se convierte a yardas, pies, centímetros y pulgadas.
+
+\subsubsection{Modelo}
+\begin{tcolorbox}[title=ConversionLongitudModel]
+\begin{lstlisting}
+void convertir(double valorMetros) {
+  metros = valorMetros;
+  centimetros = metros * 100;
+  pulgadas = centimetros / 2.54;
+  pies = pulgadas / 12;
+  yardas = pies / 3;
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Controlador}
+\begin{tcolorbox}[title=Validaciones Ejercicio 5]
+\begin{lstlisting}
+String validarMetros(String texto) {
+  if (texto.isEmpty) return 'Error: Ingrese un valor.';
+  double? valor = double.tryParse(texto);
+  if (valor == null) return 'Error: Numero invalido.';
+  if (valor < 0) return 'Error: Debe ser >= 0.';
+  return '';
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Vistas}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej5_resultado.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.5 Resultado}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Conversión exitosa.}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej5_error.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.5 Error}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Validación de error.}
+\end{minipage}
+\end{figure}
+
+\newpage
+
+% ─── EJERCICIO 6 ───
+\subsection{Ejercicio 6: Capacidad de Disco Duro}
+Convierte Gigabytes a Megabytes, Kilobytes y Bytes (factor 1024).
+
+\subsubsection{Modelo}
+\begin{tcolorbox}[title=CapacidadDiscoModel]
+\begin{lstlisting}
+void convertir(double valorGB) {
+  gigabytes = valorGB;
+  megabytes = gigabytes * 1024;
+  kilobytes = megabytes * 1024;
+  bytes = kilobytes * 1024;
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Controlador}
+Valida que el campo no esté vacío, que sea un número válido y que sea mayor a 0.
+
+\subsubsection{Vistas}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej6_resultado.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.6 Resultado}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Conversión GB exitosa.}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej6_error.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.6 Error}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Validación de entrada.}
+\end{minipage}
+\end{figure}
+
+% ─── EJERCICIO 8 ───
+\subsection{Ejercicio 8: Compañía de Seguros}
+Si el monto es menor que \$50,000 la cuota es el 3\%; si es mayor o igual, la cuota es el 2\%.
+
+\subsubsection{Modelo}
+\begin{tcolorbox}[title=CuotaFinanzaModel]
+\begin{lstlisting}
+void calcularCuota(double valorMonto) {
+  monto = valorMonto;
+  if (monto < 50000) {
+    porcentaje = 3;
+    cuota = monto * 0.03;
+  } else {
+    porcentaje = 2;
+    cuota = monto * 0.02;
+  }
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Controlador}
+Valida campo vacío, valor no numérico y monto menor o igual a 0.
+
+\subsubsection{Vistas}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej8_resultado.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.8 Resultado}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Cálculo de cuota.}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej8_error.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.8 Error}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Validación de monto.}
+\end{minipage}
+\end{figure}
+
+\newpage
+
+% ─── EJERCICIO 9 ───
+\subsection{Ejercicio 9: Producción Semanal del Operario}
+Registra producción de lunes a sábado. Si el promedio $\geq$ 100 unidades, el operario recibe incentivos.
+
+\subsubsection{Modelo}
+\begin{tcolorbox}[title=ProduccionSemanalModel]
+\begin{lstlisting}
+void calcular(List<int> valores) {
+  produccionDiaria = List.from(valores);
+  totalUnidades = produccionDiaria.fold(
+      0, (sum, val) => sum + val);
+  promedio = totalUnidades / produccionDiaria.length;
+  recibeIncentivo = promedio >= 100;
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Controlador}
+Valida cada uno de los 6 campos (Lunes a Sábado): campo vacío, valor no entero y valores negativos.
+
+\subsubsection{Vistas}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej9_resultado.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.9 Resultado}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Producción semanal.}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej9_error.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.9 Error}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Validación de campos.}
+\end{minipage}
+\end{figure}
+
+% ─── EJERCICIO 10 ───
+\subsection{Ejercicio 10: Promoción de Supermercado}
+Se genera un número al azar: si es menor que 74, descuento del 15\%; si es $\geq$ 74, descuento del 20\%.
+
+\subsubsection{Modelo}
+\begin{tcolorbox}[title=PromocionSupermercadoModel]
+\begin{lstlisting}
+void calcularDescuento(double compra) {
+  totalCompra = compra;
+  numeroAleatorio = Random().nextInt(100) + 1;
+  if (numeroAleatorio < 74) {
+    porcentajeDescuento = 15;
+    montoDescuento = totalCompra * 0.15;
+  } else {
+    porcentajeDescuento = 20;
+    montoDescuento = totalCompra * 0.20;
+  }
+  totalFinal = totalCompra - montoDescuento;
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Controlador}
+Valida campo vacío, valor no numérico y total de compra menor o igual a 0.
+
+\subsubsection{Vistas}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej10_resultado.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.10 Resultado}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Descuento calculado.}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}\centering
+    %\includegraphics[width=0.85\linewidth]{ImagenesTarea/ej10_error.png}
+    \fbox{\parbox{0.8\textwidth}{\centering\vspace{2cm}\textbf{Ej.10 Error}\\\textit{Pegar captura}\vspace{2cm}}}
+    \captionof{figure}{Validación de entrada.}
+\end{minipage}
+\end{figure}
+
+\newpage
+
+% ─── ATOMIC DESIGN ───
+\subsection{Implementación de Atomic Design}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l|l|X}
+\rowcolor{codeframe} \textbf{Nivel} & \textbf{Componente} & \textbf{Descripción} \\ \hline
+\textbf{Átomo} & \texttt{LabelText} & Texto con estilo bold configurable. \\ \hline
+\textbf{Átomo} & \texttt{NumberField} & Campo numérico con borde redondeado. \\ \hline
+\textbf{Átomo} & \texttt{StyledButton} & Botón con icono y color personalizable. \\ \hline
+\textbf{Átomo} & \texttt{ResultadoTexto} & Contenedor de resultado con borde. \\ \hline
+\textbf{Molécula} & \texttt{InputConEtiqueta} & Etiqueta + campo de texto agrupados. \\ \hline
+\textbf{Organismo} & \texttt{EjercicioXCard} & Card completo con inputs, botones y resultado. \\ \hline
+\textbf{Página} & \texttt{EjercicioXPage} & Scaffold con AppBar por ejercicio. \\
+\end{tabularx}
+\caption{Jerarquía de componentes Atomic Design.}
+\end{table}
+
+% ─── NAVEGACIÓN ───
+\subsection{Navegación entre Pantallas}
+
+La navegación se implementa mediante dos mecanismos:
+\begin{itemize}
+    \item \textbf{Drawer:} Menú lateral accesible desde el icono de hamburguesa en el AppBar. Cada opción utiliza \texttt{Navigator.push()} para navegar a la página del ejercicio correspondiente.
+    \item \textbf{Tarjetas de acceso rápido:} En la pantalla principal, cada tarjeta es un \texttt{InkWell} que navega directamente al ejercicio seleccionado.
+\end{itemize}
+
+\begin{tcolorbox}[title=Código de Navegación]
+\begin{lstlisting}
+// Desde el Drawer
+onTap: () {
+  Navigator.pop(context); // Cierra drawer
+  Navigator.push(context,
+    MaterialPageRoute(builder: (_) => page));
+}
+\end{lstlisting}
+\end{tcolorbox}
+
+\newpage
+
+% ═══════════════ 5. CONCLUSIONES ═══════════════
+\section{Conclusiones}
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item El patrón \textbf{MVC} permitió una separación clara entre la lógica de negocio, las validaciones y la interfaz, facilitando el mantenimiento y la escalabilidad del código.
+    \item El uso de \textbf{Atomic Design} demostró ser una metodología eficaz para la construcción de interfaces modulares y reutilizables en Flutter.
+    \item Las \textbf{validaciones} en el controlador garantizan la integridad de los datos, previniendo errores como campos vacíos, valores no numéricos y valores negativos.
+    \item La navegación mediante \textbf{Drawer} proporciona una experiencia de usuario intuitiva y organizada.
+    \item Cada ejercicio fue implementado siguiendo los requerimientos exactos del enunciado, con resultados verificados.
+\end{itemize}
+
+% ═══════════════ 6. RECOMENDACIONES ═══════════════
+\section{Recomendaciones}
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item Adoptar el patrón MVC desde el inicio de cada proyecto para mantener un código organizado y escalable.
+    \item Implementar pruebas unitarias para cada modelo y controlador, asegurando la confiabilidad de los cálculos.
+    \item Utilizar Atomic Design de forma consistente para facilitar la reutilización de componentes en proyectos futuros.
+    \item Considerar el uso de gestores de estado como \texttt{Provider} o \texttt{Riverpod} en aplicaciones de mayor complejidad.
+    \item Realizar pruebas en múltiples dispositivos y resoluciones para garantizar la responsividad de la interfaz.
+\end{itemize}
+
+% ═══════════════ 7. BIBLIOGRAFÍA ═══════════════
+\section{Bibliografía}
+\begin{enumerate}
+    \item Flutter Documentation. (2026). \textit{Flutter -- Build apps for any screen}. \url{https://flutter.dev/docs}
+    \item Frost, B. (2016). \textit{Atomic Design}. \url{https://atomicdesign.bradfrost.com/}
+    \item Gamma, E., Helm, R., Johnson, R., \& Vlissides, J. (1994). \textit{Design Patterns: Elements of Reusable Object-Oriented Software}. Addison-Wesley.
+    \item Google Developers. (2026). \textit{Dart Language Tour}. \url{https://dart.dev/language}
+    \item Material Design. (2026). \textit{Navigation Drawer}. \url{https://m3.material.io/components/navigation-drawer}
+    \item Repositorio del proyecto: \url{https://github.com/Dval05/AppMoviles_30738/tree/main/p1/Tareas/pry_tarea1p1}
+\end{enumerate}
+
+\end{document}

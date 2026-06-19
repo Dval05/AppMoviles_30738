@@ -145,7 +145,7 @@ class MenuLateral extends StatelessWidget {
               'TAREA 1 - APP MÓVILES',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            accountEmail: Text('danna.andrade@espe.edu.ec'),
+            accountEmail: Text(''),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Icon(Icons.person, size: 40, color: Colors.blue),
