@@ -12,4 +12,10 @@ class SitioTuristico {
     required this.longitud,
     required this.imagenUrl,
   });
+
+  // Obtener dirección cardinal desde coordenadas
+  String getDireccionCardinal() {
+    // Para un mayor detalle, podrías agregar una API de geocodificación inversa
+    return "Ubicación: $latitud, $longitud";
+  }
 }

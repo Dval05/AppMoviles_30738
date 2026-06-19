@@ -11,22 +11,28 @@ class TurismoViewModel extends ChangeNotifier {
   final RutaService _rutaService = RutaService();
 
   Position? _posicionActual;
-  List<SitioTuristico> _sitios = [];
+  List<SitioTuristico> _sitiosCercanos = [];
   double? _rumbo;
   bool _cargando = false;
+  bool _cargandoLugares = false;
   String? _error;
   
   // Lista de puntos para la ruta (Polyline)
   List<LatLng> _puntosRuta = [];
   SitioTuristico? _sitioSeleccionado;
 
+  // Para la brújula: azimut hacia el sitio seleccionado
+  double? _azimutHaciaSitio;
+
   Position? get posicionActual => _posicionActual;
-  List<SitioTuristico> get sitios => _sitios;
+  List<SitioTuristico> get sitiosCercanos => _sitiosCercanos;
   double? get rumbo => _rumbo;
   bool get cargando => _cargando;
+  bool get cargandoLugares => _cargandoLugares;
   String? get error => _error;
   List<LatLng> get puntosRuta => _puntosRuta;
   SitioTuristico? get sitioSeleccionado => _sitioSeleccionado;
+  double? get azimutHaciaSitio => _azimutHaciaSitio;
 
   TurismoViewModel() {
     inicializar();
@@ -39,7 +45,7 @@ class TurismoViewModel extends ChangeNotifier {
 
     try {
       _posicionActual = await _service.obtenerUbicacionActual();
-      _sitios = _service.obtenerSitios();
+      await _cargarLugaresCercanos();
       
       // Escuchar cambios en la brújula
       FlutterCompass.events?.listen((event) {
@@ -50,6 +56,8 @@ class TurismoViewModel extends ChangeNotifier {
       // Escuchar cambios de posición
       Geolocator.getPositionStream().listen((Position position) {
         _posicionActual = position;
+        _cargarLugaresCercanos();
+        _actualizarAzimutHaciaSitio();
         notifyListeners();
       });
 
@@ -61,6 +69,42 @@ class TurismoViewModel extends ChangeNotifier {
     }
   }
 
+  /// Carga los lugares cercanos en tiempo real desde OpenStreetMap
+  Future<void> _cargarLugaresCercanos() async {
+    if (_posicionActual == null) return;
+    
+    _cargandoLugares = true;
+    notifyListeners();
+
+    try {
+      _sitiosCercanos = await _service.obtenerLugaresCercanosEnTiempoReal(
+        _posicionActual!.latitude,
+        _posicionActual!.longitude,
+      );
+      
+      if (_sitiosCercanos.isEmpty) {
+        _error = "No hay lugares turísticos cercanos en este momento.";
+      }
+    } catch (e) {
+      _error = "Error al cargar lugares: $e";
+    } finally {
+      _cargandoLugares = false;
+      notifyListeners();
+    }
+  }
+
+  /// Actualiza el azimut hacia el sitio seleccionado
+  void _actualizarAzimutHaciaSitio() {
+    if (_posicionActual != null && _sitioSeleccionado != null) {
+      _azimutHaciaSitio = _service.calcularAzimut(
+        _posicionActual!.latitude,
+        _posicionActual!.longitude,
+        _sitioSeleccionado!.latitud,
+        _sitioSeleccionado!.longitud,
+      );
+    }
+  }
+
   // Trazar ruta hacia un sitio específico
   Future<void> trazarRuta(SitioTuristico sitio) async {
     if (_posicionActual == null) return;
@@ -68,6 +112,7 @@ class TurismoViewModel extends ChangeNotifier {
     _cargando = true;
     _sitioSeleccionado = sitio;
     _puntosRuta = [];
+    _actualizarAzimutHaciaSitio();
     notifyListeners();
 
     try {
@@ -90,6 +135,7 @@ class TurismoViewModel extends ChangeNotifier {
   void limpiarRuta() {
     _puntosRuta = [];
     _sitioSeleccionado = null;
+    _azimutHaciaSitio = null;
     notifyListeners();
   }
 
@@ -103,11 +149,34 @@ class TurismoViewModel extends ChangeNotifier {
     );
   }
 
+  /// Obtiene el azimut hacia un sitio específico
+  double obtenerAzimutHaciaSitio(SitioTuristico sitio) {
+    if (_posicionActual == null) return 0;
+    return _service.calcularAzimut(
+      _posicionActual!.latitude,
+      _posicionActual!.longitude,
+      sitio.latitud,
+      sitio.longitud,
+    );
+  }
+
+  /// Obtiene la dirección cardinal hacia un sitio (N, NE, E, SE, S, SW, W, NW)
+  String obtenerDireccionCardinal(SitioTuristico sitio) {
+    double azimut = obtenerAzimutHaciaSitio(sitio);
+    return _service.azimutADireccionCardinal(azimut);
+  }
+
   String formatearDistancia(double metros) {
     if (metros < 1000) {
       return "${metros.toStringAsFixed(0)} m";
     } else {
       return "${(metros / 1000).toStringAsFixed(2)} km";
     }
+  }
+
+  /// Obtiene la dirección cardinal desde el rumbo actual y el azimut hacia el sitio
+  String obtenerDireccionRelativa(SitioTuristico sitio) {
+    double azimut = obtenerAzimutHaciaSitio(sitio);
+    return _service.azimutADireccionCardinal(azimut);
   }
 }
