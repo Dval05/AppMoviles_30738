@@ -6,7 +6,7 @@ import 'brujula_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
-
+q
   @override
   State<HomeView> createState() => _HomeViewState();
 }
