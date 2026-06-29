@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,8 +41,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAZPrOkT4I4oPXrwj0oEnP7Ub-11TQXyg8',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB'] ?? '',
     appId: '1:344844210027:web:891214205c4a7d50b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -50,15 +51,15 @@ class DefaultFirebaseOptions {
     measurementId: 'G-Z176ZY6R70',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAyGNq3gQlKbgVo_xayPNRG4AZHcRPn_fg',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID'] ?? '',
     appId: '1:344844210027:android:f08802e0a185fd07b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
     storageBucket: 'hostsigchos.firebasestorage.app',
   );
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCVavKA27JzLLF8D3Y-pMhftIZLaqBJfJk',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS'] ?? '',
     appId: '1:344844210027:ios:c797a49711a50881b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -67,8 +68,8 @@ class DefaultFirebaseOptions {
         '344844210027-s6ckho6clpvo1de40ku2qtp78s2aj16p.apps.googleusercontent.com',
     iosBundleId: 'com.example.frontend',
   );
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCVavKA27JzLLF8D3Y-pMhftIZLaqBJfJk',
+  static FirebaseOptions get macos => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS'] ?? '',
     appId: '1:344844210027:ios:c797a49711a50881b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -78,8 +79,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.frontend',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAZPrOkT4I4oPXrwj0oEnP7Ub-11TQXyg8',
+  static FirebaseOptions get windows => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB'] ?? '',
     appId: '1:344844210027:web:bbcf8ca3e19e2054b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',

@@ -78,7 +78,15 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
 
   double get _precioTotal {
     if (_habitacion == null) return 0;
-    return _noches * _habitacion!.precioPorNoche * _numHabitaciones;
+
+    final bool esCompartida = _habitacion!.tipo.toLowerCase().contains(
+      'compartida',
+    );
+    if (esCompartida) {
+      return _noches * _habitacion!.precioPorNoche * _numHuespedes;
+    } else {
+      return _noches * _habitacion!.precioPorNoche * _numHabitaciones;
+    }
   }
 
   Future<void> _agregarAlCarrito() async {
@@ -91,7 +99,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
       return;
     }
 
-    if (_esParaOtraPersona && _nombreOtraPersonaController.text.trim().isEmpty) {
+    if (_esParaOtraPersona &&
+        _nombreOtraPersonaController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor ingresa el nombre de la otra persona'),
@@ -112,7 +121,11 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
     if (!hayDisponibilidad) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No hay suficientes habitaciones disponibles para esas fechas.')),
+        const SnackBar(
+          content: Text(
+            'No hay suficientes habitaciones disponibles para esas fechas.',
+          ),
+        ),
       );
       return;
     }
@@ -121,11 +134,19 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
     if (!_esParaOtraPersona) {
       final usuario = context.read<AuthViewModel>().usuarioActual;
       if (usuario != null) {
-        final haySolapamiento = await reservaVm.existeSolapamiento(usuario.id, _fechaCheckIn!, _fechaCheckOut!);
+        final haySolapamiento = await reservaVm.existeSolapamiento(
+          usuario.id,
+          _fechaCheckIn!,
+          _fechaCheckOut!,
+        );
         if (haySolapamiento) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ya tienes una reserva activa en estas fechas. Activa la opción "Reservar para otra persona" si la reserva no es para ti.')),
+            const SnackBar(
+              content: Text(
+                'Ya tienes una reserva activa en estas fechas. Activa la opción "Reservar para otra persona" si la reserva no es para ti.',
+              ),
+            ),
           );
           return;
         }
@@ -140,9 +161,11 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
       numHabitaciones: _numHabitaciones,
       notas: _notasController.text.trim(),
       esParaOtraPersona: _esParaOtraPersona,
-      nombreOtraPersona: _esParaOtraPersona ? _nombreOtraPersonaController.text.trim() : null,
+      nombreOtraPersona: _esParaOtraPersona
+          ? _nombreOtraPersonaController.text.trim()
+          : null,
     );
-    
+
     context.read<CarritoReservaViewModel>().agregarItem(item);
 
     if (mounted) {
@@ -206,7 +229,11 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / noche',
+                            _habitacion!.tipo.toLowerCase().contains(
+                                  'compartida',
+                                )
+                                ? '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / cama / noche'
+                                : '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / noche',
                             style: const TextStyle(
                               color: ColorSchemeApp.darkGreen,
                             ),
@@ -273,9 +300,19 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
               const SizedBox(height: 24),
 
               // Huéspedes
-              const Text(
-                'Huéspedes',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Builder(
+                builder: (context) {
+                  final esCompartida = _habitacion!.tipo.toLowerCase().contains(
+                    'compartida',
+                  );
+                  return Text(
+                    esCompartida ? 'Huéspedes (Camas a reservar)' : 'Huéspedes',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 12),
               Row(
@@ -311,42 +348,44 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
               const SizedBox(height: 24),
 
               // Habitaciones
-              const Text(
-                'Habitaciones',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: _numHabitaciones > 1
-                        ? () => setState(() => _numHabitaciones--)
-                        : null,
-                    icon: const Icon(Icons.remove_circle_outline),
-                    color: ColorSchemeApp.primaryGreen,
-                  ),
-                  Text(
-                    '$_numHabitaciones',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+              if (!_habitacion!.tipo.toLowerCase().contains('compartida')) ...[
+                const Text(
+                  'Habitaciones',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: _numHabitaciones > 1
+                          ? () => setState(() => _numHabitaciones--)
+                          : null,
+                      icon: const Icon(Icons.remove_circle_outline),
+                      color: ColorSchemeApp.primaryGreen,
                     ),
-                  ),
-                  IconButton(
-                    onPressed: _numHabitaciones < 5
-                        ? () => setState(() => _numHabitaciones++)
-                        : null,
-                    icon: const Icon(Icons.add_circle_outline),
-                    color: ColorSchemeApp.primaryGreen,
-                  ),
-                  const Spacer(),
-                  const Text(
-                    'Máx. 5',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
+                    Text(
+                      '$_numHabitaciones',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _numHabitaciones < 5
+                          ? () => setState(() => _numHabitaciones++)
+                          : null,
+                      icon: const Icon(Icons.add_circle_outline),
+                      color: ColorSchemeApp.primaryGreen,
+                    ),
+                    const Spacer(),
+                    const Text(
+                      'Máx. 5',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
 
               // Titular de Reserva
               const Text(
@@ -380,7 +419,11 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                     ),
                     prefixIcon: const Icon(Icons.person_outline),
                   ),
-                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]'))],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]'),
+                    ),
+                  ],
                 ),
               ],
               const SizedBox(height: 24),
