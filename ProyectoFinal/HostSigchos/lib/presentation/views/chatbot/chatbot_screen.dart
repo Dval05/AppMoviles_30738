@@ -6,6 +6,7 @@ import 'package:record/record.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/chatbot_viewmodel.dart';
+import '../../viewmodels/habitacion_viewmodel.dart';
 import '../../viewmodels/hosteria_viewmodel.dart';
 
 class ChatbotScreen extends StatefulWidget {
@@ -19,6 +20,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _textController = TextEditingController();
   final AudioRecorder _audioRecorder = AudioRecorder();
   bool _isRecording = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HabitacionViewModel>().cargarTodasLasHabitaciones();
+    });
+  }
 
   @override
   void dispose() {
@@ -43,8 +52,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         )
         .toList();
 
+    final habitacionVm = context.read<HabitacionViewModel>();
+    final habitaciones = habitacionVm.todasLasHabitaciones
+        .map(
+          (h) => {
+            'id': h.id,
+            'hosteriaId': h.hosteriaId,
+            'tipo': h.tipo,
+            'precio': h.precioPorNoche,
+            'capacidad': h.capacidad,
+          },
+        )
+        .toList();
+
     return {
       'hosterias_disponibles': hosterias,
+      'habitaciones_disponibles': habitaciones,
     };
   }
 
@@ -85,6 +108,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       );
     } else if (action == 'NAVIGATE_TO_HOSTERIAS') {
       Navigator.pushNamed(context, AppRoutes.hosteriasList);
+    } else if (action == 'SHOW_SUGGESTIONS') {
+      final suggestions = data?['suggestions'] as List<dynamic>? ?? [];
+      Navigator.pushNamed(
+        context,
+        AppRoutes.chatbotSuggestions,
+        arguments: suggestions,
+      );
     }
   }
 

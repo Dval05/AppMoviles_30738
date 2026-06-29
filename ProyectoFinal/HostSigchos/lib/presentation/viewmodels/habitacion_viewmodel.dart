@@ -3,16 +3,20 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/habitacion.dart';
 import '../../domain/usecases/habitacion/check_disponibilidad_usecase.dart';
 import '../../domain/usecases/habitacion/get_habitaciones_usecase.dart';
+import '../../domain/usecases/habitacion/get_todas_las_habitaciones_usecase.dart';
 
 class HabitacionViewModel extends ChangeNotifier {
   HabitacionViewModel({
-    required this._getHabitacionesUseCase,
-    required this._checkDisponibilidadUseCase,
+    required this.getHabitacionesUseCase,
+    required this.checkDisponibilidadUseCase,
+    required this.getTodasLasHabitacionesUseCase,
   });
-  final GetHabitacionesUseCase _getHabitacionesUseCase;
-  final CheckDisponibilidadUseCase _checkDisponibilidadUseCase;
+  final GetHabitacionesUseCase getHabitacionesUseCase;
+  final CheckDisponibilidadUseCase checkDisponibilidadUseCase;
+  final GetTodasLasHabitacionesUseCase getTodasLasHabitacionesUseCase;
 
   List<Habitacion> _habitaciones = [];
+  List<Habitacion> _todasLasHabitaciones = [];
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -20,17 +24,30 @@ class HabitacionViewModel extends ChangeNotifier {
   final Map<String, bool> _disponibilidadPorHabitacion = {};
 
   List<Habitacion> get habitaciones => _habitaciones;
+  List<Habitacion> get todasLasHabitaciones => _todasLasHabitaciones;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   bool? getDisponibilidad(String habitacionId) =>
       _disponibilidadPorHabitacion[habitacionId];
 
+  Future<void> cargarTodasLasHabitaciones() async {
+    _setLoading(true);
+    try {
+      _todasLasHabitaciones = await getTodasLasHabitacionesUseCase();
+      _errorMessage = null;
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> cargarHabitacionesPorHosteria(String hosteriaId) async {
     _setLoading(true);
     _disponibilidadPorHabitacion.clear(); // Limpiar disponibilidad previa
     try {
-      _habitaciones = await _getHabitacionesUseCase(hosteriaId);
+      _habitaciones = await getHabitacionesUseCase(hosteriaId);
       _errorMessage = null;
     } catch (e) {
       _errorMessage = e.toString();
@@ -46,7 +63,7 @@ class HabitacionViewModel extends ChangeNotifier {
     _setLoading(true);
     try {
       for (final hab in _habitaciones) {
-        final disponible = await _checkDisponibilidadUseCase(
+        final disponible = await checkDisponibilidadUseCase(
           hab.id,
           checkIn,
           checkOut,

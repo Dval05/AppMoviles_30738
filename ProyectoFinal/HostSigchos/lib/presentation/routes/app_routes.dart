@@ -4,6 +4,7 @@ import '../views/auth/login_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/auth/verificacion_screen.dart';
 import '../views/chatbot/chatbot_screen.dart';
+import '../views/chatbot/chatbot_suggestions_screen.dart';
 import '../views/home/home_screen.dart';
 import '../views/hosteria/hosteria_detail_screen.dart';
 import '../views/hosteria/hosterias_list_screen.dart';
@@ -40,6 +41,7 @@ class AppRoutes {
   static const String editarPerfil = '/editar-perfil';
   static const String propietarioDashboard = '/propietario-dashboard';
   static const String chatbot = '/chatbot';
+  static const String chatbotSuggestions = '/chatbot-suggestions';
 
   static Map<String, WidgetBuilder> get routes => {
     splash: (context) => const SplashScreen(),
@@ -61,5 +63,9 @@ class AppRoutes {
     editarPerfil: (context) => const EditarPerfilScreen(),
     propietarioDashboard: (context) => const PropietarioDashboardScreen(),
     chatbot: (context) => const ChatbotScreen(),
+    chatbotSuggestions: (context) {
+      final suggestions = ModalRoute.of(context)?.settings.arguments as List<dynamic>? ?? [];
+      return ChatbotSuggestionsScreen(suggestions: suggestions);
+    },
   };
 }

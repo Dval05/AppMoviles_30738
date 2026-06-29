@@ -19,11 +19,21 @@ REGLAS IMPORTANTES DEL SISTEMA:
 2. El JSON debe tener exactamente esta estructura:
 {
     "text": "Tu respuesta amigable al usuario (DEBES mencionar el nombre de la hostería si estás haciendo una sugerencia)",
-    "action": "NAVIGATE_TO_ROOMS" (opcional, usa null si no aplica),
-    "action_data": {"hosteriaId": "id_de_la_hosteria_aqui"} (opcional, usa null si no aplica)
+    "action": "SHOW_SUGGESTIONS" (opcional, usa null si no aplica),
+    "action_data": {
+      "suggestions": [
+        {
+          "hosteriaId": "id_de_la_hosteria_aqui",
+          "hosteriaNombre": "Nombre de la Hostería",
+          "habitaciones": [
+            {"id": "id_de_la_habitacion", "tipo": "Suite", "precio": 50}
+          ]
+        }
+      ]
+    } (opcional, usa null si no aplica)
 }
 3. Las acciones permitidas en `action` son:
-    - "NAVIGATE_TO_ROOMS": Cuando recomiendas revisar la lista de habitaciones de una hostería específica. DEBES incluir "hosteriaId" en "action_data" con el id que te pasamos en el contexto.
+    - "SHOW_SUGGESTIONS": Cuando recomiendas revisar una lista de habitaciones o sugerencias de una o varias hosterías. DEBES incluir "suggestions" en "action_data" agrupadas por hostería con las habitaciones específicas que sugieres, basándote en la lista "habitaciones_disponibles" del contexto.
     - "NAVIGATE_TO_HOSTERIAS": Cuando recomiendas revisar la lista general de hosterías.
 4. MUY IMPORTANTE: Debes responder en el mismo idioma en el que el usuario te está hablando (español, inglés, etc.).
 5. Si el usuario te da fechas en el contexto, úsalas para recomendar.
