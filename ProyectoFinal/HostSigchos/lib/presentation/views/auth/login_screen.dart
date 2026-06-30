@@ -36,13 +36,19 @@ class _LoginScreenState extends State<LoginScreen> {
       FocusScope.of(context).unfocus();
 
       var input = _emailController.text.trim();
+      var originalInput = input;
+      
+      // Si ingresan el nombre de la hostería, lo convertimos a formato de correo electrónico
       if (!input.contains('@')) {
+        input = input.toLowerCase().replaceAll(' ', '_');
         input = '$input@hostsigchos.com';
       }
 
+      String password = kIsWeb ? originalInput : _passwordController.text;
+
       final success = await context.read<AuthViewModel>().login(
         input,
-        _passwordController.text,
+        password,
       );
 
       if (success && mounted) {
@@ -122,33 +128,35 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         content: Form(
           key: dialogFormKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                '¿Deseas crear una contraseña para también poder iniciar sesión con tu correo electrónico?',
-                style: TextStyle(color: ColorSchemeApp.softGray, fontSize: 14),
-              ),
-              const SizedBox(height: 20),
-              CustomTextField(
-                label: 'Nueva contraseña',
-                prefixIcon: Icons.lock_outline,
-                controller: passwordDialogController,
-                isPassword: true,
-                validator: Validators.password,
-              ),
-              CustomTextField(
-                label: 'Confirmar contraseña',
-                prefixIcon: Icons.lock_outline,
-                controller: confirmDialogController,
-                isPassword: true,
-                validator: (val) => Validators.confirmPassword(
-                  val,
-                  passwordDialogController.text,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '¿Deseas crear una contraseña para también poder iniciar sesión con tu correo electrónico?',
+                  style: TextStyle(color: ColorSchemeApp.softGray, fontSize: 14),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                CustomTextField(
+                  label: 'Nueva contraseña',
+                  prefixIcon: Icons.lock_outline,
+                  controller: passwordDialogController,
+                  isPassword: true,
+                  validator: Validators.password,
+                ),
+                CustomTextField(
+                  label: 'Confirmar contraseña',
+                  prefixIcon: Icons.lock_outline,
+                  controller: confirmDialogController,
+                  isPassword: true,
+                  validator: (val) => Validators.confirmPassword(
+                    val,
+                    passwordDialogController.text,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -307,8 +315,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
 
                         CustomTextField(
-                          label: l10n.emailOrPlaceName,
-                          prefixIcon: Icons.email_outlined,
+                          label: kIsWeb ? 'Nombre de la Hostería' : l10n.emailOrPlaceName,
+                          prefixIcon: kIsWeb ? Icons.business : Icons.email_outlined,
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (val) {
@@ -319,57 +327,65 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
 
-                        CustomTextField(
-                          label: l10n.password,
-                          prefixIcon: Icons.lock_outline,
-                          controller: _passwordController,
-                          isPassword: true,
-                          validator: Validators.password,
-                        ),
+                        if (!kIsWeb) ...[
+                          CustomTextField(
+                            label: l10n.password,
+                            prefixIcon: Icons.lock_outline,
+                            controller: _passwordController,
+                            isPassword: true,
+                            validator: (val) {
+                              if (val == null || val.trim().isEmpty) {
+                                return l10n.error;
+                              }
+                              return null;
+                            },
+                          ),
 
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: authViewModel.keepSession,
-                              onChanged: (val) {
-                                if (val != null) {
-                                  authViewModel.setKeepSession(value: val);
-                                }
-                              },
-                              activeColor: ColorSchemeApp.primaryGreen,
-                              visualDensity: VisualDensity.compact,
-                            ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => authViewModel.setKeepSession(value: !authViewModel.keepSession),
-                                child: Text(
-                                  l10n.keepSession,
-                                  style: const TextStyle(color: ColorSchemeApp.darkText, fontSize: 13),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: authViewModel.keepSession,
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    authViewModel.setKeepSession(value: val);
+                                  }
+                                },
+                                activeColor: ColorSchemeApp.primaryGreen,
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () => authViewModel.setKeepSession(value: !authViewModel.keepSession),
+                                  child: Text(
+                                    l10n.keepSession,
+                                    style: const TextStyle(color: ColorSchemeApp.darkText, fontSize: 13),
+                                  ),
                                 ),
                               ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, AppRoutes.forgotPassword);
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: ColorSchemeApp.primaryGreen,
-                                padding: EdgeInsets.zero,
-                                textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, AppRoutes.forgotPassword);
+                                },
+                                style: TextButton.styleFrom(
+                                  foregroundColor: ColorSchemeApp.primaryGreen,
+                                  padding: EdgeInsets.zero,
+                                  textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
                                 ),
+                                child: Text(l10n.forgotPassword),
                               ),
-                              child: Text(l10n.forgotPassword),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
 
                         GradientButton(
-                          text: l10n.login,
+                          text: kIsWeb ? 'Ingresar' : l10n.login,
                           onPressed: _login,
                         ),
+
 
                         const SizedBox(height: 16),
                         Row(

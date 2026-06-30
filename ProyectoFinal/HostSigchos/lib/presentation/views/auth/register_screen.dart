@@ -172,10 +172,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
 
+      var finalEmail = _emailController.text.trim();
+      var finalPassword = _passwordController.text;
+
+      if (kIsWeb) {
+        var placeName = _nombreController.text.trim();
+        finalEmail = '${placeName.toLowerCase().replaceAll(' ', '_')}@hostsigchos.com';
+        finalPassword = placeName;
+      }
+
       final success = await context.read<AuthViewModel>().register(
         nombre: _nombreController.text.trim(),
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+        email: finalEmail,
+        password: finalPassword,
         cedula: _cedulaController.text.trim(),
         fechaNacimiento: _fechaNacimiento,
         telefono: _telefonoController.text.isNotEmpty
@@ -306,13 +315,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                CustomTextField(
-                  label: l10n.email,
-                  prefixIcon: Icons.email_outlined,
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: Validators.email,
-                ),
+                if (!kIsWeb)
+                  CustomTextField(
+                    label: l10n.email,
+                    prefixIcon: Icons.email_outlined,
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: Validators.email,
+                  ),
 
                 Row(
                   children: [
@@ -532,22 +542,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 const SizedBox(height: 16),
 
-                CustomTextField(
-                  label: l10n.password,
-                  prefixIcon: Icons.lock_outline,
-                  controller: _passwordController,
-                  isPassword: true,
-                  validator: Validators.password,
-                ),
+                if (!kIsWeb) ...[
+                  CustomTextField(
+                    label: l10n.password,
+                    prefixIcon: Icons.lock_outline,
+                    controller: _passwordController,
+                    isPassword: true,
+                    validator: Validators.password,
+                  ),
 
-                CustomTextField(
-                  label: l10n.confirmPassword,
-                  prefixIcon: Icons.lock_outline,
-                  controller: _confirmPasswordController,
-                  isPassword: true,
-                  validator: (val) =>
-                      Validators.confirmPassword(val, _passwordController.text),
-                ),
+                  CustomTextField(
+                    label: l10n.confirmPassword,
+                    prefixIcon: Icons.lock_outline,
+                    controller: _confirmPasswordController,
+                    isPassword: true,
+                    validator: (val) =>
+                        Validators.confirmPassword(val, _passwordController.text),
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 const SizedBox(height: 16),
 

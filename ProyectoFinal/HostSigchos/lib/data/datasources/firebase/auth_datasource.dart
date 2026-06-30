@@ -161,10 +161,10 @@ class AuthDataSource {
 
   Future<void> cerrarSesion() async {
     try {
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await _firebaseAuth.signOut();
+      // Disparamos el cierre de sesión de Google sin esperar (fire-and-forget)
+      // para evitar que bloquee la interfaz si la plataforma no lo soporta bien o tarda.
+      _googleSignIn.signOut().catchError((_) => null);
     } catch (e) {
       throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
     }

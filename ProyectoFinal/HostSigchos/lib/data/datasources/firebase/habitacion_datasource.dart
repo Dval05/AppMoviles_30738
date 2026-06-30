@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../../../core/constants/firestore_paths.dart';
 import '../../../core/errors/failures.dart';
+import '../../../domain/entities/habitacion.dart';
 import '../../models/habitacion_model.dart';
 
 class HabitacionDataSource {
@@ -104,6 +105,50 @@ class HabitacionDataSource {
       return (cantidadTotal - habitacionesOcupadas) >= cantidadSolicitada;
     } catch (e) {
       throw const FirestoreFailure('Error al verificar disponibilidad');
+    }
+  }
+
+  Future<void> agregarHabitacion(Habitacion habitacion) async {
+    try {
+      final docRef = _firestore.collection(FirestorePaths.habitaciones).doc();
+      final habitacionModel = HabitacionModel(
+        id: docRef.id,
+        hosteriaId: habitacion.hosteriaId,
+        tipo: habitacion.tipo,
+        descripcion: habitacion.descripcion,
+        capacidad: habitacion.capacidad,
+        precioPorNoche: habitacion.precioPorNoche,
+        imagenes: habitacion.imagenes,
+        amenidades: habitacion.amenidades,
+        disponible: habitacion.disponible,
+        cantidadTotal: habitacion.cantidadTotal,
+      );
+      await docRef.set(habitacionModel.toJson());
+    } catch (e) {
+      throw const FirestoreFailure('Error al agregar habitación');
+    }
+  }
+
+  Future<void> actualizarHabitacion(Habitacion habitacion) async {
+    try {
+      final habitacionModel = HabitacionModel(
+        id: habitacion.id,
+        hosteriaId: habitacion.hosteriaId,
+        tipo: habitacion.tipo,
+        descripcion: habitacion.descripcion,
+        capacidad: habitacion.capacidad,
+        precioPorNoche: habitacion.precioPorNoche,
+        imagenes: habitacion.imagenes,
+        amenidades: habitacion.amenidades,
+        disponible: habitacion.disponible,
+        cantidadTotal: habitacion.cantidadTotal,
+      );
+      await _firestore
+          .collection(FirestorePaths.habitaciones)
+          .doc(habitacion.id)
+          .update(habitacionModel.toJson());
+    } catch (e) {
+      throw const FirestoreFailure('Error al actualizar habitación');
     }
   }
 }

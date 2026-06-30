@@ -50,6 +50,8 @@ import 'domain/usecases/geocoding/get_direccion_usecase.dart';
 import 'domain/usecases/habitacion/check_disponibilidad_usecase.dart';
 import 'domain/usecases/habitacion/get_habitaciones_usecase.dart';
 import 'domain/usecases/habitacion/get_todas_las_habitaciones_usecase.dart';
+import 'domain/usecases/habitacion/agregar_habitacion_usecase.dart';
+import 'domain/usecases/habitacion/actualizar_habitacion_usecase.dart';
 import 'domain/usecases/hosteria/actualizar_hosteria_usecase.dart';
 import 'domain/usecases/hosteria/crear_hosteria_usecase.dart';
 import 'domain/usecases/hosteria/get_hosteria_detail_usecase.dart';
@@ -166,6 +168,8 @@ void main() async {
               getHabitacionesUseCase: GetHabitacionesUseCase(repo),
               checkDisponibilidadUseCase: CheckDisponibilidadUseCase(repo),
               getTodasLasHabitacionesUseCase: GetTodasLasHabitacionesUseCase(repo),
+              agregarHabitacionUseCase: AgregarHabitacionUseCase(repo),
+              actualizarHabitacionUseCase: ActualizarHabitacionUseCase(repo),
             );
           },
         ),

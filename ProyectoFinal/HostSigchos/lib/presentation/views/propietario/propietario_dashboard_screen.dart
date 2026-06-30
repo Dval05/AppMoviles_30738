@@ -6,6 +6,7 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/hosteria.dart';
 import '../../../domain/entities/promocion.dart';
 import '../../../domain/entities/reserva.dart';
+import '../../../domain/entities/habitacion.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -33,13 +34,17 @@ class _PropietarioDashboardScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HosteriaViewModel>().cargarHosterias();
       context.read<ReservaViewModel>().cargarTodasLasReservas();
+      context.read<HabitacionViewModel>().cargarTodasLasHabitaciones();
     });
   }
 
   Future<void> _logout(BuildContext context) async {
     final authViewModel = context.read<AuthViewModel>();
-    await authViewModel.logoutUseCase();
-    authViewModel.setUsuarioActual(null);
+    try {
+      await authViewModel.logout();
+    } catch (e) {
+      debugPrint('Error al cerrar sesión: $e');
+    }
     if (context.mounted) {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -71,6 +76,11 @@ class _PropietarioDashboardScreenState
                 icon: const Icon(Icons.business_center_outlined),
                 selectedIcon: const Icon(Icons.business_center),
                 label: Text(AppLocalizations.of(context)!.myHostels),
+              ),
+              NavigationRailDestination(
+                icon: const Icon(Icons.bed_outlined),
+                selectedIcon: const Icon(Icons.bed),
+                label: const Text('Habitaciones'),
               ),
               NavigationRailDestination(
                 icon: const Icon(Icons.book_online_outlined),
@@ -140,8 +150,10 @@ class _PropietarioDashboardScreenState
       case 1:
         return const _MisHosteriasView();
       case 2:
-        return const _ReservasAdminView();
+        return const _HabitacionesAdminView();
       case 3:
+        return const _ReservasAdminView();
+      case 4:
         return const _PromocionesAdminView();
       default:
         return _DashboardView(nombre: nombre);
@@ -625,7 +637,7 @@ class _ReservasAdminViewState extends State<_ReservasAdminView> {
 
     if (isPropietario && usuario != null) {
       final hosterias = context
-          .read<HosteriaViewModel>()
+          .watch<HosteriaViewModel>()
           .hosterias
           .where((h) => h.propietarioId == usuario.id)
           .map((h) => h.id)
@@ -840,7 +852,7 @@ class _PromocionesAdminViewState extends State<_PromocionesAdminView> {
     var promociones = viewModel.promociones;
     if (isPropietario && usuario != null) {
       final hosterias = context
-          .read<HosteriaViewModel>()
+          .watch<HosteriaViewModel>()
           .hosterias
           .where((h) => h.propietarioId == usuario.id)
           .map((h) => h.id)
@@ -1162,6 +1174,393 @@ class _PromocionFormDialogState extends State<_PromocionFormDialog> {
             foregroundColor: Colors.white,
           ),
           child: const Text('Guardar'),
+        ),
+      ],
+    );
+  }
+}
+
+class _HabitacionesAdminView extends StatelessWidget {
+  const _HabitacionesAdminView();
+
+  @override
+  Widget build(BuildContext context) {
+    final usuario = context.watch<AuthViewModel>().usuarioActual;
+    final isPropietario = usuario?.rol == 'propietario';
+
+    var hosterias = context.watch<HosteriaViewModel>().hosterias;
+    if (isPropietario && usuario != null) {
+      hosterias = hosterias.where((h) => h.propietarioId == usuario.id).toList();
+    }
+    final hosteriaIds = hosterias.map((h) => h.id).toSet();
+
+    var habitaciones = context.watch<HabitacionViewModel>().todasLasHabitaciones;
+    if (isPropietario) {
+      habitaciones = habitaciones.where((h) => hosteriaIds.contains(h.hosteriaId)).toList();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Gestión de Habitaciones',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: ColorSchemeApp.darkGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => _HabitacionFormDialog(
+                      hosteriasPropietario: hosterias,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Nueva Habitación'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorSchemeApp.primaryGreen,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: habitaciones.isEmpty
+                ? const Center(child: Text('No tienes habitaciones registradas.'))
+                : ListView.builder(
+                    itemCount: habitaciones.length,
+                    itemBuilder: (context, index) {
+                      final hab = habitaciones[index];
+                      // Find parent hosteria or fallback to an empty name to avoid crash
+                      final hosteriaNombre = hosterias
+                          .where((h) => h.id == hab.hosteriaId)
+                          .map((h) => h.nombre)
+                          .firstOrNull ?? 'Hostería desconocida';
+                      
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+                          leading: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: ColorSchemeApp.softGray,
+                              borderRadius: BorderRadius.circular(8),
+                              image: hab.imagenes.isNotEmpty
+                                  ? DecorationImage(
+                                      image: NetworkImage(hab.imagenes.first),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            child: hab.imagenes.isEmpty
+                                ? const Icon(Icons.bed, color: Colors.white)
+                                : null,
+                          ),
+                          title: Text(
+                            '${hab.tipo} - $hosteriaNombre',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 8),
+                              Text('Capacidad: ${hab.capacidad} personas'),
+                              Text('Precio: \$${hab.precioPorNoche.toStringAsFixed(2)} / noche'),
+                              Text('Estado: ${hab.disponible ? "Disponible" : "Ocupada/Inactiva"} (Total físicas: ${hab.cantidadTotal})'),
+                            ],
+                          ),
+                          isThreeLine: true,
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => _HabitacionFormDialog(
+                                      habitacion: hab,
+                                      hosteriasPropietario: hosterias,
+                                    ),
+                                  );
+                                },
+                                tooltip: 'Editar Habitación',
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HabitacionFormDialog extends StatefulWidget {
+  const _HabitacionFormDialog({
+    this.habitacion,
+    required this.hosteriasPropietario,
+  });
+
+  final Habitacion? habitacion;
+  final List<Hosteria> hosteriasPropietario;
+
+  @override
+  State<_HabitacionFormDialog> createState() => _HabitacionFormDialogState();
+}
+
+class _HabitacionFormDialogState extends State<_HabitacionFormDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late String _tipo;
+  late String _descripcion;
+  late int _capacidad;
+  late double _precioPorNoche;
+  late int _cantidadTotal;
+  late bool _disponible;
+  String? _selectedHosteriaId;
+  final _imagenesController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tipo = widget.habitacion?.tipo ?? '';
+    _descripcion = widget.habitacion?.descripcion ?? '';
+    _capacidad = widget.habitacion?.capacidad ?? 2;
+    _precioPorNoche = widget.habitacion?.precioPorNoche ?? 50.0;
+    _cantidadTotal = widget.habitacion?.cantidadTotal ?? 1;
+    _disponible = widget.habitacion?.disponible ?? true;
+    _selectedHosteriaId = widget.habitacion?.hosteriaId;
+    
+    if (_selectedHosteriaId == null && widget.hosteriasPropietario.isNotEmpty) {
+      _selectedHosteriaId = widget.hosteriasPropietario.first.id;
+    }
+    
+    if (widget.habitacion?.imagenes.isNotEmpty ?? false) {
+      _imagenesController.text = widget.habitacion!.imagenes.join(', ');
+    }
+  }
+
+  @override
+  void dispose() {
+    _imagenesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _guardar() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      
+      if (_selectedHosteriaId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Debe seleccionar una hostería')),
+        );
+        return;
+      }
+
+      final imagenes = _imagenesController.text
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+
+      final nuevaHabitacion = Habitacion(
+        id: widget.habitacion?.id ?? '',
+        hosteriaId: _selectedHosteriaId!,
+        tipo: _tipo,
+        descripcion: _descripcion,
+        capacidad: _capacidad,
+        precioPorNoche: _precioPorNoche,
+        imagenes: imagenes,
+        amenidades: widget.habitacion?.amenidades ?? const [],
+        disponible: _disponible,
+        cantidadTotal: _cantidadTotal,
+      );
+
+      final vm = context.read<HabitacionViewModel>();
+      final exito = widget.habitacion == null
+          ? await vm.agregarHabitacion(nuevaHabitacion)
+          : await vm.actualizarHabitacion(nuevaHabitacion);
+
+      if (exito && mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.habitacion == null
+                ? 'Habitación creada'
+                : 'Habitación actualizada'),
+            backgroundColor: ColorSchemeApp.primaryGreen,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(vm.errorMessage ?? 'Error desconocido'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.hosteriasPropietario.isEmpty) {
+      return AlertDialog(
+        title: const Text('Error'),
+        content: const Text('No tienes hosterías registradas. Debes crear una hostería antes de crear una habitación.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      title: Text(widget.habitacion == null ? 'Nueva Habitación' : 'Editar Habitación'),
+      content: SizedBox(
+        width: 600,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Hostería *'),
+                  value: _selectedHosteriaId,
+                  items: widget.hosteriasPropietario.map((h) {
+                    return DropdownMenuItem(
+                      value: h.id,
+                      child: Text(h.nombre),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedHosteriaId = val;
+                    });
+                  },
+                  validator: (v) => v == null ? 'Requerido' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _tipo,
+                  decoration: const InputDecoration(labelText: 'Tipo de Habitación (Ej: Sencilla, Doble) *'),
+                  validator: (v) => v!.isEmpty ? 'Requerido' : null,
+                  onSaved: (v) => _tipo = v!,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  initialValue: _descripcion,
+                  decoration: const InputDecoration(labelText: 'Descripción *'),
+                  maxLines: 3,
+                  validator: (v) => v!.isEmpty ? 'Requerido' : null,
+                  onSaved: (v) => _descripcion = v!,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: _capacidad.toString(),
+                        decoration: const InputDecoration(labelText: 'Capacidad (personas) *'),
+                        keyboardType: TextInputType.number,
+                        validator: (v) {
+                          if (v!.isEmpty) return 'Requerido';
+                          if (int.tryParse(v) == null || int.parse(v) <= 0) return 'Invalido';
+                          return null;
+                        },
+                        onSaved: (v) => _capacidad = int.parse(v!),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: _precioPorNoche.toString(),
+                        decoration: const InputDecoration(labelText: 'Precio por Noche (\$) *'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (v) {
+                          if (v!.isEmpty) return 'Requerido';
+                          if (double.tryParse(v) == null || double.parse(v) <= 0) return 'Invalido';
+                          return null;
+                        },
+                        onSaved: (v) => _precioPorNoche = double.parse(v!),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: _cantidadTotal.toString(),
+                        decoration: const InputDecoration(labelText: 'Cantidad Física Total *', helperText: 'Cuantas habitaciones de este tipo tienes.'),
+                        keyboardType: TextInputType.number,
+                        validator: (v) {
+                          if (v!.isEmpty) return 'Requerido';
+                          if (int.tryParse(v) == null || int.parse(v) <= 0) return 'Invalido';
+                          return null;
+                        },
+                        onSaved: (v) => _cantidadTotal = int.parse(v!),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: SwitchListTile(
+                        title: const Text('Disponible para reservas'),
+                        value: _disponible,
+                        onChanged: (val) {
+                          setState(() {
+                            _disponible = val;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _imagenesController,
+                  decoration: const InputDecoration(
+                    labelText: 'Imágenes (URLs separadas por coma)',
+                  ),
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: context.watch<HabitacionViewModel>().isLoading ? null : _guardar,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: ColorSchemeApp.primaryGreen,
+            foregroundColor: Colors.white,
+          ),
+          child: context.watch<HabitacionViewModel>().isLoading
+              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              : const Text('Guardar'),
         ),
       ],
     );
