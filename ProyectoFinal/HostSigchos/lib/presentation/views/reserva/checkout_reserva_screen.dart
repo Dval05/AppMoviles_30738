@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../domain/entities/reserva.dart';
@@ -41,7 +42,7 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
     final usuario = authVm.usuarioActual;
     if (usuario == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes iniciar sesión para reservar')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.mustSignInToBook)),
       );
       return;
     }
@@ -85,7 +86,7 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Error al procesar reserva de ${item.habitacion.tipo}: ${reservaVm.errorMessage}',
+                AppLocalizations.of(context)!.errorProcessingBooking(item.habitacion.tipo, reservaVm.errorMessage ?? ''),
               ),
             ),
           );
@@ -135,12 +136,12 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout Reserva'),
+        title: Text(AppLocalizations.of(context)!.bookingCheckout),
       ),
       body: LoadingOverlay(
         isLoading: _isProcessing,
         child: carritoVm.isEmpty
-            ? const Center(child: Text('El carrito está vacío'))
+            ? Center(child: Text(AppLocalizations.of(context)!.cartIsEmpty))
             : Column(
                 children: [
                   Expanded(
@@ -165,7 +166,7 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
                                 ),
                                 if (item.esParaOtraPersona)
                                   Text(
-                                    'Para: ${item.nombreOtraPersona}',
+                                    AppLocalizations.of(context)!.bookingFor(item.nombreOtraPersona ?? ''),
                                     style: const TextStyle(
                                       fontStyle: FontStyle.italic,
                                     ),
@@ -220,17 +221,17 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    'Total a pagar:',
-                                    style: TextStyle(
+                                  Text(
+                                    AppLocalizations.of(context)!.totalToPay,
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   if (hayDescuento)
-                                    const Text(
-                                      'Promociones aplicadas al carrito',
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)!.promotionsApplied,
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         color: Colors.orange,
                                         fontWeight: FontWeight.bold,
@@ -268,7 +269,7 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
                           ),
                           const SizedBox(height: 24),
                           GradientButton(
-                            text: 'Confirmar todas las reservas',
+                            text: AppLocalizations.of(context)!.confirmAllBookings,
                             onPressed: _confirmarLoteReservas,
                           ),
                         ],

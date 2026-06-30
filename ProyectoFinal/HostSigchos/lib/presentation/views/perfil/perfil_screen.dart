@@ -27,117 +27,206 @@ class PerfilScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profile),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await authViewModel.logout();
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.splash,
-                  (route) => false,
-                );
-              }
-            },
-          ),
-        ],
-      ),
+      backgroundColor: ColorSchemeApp.offWhite,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: ColorSchemeApp.lightGreen.withValues(
-                      alpha: 0.3,
+            // Header Stack
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Fondo verde
+                Container(
+                  width: double.infinity,
+                  height: 220,
+                  decoration: const BoxDecoration(
+                    color: ColorSchemeApp.primaryGreen,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(32),
+                      bottomRight: Radius.circular(32),
                     ),
-                    backgroundImage: usuario.fotoUrl != null
-                        ? CachedNetworkImageProvider(usuario.fotoUrl!)
-                        : null,
-                    child: usuario.fotoUrl == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: ColorSchemeApp.primaryGreen,
-                          )
-                        : null,
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              usuario.nombre,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              usuario.email,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: ColorSchemeApp.softGray,
-              ),
-            ),
-            const SizedBox(height: 48),
-
-            _buildOpcionMenu(
-              context,
-              icon: Icons.edit,
-              title: l10n.editProfile,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.editarPerfil),
-            ),
-            _buildOpcionMenu(
-              context,
-              icon: Icons.history,
-              title: l10n.reservationHistory,
-              onTap: () =>
-                  Navigator.pushNamed(context, AppRoutes.historialReservas),
-            ),
-            _buildOpcionMenu(
-              context,
-              icon: Icons.language,
-              title: l10n.language,
-              subtitle: localeVm.locale.languageCode == 'es'
-                  ? 'ESPAÑOL'
-                  : 'ENGLISH',
-              onTap: () {
-                context.read<LocaleViewModel>().toggleLanguage();
-              },
-            ),
-            _buildOpcionMenu(
-              context,
-              icon: Icons.help_outline,
-              title: l10n.helpAndSupport,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(l10n.helpAndSupport),
-                    content: Text(l10n.supportInfoText),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.understood),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Text(
+                        l10n.profile,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                // Avatar e Info superpuesta
+                Positioned(
+                  top: 120,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          radius: 56,
+                          backgroundColor: ColorSchemeApp.lightGreen.withValues(alpha: 0.3),
+                          backgroundImage: usuario.fotoUrl != null
+                              ? CachedNetworkImageProvider(usuario.fotoUrl!)
+                              : null,
+                          child: usuario.fotoUrl == null
+                              ? Text(
+                                  usuario.nombre[0].toUpperCase(),
+                                  style: const TextStyle(
+                                    color: ColorSchemeApp.primaryGreen,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        usuario.nombre,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: ColorSchemeApp.darkText,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        usuario.email,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: ColorSchemeApp.softGray,
+                        ),
                       ),
                     ],
                   ),
-                );
-              },
+                ),
+              ],
             ),
-            _buildOpcionMenu(
-              context,
-              icon: Icons.payment,
-              title: l10n.paymentHistory,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.historialPagos);
-              },
+            const SizedBox(height: 140), // Espacio para que el Stack superpuesto respire
+
+            // Tarjeta de Opciones Unificada
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    _buildOpcionMenu(
+                      context,
+                      icon: Icons.edit_outlined,
+                      title: l10n.editProfile,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.editarPerfil),
+                    ),
+                    const Divider(height: 1, indent: 64, endIndent: 24, color: Color(0xFFF0F0F0)),
+                    _buildOpcionMenu(
+                      context,
+                      icon: Icons.history_outlined,
+                      title: l10n.reservationHistory,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.historialReservas),
+                    ),
+                    const Divider(height: 1, indent: 64, endIndent: 24, color: Color(0xFFF0F0F0)),
+                    _buildOpcionMenu(
+                      context,
+                      icon: Icons.payment_outlined,
+                      title: l10n.paymentHistory,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.historialPagos),
+                    ),
+                    const Divider(height: 1, indent: 64, endIndent: 24, color: Color(0xFFF0F0F0)),
+                    _buildOpcionMenu(
+                      context,
+                      icon: Icons.language_outlined,
+                      title: l10n.language,
+                      subtitle: localeVm.locale.languageCode == 'es' ? 'ESPAÑOL' : 'ENGLISH',
+                      onTap: () => context.read<LocaleViewModel>().toggleLanguage(),
+                    ),
+                    const Divider(height: 1, indent: 64, endIndent: 24, color: Color(0xFFF0F0F0)),
+                    _buildOpcionMenu(
+                      context,
+                      icon: Icons.help_outline,
+                      title: l10n.helpAndSupport,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                            title: Text(l10n.helpAndSupport, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            content: Text(l10n.supportInfoText),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(l10n.understood, style: const TextStyle(color: ColorSchemeApp.primaryGreen)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
+            
+            const SizedBox(height: 32),
+            
+            // Botón de Cerrar Sesión
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  await authViewModel.logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.splash,
+                      (route) => false,
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text(
+                        'Cerrar Sesión',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 48),
           ],
         ),
       ),
@@ -151,14 +240,49 @@ class PerfilScreen extends StatelessWidget {
     required VoidCallback onTap,
     String? subtitle,
   }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: Icon(icon, color: ColorSchemeApp.primaryGreen),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-        subtitle: subtitle != null ? Text(subtitle) : null,
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: onTap,
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: ColorSchemeApp.primaryGreen.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: ColorSchemeApp.primaryGreen, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: ColorSchemeApp.darkText,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: ColorSchemeApp.softGray,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: ColorSchemeApp.softGray),
+          ],
+        ),
       ),
     );
   }

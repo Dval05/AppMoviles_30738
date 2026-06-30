@@ -56,6 +56,16 @@ class ErrorHandler {
           ? 'La cuenta ya está vinculada a otro proveedor.'
           : 'The account is already linked to another provider.';
     }
+    if (eString.contains('operation-not-allowed')) {
+      return isSpanish
+          ? 'La verificación por SMS u otro método no está habilitada en estos momentos. Por favor, inténtalo más tarde.'
+          : 'This verification method is currently not enabled on the server. Please try again later.';
+    }
+    if (eString.contains('too-many-requests')) {
+      return isSpanish
+          ? 'Demasiados intentos. Por favor, inténtalo más tarde.'
+          : 'Too many attempts. Please try again later.';
+    }
 
     // Fallback genérico para no exponer errores crudos
     debugPrint('Excepción no mapeada capturada: $error');

@@ -120,6 +120,16 @@ class _VerificacionScreenState extends State<VerificacionScreen> {
   }
 
   void _continuar() {
+    final authVm = context.read<AuthViewModel>();
+    if (!authVm.isEmailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, verifica tu correo antes de continuar.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.home,
@@ -348,20 +358,9 @@ class _VerificacionScreenState extends State<VerificacionScreen> {
               // Botón continuar
               const SizedBox(height: 16),
               GradientButton(
-                text: authVm.isEmailVerified ? 'Continuar' : 'Omitir por ahora',
+                text: 'Continuar',
                 onPressed: _continuar,
               ),
-              if (!authVm.isEmailVerified) ...[
-                const SizedBox(height: 8),
-                const Text(
-                  'Podrás verificar tu cuenta más tarde desde tu perfil.',
-                  style: TextStyle(
-                    color: ColorSchemeApp.softGray,
-                    fontSize: 12,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
             ],
           ),
         ),

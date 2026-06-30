@@ -16,6 +16,7 @@ class Hosteria {
     this.activa = true,
     this.propietarioId,
     this.precioPorNoche = 50.0,
+    this.totalResenas = 0,
   });
   final String id;
   final String nombre;
@@ -27,6 +28,7 @@ class Hosteria {
   final String? email;
   final String? sitioWeb;
   final double rating;
+  final int totalResenas;
   final List<String> imagenes;
   final List<String> servicios;
   final bool activa;
@@ -44,6 +46,7 @@ class Hosteria {
     String? email,
     String? sitioWeb,
     double? rating,
+    int? totalResenas,
     List<String>? imagenes,
     List<String>? servicios,
     bool? activa,
@@ -61,6 +64,7 @@ class Hosteria {
       email: email ?? this.email,
       sitioWeb: sitioWeb ?? this.sitioWeb,
       rating: rating ?? this.rating,
+      totalResenas: totalResenas ?? this.totalResenas,
       imagenes: imagenes ?? this.imagenes,
       servicios: servicios ?? this.servicios,
       activa: activa ?? this.activa,

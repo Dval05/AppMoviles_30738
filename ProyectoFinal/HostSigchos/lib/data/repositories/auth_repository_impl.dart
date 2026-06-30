@@ -95,6 +95,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> enviarCorreoRecuperacionPassword(String email) async {
+    return _authDataSource.enviarCorreoRecuperacionPassword(email);
+  }
+
+  @override
   Future<void> enviarCodigoTelefono({
     required String telefono,
     required Function(String verificationId) onCodeSent,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../domain/entities/habitacion.dart';
@@ -92,8 +93,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
   Future<void> _agregarAlCarrito() async {
     if (_fechaCheckIn == null || _fechaCheckOut == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor selecciona las fechas de estadía'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectDates),
         ),
       );
       return;
@@ -102,8 +103,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
     if (_esParaOtraPersona &&
         _nombreOtraPersonaController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Por favor ingresa el nombre de la otra persona'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseEnterOtherPersonName),
         ),
       );
       return;
@@ -121,10 +122,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
     if (!hayDisponibilidad) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No hay suficientes habitaciones disponibles para esas fechas.',
-          ),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.notEnoughRooms),
         ),
       );
       return;
@@ -142,10 +141,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
         if (haySolapamiento) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Ya tienes una reserva activa en estas fechas. Activa la opción "Reservar para otra persona" si la reserva no es para ti.',
-              ),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.overlappingBooking),
             ),
           );
           return;
@@ -170,7 +167,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Añadido a tu reserva (Carrito)')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.addedToCart)),
       );
       Navigator.pop(context); // Volver a lista de habitaciones
     }
@@ -182,16 +179,16 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
 
     if (_habitacion == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Añadir Habitación')),
-        body: const Center(
-          child: Text('Error: Datos de habitación no disponibles'),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.addRoom)),
+        body: Center(
+          child: Text(AppLocalizations.of(context)!.roomDataNotAvailable),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles de la Habitación'),
+        title: Text(AppLocalizations.of(context)!.roomDetails),
       ),
       body: LoadingOverlay(
         isLoading: reservaVm.isLoading,
@@ -232,8 +229,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                             _habitacion!.tipo.toLowerCase().contains(
                                   'compartida',
                                 )
-                                ? '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / cama / noche'
-                                : '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / noche',
+                                ? '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / ${AppLocalizations.of(context)!.perBedPerNight}'
+                                : '${CurrencyFormatter.formatear(_habitacion!.precioPorNoche)} / ${AppLocalizations.of(context)!.night}',
                             style: const TextStyle(
                               color: ColorSchemeApp.darkGreen,
                             ),
@@ -247,9 +244,9 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
               const SizedBox(height: 32),
 
               // Selección de fechas
-              const Text(
-                'Fechas de Estadía',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Text(
+                AppLocalizations.of(context)!.dates,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const SizedBox(height: 12),
               InkWell(
@@ -283,7 +280,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '$_noches noche(s)',
+                                    '$_noches ${AppLocalizations.of(context)!.nights}',
                                     style: const TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12,
@@ -291,7 +288,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                                   ),
                                 ],
                               )
-                            : const Text('Seleccionar fechas'),
+                            : Text(AppLocalizations.of(context)!.selectDates),
                       ),
                     ],
                   ),
@@ -306,7 +303,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                     'compartida',
                   );
                   return Text(
-                    esCompartida ? 'Huéspedes (Camas a reservar)' : 'Huéspedes',
+                    esCompartida ? AppLocalizations.of(context)!.guestsBedsToBook : AppLocalizations.of(context)!.guests,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -340,7 +337,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                   ),
                   const Spacer(),
                   Text(
-                    'Máx. ${_habitacion!.capacidad}',
+                    '${AppLocalizations.of(context)!.max} ${_habitacion!.capacidad}',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -349,9 +346,9 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
 
               // Habitaciones
               if (!_habitacion!.tipo.toLowerCase().contains('compartida')) ...[
-                const Text(
-                  'Habitaciones',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  AppLocalizations.of(context)!.rooms,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -378,9 +375,9 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                       color: ColorSchemeApp.primaryGreen,
                     ),
                     const Spacer(),
-                    const Text(
-                      'Máx. 5',
-                      style: TextStyle(color: Colors.grey),
+                    Text(
+                      '${AppLocalizations.of(context)!.max} 5',
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -394,8 +391,8 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
               ),
               const SizedBox(height: 12),
               SwitchListTile(
-                title: const Text('Reservar para otra persona'),
-                subtitle: const Text('Activa esto si no te hospedarás tú'),
+                title: Text(AppLocalizations.of(context)!.bookForOtherPerson),
+                subtitle: Text(AppLocalizations.of(context)!.activateIfYouWontStay),
                 value: _esParaOtraPersona,
                 activeThumbColor: ColorSchemeApp.primaryGreen,
                 onChanged: (value) {
@@ -413,7 +410,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                 TextField(
                   controller: _nombreOtraPersonaController,
                   decoration: InputDecoration(
-                    labelText: 'Nombre de la otra persona',
+                    labelText: AppLocalizations.of(context)!.otherPersonName,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -433,7 +430,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                 controller: _notasController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Peticiones especiales (opcional)',
+                  labelText: AppLocalizations.of(context)!.specialRequests,
                   alignLabelWithHint: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -454,7 +451,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total a pagar:'),
+                        Text(AppLocalizations.of(context)!.totalToPay),
                         Text(
                           CurrencyFormatter.formatear(_precioTotal),
                           style: const TextStyle(
@@ -466,9 +463,9 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Podrás realizar el pago en el siguiente paso',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    Text(
+                      AppLocalizations.of(context)!.payInNextStep,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -476,7 +473,7 @@ class _CrearReservaScreenState extends State<CrearReservaScreen> {
               const SizedBox(height: 32),
 
               GradientButton(
-                text: 'Añadir a mi Reserva',
+                text: AppLocalizations.of(context)!.addToMyBooking,
                 onPressed: _agregarAlCarrito,
               ),
             ],

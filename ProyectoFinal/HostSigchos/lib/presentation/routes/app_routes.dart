@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../views/auth/forgot_password_screen.dart';
 import '../views/auth/login_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/auth/verificacion_screen.dart';
 import '../views/chatbot/chatbot_screen.dart';
 import '../views/chatbot/chatbot_suggestions_screen.dart';
-import '../views/home/home_screen.dart';
 import '../views/hosteria/hosteria_detail_screen.dart';
 import '../views/hosteria/hosterias_list_screen.dart';
+import '../views/main/main_screen.dart';
 import '../views/mapa/mapa_screen.dart';
+import '../views/notificaciones/notificaciones_screen.dart';
 import '../views/pago/historial_pagos_screen.dart';
 import '../views/pago/pago_screen.dart';
 import '../views/perfil/editar_perfil_screen.dart';
@@ -25,6 +27,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String login = '/login';
   static const String register = '/register';
+  static const String forgotPassword = '/forgot-password';
   static const String verificacion = '/verificacion';
   static const String home = '/home';
   static const String hosteriasList = '/hosterias';
@@ -42,13 +45,15 @@ class AppRoutes {
   static const String propietarioDashboard = '/propietario-dashboard';
   static const String chatbot = '/chatbot';
   static const String chatbotSuggestions = '/chatbot-suggestions';
+  static const String notificaciones = '/notificaciones';
 
   static Map<String, WidgetBuilder> get routes => {
     splash: (context) => const SplashScreen(),
     login: (context) => const LoginScreen(),
     register: (context) => const RegisterScreen(),
+    forgotPassword: (context) => const ForgotPasswordScreen(),
     verificacion: (context) => const VerificacionScreen(),
-    home: (context) => const HomeScreen(),
+    home: (context) => const MainScreen(),
     hosteriasList: (context) => const HosteriasListScreen(),
     hosteriaDetail: (context) => const HosteriaDetailScreen(),
     habitaciones: (context) => const HabitacionesListScreen(),
@@ -59,6 +64,7 @@ class AppRoutes {
     historialPagos: (context) => const HistorialPagosScreen(),
     pago: (context) => const PagoScreen(),
     mapa: (context) => const MapaScreen(),
+    notificaciones: (context) => const NotificacionesScreen(),
     perfil: (context) => const PerfilScreen(),
     editarPerfil: (context) => const EditarPerfilScreen(),
     propietarioDashboard: (context) => const PropietarioDashboardScreen(),

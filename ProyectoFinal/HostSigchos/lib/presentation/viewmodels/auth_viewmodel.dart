@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import '../../core/services/biometric_service.dart';
 import '../../domain/entities/usuario.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -9,6 +11,7 @@ import '../../domain/usecases/auth/actualizar_perfil_usecase.dart';
 import '../../domain/usecases/auth/google_signin_usecase.dart';
 import '../../domain/usecases/auth/login_usecase.dart';
 import '../../domain/usecases/auth/logout_usecase.dart';
+import '../../domain/usecases/auth/recuperar_password_usecase.dart';
 import '../../domain/usecases/auth/register_usecase.dart';
 import '../../domain/usecases/auth/verificar_email_usecase.dart';
 import '../../domain/usecases/auth/verificar_telefono_usecase.dart';
@@ -24,6 +27,7 @@ class AuthViewModel extends ChangeNotifier {
     required this.vincularPasswordUseCase,
     required this.verificarEmailUseCase,
     required this.verificarTelefonoUseCase,
+    required this.recuperarPasswordUseCase,
     required this.authRepository,
   }) {
     _checkBiometricStatus();
@@ -36,11 +40,13 @@ class AuthViewModel extends ChangeNotifier {
   final VincularPasswordUseCase vincularPasswordUseCase;
   final VerificarEmailUseCase verificarEmailUseCase;
   final VerificarTelefonoUseCase verificarTelefonoUseCase;
+  final RecuperarPasswordUseCase recuperarPasswordUseCase;
   final AuthRepository authRepository;
 
   Usuario? _usuarioActual;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _keepSession = true;
 
   // Estado de verificación
   bool _isEmailVerified = false;
@@ -61,6 +67,12 @@ class AuthViewModel extends ChangeNotifier {
   bool get isUsuarioSoloGoogle => _isUsuarioSoloGoogle;
   bool get isBiometricAvailable => _isBiometricAvailable;
   bool get hasSavedCredentials => _hasSavedCredentials;
+  bool get keepSession => _keepSession;
+
+  void setKeepSession({required bool value}) {
+    _keepSession = value;
+    notifyListeners();
+  }
 
   Future<void> _checkBiometricStatus() async {
     final service = BiometricService();
@@ -91,9 +103,30 @@ class AuthViewModel extends ChangeNotifier {
     try {
       _usuarioActual = await loginUseCase(email, password);
 
+      // Require email verification logic
+      if (!_usuarioActual!.email.endsWith('@hostsigchos.com')) {
+         final isVerified = await authRepository.verificarEmailConfirmado();
+         if (!isVerified) {
+            _errorMessage = 'Por favor verifica tu correo electrónico antes de iniciar sesión.';
+            // En vez de lanzar error, no lo logueamos o lo dejamos pasar para verificar en SplashScreen.
+            // Actually, best to return true but let UI handle it, or we throw Error so UI stays.
+            // Let's sign out to prevent unverified login token persistence.
+            await logoutUseCase();
+            return false;
+         }
+      }
+
       if (_isBiometricAvailable) {
         await BiometricService().saveCredentials(email, password);
         _hasSavedCredentials = true;
+      }
+
+      // Handle keep session
+      const storage = FlutterSecureStorage();
+      if (!_keepSession) {
+        await storage.write(key: 'keep_session', value: 'false');
+      } else {
+        await storage.delete(key: 'keep_session');
       }
 
       return true;
@@ -129,6 +162,14 @@ class AuthViewModel extends ChangeNotifier {
         fotoBytes: fotoBytes,
         rol: rol,
       );
+      
+      // Enviar correo de verificación automáticamente
+      try {
+        await verificarEmailUseCase.enviar();
+      } catch (e) {
+        debugPrint('Error enviando correo de verificación inicial: $e');
+      }
+      
       _errorMessage = null;
       return true;
     } catch (e) {
@@ -227,6 +268,21 @@ class AuthViewModel extends ChangeNotifier {
           .esUsuarioSoloGoogle();
     } catch (_) {
       _isUsuarioSoloGoogle = false;
+    }
+  }
+
+  /// Enviar correo de recuperación de contraseña
+  Future<bool> recuperarPassword(String email) async {
+    _setLoading(true);
+    try {
+      await recuperarPasswordUseCase(email);
+      _errorMessage = null;
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -356,7 +412,12 @@ class AuthViewModel extends ChangeNotifier {
       _setLoading(false);
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      final errorStr = e.toString().toLowerCase();
+      if (errorStr.contains('canceled') || errorStr.contains('cancelled')) {
+        _errorMessage = null;
+      } else {
+        _errorMessage = e.toString();
+      }
       _setLoading(false);
       return false;
     }

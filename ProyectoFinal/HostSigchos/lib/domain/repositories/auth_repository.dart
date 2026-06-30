@@ -51,6 +51,9 @@ abstract class AuthRepository {
   /// Verificar si el email fue confirmado
   Future<bool> verificarEmailConfirmado();
 
+  /// Enviar correo de recuperación de contraseña
+  Future<void> enviarCorreoRecuperacionPassword(String email);
+
   /// Enviar código SMS al teléfono
   Future<void> enviarCodigoTelefono({
     required String telefono,

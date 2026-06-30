@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../domain/entities/reserva.dart';
 import '../../../themes/esquema_color.dart';
@@ -19,7 +20,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading:
             false, // Ocultar botón atrás para forzar flujo
-        title: const Text('Reserva Confirmada'),
+        title: Text(AppLocalizations.of(context)!.bookingConfirmed),
         centerTitle: true,
       ),
       body: Center(
@@ -34,9 +35,9 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                 color: ColorSchemeApp.primaryGreen,
               ),
               const SizedBox(height: 24),
-              const Text(
-                '¡Reserva Creada Exitosamente!',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.bookingCreatedSuccessfully,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: ColorSchemeApp.darkText,
@@ -44,17 +45,17 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Hemos registrado tu solicitud de reserva en la hostería.',
-                style: TextStyle(color: ColorSchemeApp.softGray),
+              Text(
+                AppLocalizations.of(context)!.bookingRequestRegistered,
+                style: const TextStyle(color: ColorSchemeApp.softGray),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               if (reservas != null && reservas.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Text(
-                  'Códigos de Reserva:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.bookingCodes,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 ...reservas.map(
@@ -87,7 +88,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text('Proceder al Pago'),
+                  child: Text(AppLocalizations.of(context)!.proceedToPayment),
                 ),
               ),
               const SizedBox(height: 16),
@@ -104,12 +105,12 @@ class ConfirmacionReservaScreen extends StatelessWidget {
 
                     // Mostrar mensaje informativo
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'Te recordaremos realizar tu pago para confirmar la reserva.',
+                          AppLocalizations.of(context)!.paymentReminder,
                         ),
                         backgroundColor: Colors.orange,
-                        duration: Duration(seconds: 3),
+                        duration: const Duration(seconds: 3),
                       ),
                     );
                   }
@@ -119,7 +120,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                     AppRoutes.historialReservas,
                   );
                 },
-                child: const Text('Pagar más tarde'),
+                child: Text(AppLocalizations.of(context)!.payLater),
               ),
             ],
           ),

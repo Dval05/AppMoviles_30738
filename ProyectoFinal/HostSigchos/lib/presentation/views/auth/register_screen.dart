@@ -14,6 +14,7 @@ import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/gradient_button.dart';
+import '../../widgets/language_selector.dart';
 import '../../widgets/loading_overlay.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -43,6 +44,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
 
   final String _selectedRol = kIsWeb ? 'propietario' : 'usuario';
+
+  final List<String> _provinciasEcuador = [
+    'Azuay', 'Bolívar', 'Cañar', 'Carchi', 'Chimborazo', 'Cotopaxi', 
+    'El Oro', 'Esmeraldas', 'Galápagos', 'Guayas', 'Imbabura', 'Loja', 
+    'Los Ríos', 'Manabí', 'Morona Santiago', 'Napo', 'Orellana', 'Pastaza', 
+    'Pichincha', 'Santa Elena', 'Santo Domingo de los Tsáchilas', 
+    'Sucumbíos', 'Tungurahua', 'Zamora Chinchipe'
+  ];
+  String? _selectedProvincia;
 
   XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -205,16 +215,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Navigator.pop(context);
           },
         ),
+        actions: const [
+          LanguageSelector(),
+          SizedBox(width: 8),
+        ],
       ),
       body: LoadingOverlay(
         isLoading: authViewModel.isLoading,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: 8),
                 // Selector de Foto de Perfil
                 Center(
                   child: GestureDetector(
@@ -260,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
 
                 if (authViewModel.errorMessage != null) ...[
                   Container(
@@ -276,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                 ],
 
                 CustomTextField(
@@ -302,8 +317,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   children: [
                     Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: DropdownButtonFormField<String>(
+                        isExpanded: true,
                         initialValue: _tipoIdentificacion,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
@@ -316,11 +332,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        items: ['Cédula', 'Pasaporte']
-                            .map(
-                              (e) => DropdownMenuItem(value: e, child: Text(e)),
-                            )
-                            .toList(),
+                        items: [
+                          DropdownMenuItem(value: 'Cédula', child: Text(l10n.idTypeCedula)),
+                          DropdownMenuItem(value: 'Pasaporte', child: Text(l10n.idTypePassport)),
+                        ],
                         onChanged: (val) {
                           setState(() {
                             _tipoIdentificacion = val!;
@@ -331,18 +346,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      flex: 5,
+                      flex: 4,
                       child: CustomTextField(
                         label: _tipoIdentificacion == 'Cédula'
-                            ? 'Cédula'
-                            : 'Pasaporte',
+                            ? l10n.idTypeCedula
+                            : l10n.idTypePassport,
                         prefixIcon: Icons.badge_outlined,
                         controller: _cedulaController,
                         keyboardType: _tipoIdentificacion == 'Cédula'
                             ? TextInputType.number
                             : TextInputType.text,
                         validator: (val) =>
-                            Validators.identificacion(val, _tipoIdentificacion),
+                            Validators.identificacion(val, _tipoIdentificacion, _selectedCountry ?? 'Ecuador'),
                         inputFormatters: _tipoIdentificacion == 'Cédula'
                             ? [FilteringTextInputFormatter.digitsOnly]
                             : [
@@ -429,6 +444,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onSelect: (Country country) {
                         setState(() {
                           _selectedCountry = country.name;
+                          _selectedPhonePrefix = '+${country.phoneCode}';
+                          if (_selectedCountry != 'Ecuador') {
+                            _selectedProvincia = null;
+                            _customCityController.clear();
+                          }
                         });
                       },
                     );
@@ -474,12 +494,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                CustomTextField(
-                  label: l10n.cityOrProvince,
-                  prefixIcon: Icons.location_city_outlined,
-                  controller: _customCityController,
-                  validator: (val) => Validators.requerido(val, l10n.city),
-                ),
+                if (_selectedCountry == null || _selectedCountry == 'Ecuador')
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.cityOrProvince,
+                      prefixIcon: const Icon(Icons.location_city_outlined),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    initialValue: _selectedProvincia,
+                    items: _provinciasEcuador.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value, overflow: TextOverflow.ellipsis),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedProvincia = newValue;
+                        _customCityController.text = newValue ?? '';
+                      });
+                    },
+                    validator: (val) => Validators.requerido(val, l10n.cityOrProvince),
+                  )
+                else
+                  CustomTextField(
+                    label: l10n.cityOrProvince,
+                    prefixIcon: Icons.location_city_outlined,
+                    controller: _customCityController,
+                    validator: (val) => Validators.requerido(val, l10n.city),
+                  ),
                 const SizedBox(height: 16),
 
                 CustomTextField(

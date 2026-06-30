@@ -124,10 +124,19 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asistente Virtual'),
-        backgroundColor: ColorSchemeApp.primaryGreen,
-        foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: ColorSchemeApp.darkText),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Asistente Virtual',
+          style: TextStyle(color: ColorSchemeApp.darkText, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white.withValues(alpha: 0.9),
+        elevation: 0,
+        centerTitle: true,
       ),
+      backgroundColor: ColorSchemeApp.pearlWhite,
       body: Column(
         children: [
           Expanded(

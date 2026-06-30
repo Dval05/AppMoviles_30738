@@ -101,7 +101,7 @@ class _HosteriasListScreenState extends State<HosteriasListScreen> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            childAspectRatio: 0.68,
+                            childAspectRatio: 1.4,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
                           ),

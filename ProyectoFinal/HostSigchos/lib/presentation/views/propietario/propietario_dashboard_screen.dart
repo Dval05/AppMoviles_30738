@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/hosteria.dart';
 import '../../../domain/entities/promocion.dart';
 import '../../../domain/entities/reserva.dart';
@@ -60,26 +61,26 @@ class _PropietarioDashboardScreenState
           NavigationRail(
             backgroundColor: Colors.white,
             extended: MediaQuery.of(context).size.width >= 800,
-            destinations: const [
+            destinations: [
               NavigationRailDestination(
-                icon: Icon(Icons.dashboard_outlined),
-                selectedIcon: Icon(Icons.dashboard),
-                label: Text('Dashboard'),
+                icon: const Icon(Icons.dashboard_outlined),
+                selectedIcon: const Icon(Icons.dashboard),
+                label: Text(AppLocalizations.of(context)!.dashboard),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.business_center_outlined),
-                selectedIcon: Icon(Icons.business_center),
-                label: Text('Mis Hosterías'),
+                icon: const Icon(Icons.business_center_outlined),
+                selectedIcon: const Icon(Icons.business_center),
+                label: Text(AppLocalizations.of(context)!.myHostels),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.book_online_outlined),
-                selectedIcon: Icon(Icons.book_online),
-                label: Text('Reservas de Clientes'),
+                icon: const Icon(Icons.book_online_outlined),
+                selectedIcon: const Icon(Icons.book_online),
+                label: Text(AppLocalizations.of(context)!.customerBookings),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.local_offer_outlined),
-                selectedIcon: Icon(Icons.local_offer),
-                label: Text('Promociones'),
+                icon: const Icon(Icons.local_offer_outlined),
+                selectedIcon: const Icon(Icons.local_offer),
+                label: Text(AppLocalizations.of(context)!.promotions),
               ),
             ],
             selectedIndex: _selectedIndex,
@@ -116,7 +117,7 @@ class _PropietarioDashboardScreenState
                   child: IconButton(
                     icon: const Icon(Icons.logout, color: Colors.redAccent),
                     onPressed: () => _logout(context),
-                    tooltip: 'Cerrar Sesión',
+                    tooltip: AppLocalizations.of(context)!.logOut,
                   ),
                 ),
               ),
@@ -189,37 +190,37 @@ class _DashboardView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '¡Bienvenido, $nombre!',
+            AppLocalizations.of(context)!.welcomeAdmin(nombre),
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: ColorSchemeApp.darkGreen,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Resumen de tu plataforma web de administración B2B.',
-            style: TextStyle(fontSize: 16, color: Colors.black54),
+          Text(
+            AppLocalizations.of(context)!.adminSummary,
+            style: const TextStyle(fontSize: 16, color: Colors.black54),
           ),
           const SizedBox(height: 32),
           Row(
             children: [
               _buildStatCard(
                 context,
-                'Hosterías Activas',
+                AppLocalizations.of(context)!.activeHostels,
                 hosteriasActivas.toString(),
                 Icons.business_center,
               ),
               const SizedBox(width: 24),
               _buildStatCard(
                 context,
-                'Reservas Activas',
+                AppLocalizations.of(context)!.activeBookings,
                 reservasNuevas.toString(),
                 Icons.book_online,
               ),
               const SizedBox(width: 24),
               _buildStatCard(
                 context,
-                'Ingresos Totales',
+                AppLocalizations.of(context)!.totalIncome,
                 '\$${ingresosTotales.toStringAsFixed(2)}',
                 Icons.attach_money,
               ),
@@ -300,7 +301,7 @@ class _MisHosteriasView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Mis Hosterías',
+                AppLocalizations.of(context)!.myHostels,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: ColorSchemeApp.darkGreen,
                   fontWeight: FontWeight.bold,
@@ -314,7 +315,7 @@ class _MisHosteriasView extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Añadir Hostería'),
+                label: Text(AppLocalizations.of(context)!.addHostel),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorSchemeApp.primaryGreen,
                   foregroundColor: Colors.white,

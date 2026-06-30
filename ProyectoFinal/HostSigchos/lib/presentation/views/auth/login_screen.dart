@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/validators.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/gradient_button.dart';
+import '../../widgets/language_selector.dart';
 import '../../widgets/loading_overlay.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -112,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(width: 12),
             const Expanded(
               child: Text(
-                'Crear contraseña',
+                'Crear contraseña', // We keep this hardcoded for now, or translate later if needed, but user specifically asked for sign in, forgot pwd, register
                 style: TextStyle(fontSize: 18),
               ),
             ),
@@ -211,17 +213,49 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authViewModel = context.watch<AuthViewModel>();
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: ColorSchemeApp.offWhite,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: const [
+          LanguageSelector(iconColor: Colors.white),
+          SizedBox(width: 8),
+        ],
+      ),
       body: LoadingOverlay(
         isLoading: authViewModel.isLoading,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Center(
-                child: SingleChildScrollView(
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF308658), // Verde claro/brillante
+                Color(0xFF1B5133), // Verde medio
+                Color(0xFF0D2B1A), // Muy oscuro
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Container(
                   padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -230,23 +264,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Image.asset(
                           'assets/images/logo.png',
-                          height: 30,
+                          height: 35,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         Text(
-                          'Bienvenido a HostSigchos',
-                          style: theme.textTheme.titleLarge,
+                          l10n.welcomeTo,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: ColorSchemeApp.darkGreen,
+                          ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Text(
-                          'Inicia sesión para continuar',
+                          l10n.signInToContinue,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: ColorSchemeApp.softGray,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 24),
 
                         if (authViewModel.errorMessage != null) ...[
                           Container(
@@ -266,63 +303,89 @@ class _LoginScreenState extends State<LoginScreen> {
                               textAlign: TextAlign.center,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                         ],
 
                         CustomTextField(
-                          label: 'Correo / Nombre de local',
+                          label: l10n.emailOrPlaceName,
                           prefixIcon: Icons.email_outlined,
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
-                              return 'Este campo es requerido';
+                              return l10n.error;
                             }
                             return null;
                           },
                         ),
 
                         CustomTextField(
-                          label: 'Contraseña',
+                          label: l10n.password,
                           prefixIcon: Icons.lock_outline,
                           controller: _passwordController,
                           isPassword: true,
                           validator: Validators.password,
                         ),
 
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              // Navegar a recuperación de contraseña
-                            },
-                            child: const Text('¿Olvidaste tu contraseña?'),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        GradientButton(
-                          text: 'Iniciar Sesión',
-                          onPressed: _login,
-                        ),
-
-                        const SizedBox(height: 24),
-                        const Row(
+                        Row(
                           children: [
-                            Expanded(child: Divider()),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                'O continúa con',
-                                style: TextStyle(
-                                  color: ColorSchemeApp.softGray,
+                            Checkbox(
+                              value: authViewModel.keepSession,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  authViewModel.setKeepSession(value: val);
+                                }
+                              },
+                              activeColor: ColorSchemeApp.primaryGreen,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => authViewModel.setKeepSession(value: !authViewModel.keepSession),
+                                child: Text(
+                                  l10n.keepSession,
+                                  style: const TextStyle(color: ColorSchemeApp.darkText, fontSize: 13),
                                 ),
                               ),
                             ),
-                            Expanded(child: Divider()),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, AppRoutes.forgotPassword);
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: ColorSchemeApp.primaryGreen,
+                                padding: EdgeInsets.zero,
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              child: Text(l10n.forgotPassword),
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
+
+                        GradientButton(
+                          text: l10n.login,
+                          onPressed: _login,
+                        ),
+
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Expanded(child: Divider()),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                l10n.orContinueWith,
+                                style: const TextStyle(color: ColorSchemeApp.softGray),
+                              ),
+                            ),
+                            const Expanded(child: Divider()),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
 
                         Row(
                           children: [
@@ -362,9 +425,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            'Inicia sesión con correo y contraseña primero para habilitar esta opción.',
+                                            l10n.biometricSetupMessage,
                                           ),
                                           backgroundColor: Colors.orange,
                                         ),
@@ -376,9 +439,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     size: 30,
                                     color: ColorSchemeApp.primaryGreen,
                                   ),
-                                  label: const Text(
-                                    'Huella/Face ID',
-                                    style: TextStyle(
+                                  label: Text(
+                                    l10n.biometricLogin,
+                                    style: const TextStyle(
                                       color: ColorSchemeApp.darkText,
                                       fontSize: 13,
                                     ),
@@ -398,11 +461,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('¿No tienes cuenta?'),
+                            Text(l10n.noAccount, style: const TextStyle(fontSize: 13)),
                             TextButton(
                               onPressed: () {
                                 context.read<AuthViewModel>().clearError();
@@ -411,7 +474,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   AppRoutes.register,
                                 );
                               },
-                              child: const Text('Regístrate aquí'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: ColorSchemeApp.primaryGreen,
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              child: Text(l10n.registerHere),
                             ),
                           ],
                         ),
@@ -420,7 +491,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

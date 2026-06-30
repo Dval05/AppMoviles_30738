@@ -269,6 +269,15 @@ class AuthDataSource {
     }
   }
 
+  /// Enviar correo de recuperación de contraseña
+  Future<void> enviarCorreoRecuperacionPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
+    }
+  }
+
   /// Verificar si el email del usuario actual fue confirmado
   Future<bool> verificarEmailConfirmado() async {
     try {

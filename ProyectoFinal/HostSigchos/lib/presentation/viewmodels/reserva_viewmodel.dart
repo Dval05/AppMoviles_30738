@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/habitacion.dart';
@@ -39,6 +41,17 @@ class ReservaViewModel extends ChangeNotifier {
     _setLoading(true);
     try {
       _reservaActual = await _crearReservaUseCase(reserva);
+      
+      // Simular envío de notificación real al usuario
+      await FirebaseFirestore.instance.collection('notificaciones').add({
+        'usuarioId': reserva.usuarioId,
+        'titulo': '¡Reserva Confirmada!',
+        'mensaje': 'Tu reserva para el ${reserva.fechaCheckIn.day}/${reserva.fechaCheckIn.month} ha sido procesada con éxito.',
+        'fecha': FieldValue.serverTimestamp(),
+        'leida': false,
+        'tipo': 'reserva',
+      });
+
       _errorMessage = null;
       return true;
     } catch (e) {
