@@ -100,10 +100,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     if (kIsWeb) {
-      FirebaseFirestore.instanceFor(
-        app: Firebase.app(),
-        databaseId: 'hostsigchos',
-      ).settings = const Settings(
+      FirebaseFirestore.instance.settings = const Settings(
         persistenceEnabled: false,
       );
     }

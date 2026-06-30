@@ -846,4 +846,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get verifyEmailToContinue =>
       'Please, verify your email before continuing.';
+
+  @override
+  String get landingTitle => 'Discover HostSigchos';
+
+  @override
+  String get landingSubtitle =>
+      'Find the perfect place for your next nature adventure.';
+
+  @override
+  String get noHosteriasFound => 'No lodges found.';
+
+  @override
+  String get searchHint => 'Search by name, location...';
 }

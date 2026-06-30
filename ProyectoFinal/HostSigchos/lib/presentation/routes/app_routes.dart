@@ -8,6 +8,7 @@ import '../views/chatbot/chatbot_screen.dart';
 import '../views/chatbot/chatbot_suggestions_screen.dart';
 import '../views/hosteria/hosteria_detail_screen.dart';
 import '../views/hosteria/hosterias_list_screen.dart';
+import '../views/landing_screen.dart';
 import '../views/main/main_screen.dart';
 import '../views/mapa/mapa_screen.dart';
 import '../views/notificaciones/notificaciones_screen.dart';
@@ -25,6 +26,7 @@ import '../views/splash_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String landing = '/landing';
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
@@ -49,6 +51,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> get routes => {
     splash: (context) => const SplashScreen(),
+    landing: (context) => const LandingScreen(),
     login: (context) => const LoginScreen(),
     register: (context) => const RegisterScreen(),
     forgotPassword: (context) => const ForgotPasswordScreen(),

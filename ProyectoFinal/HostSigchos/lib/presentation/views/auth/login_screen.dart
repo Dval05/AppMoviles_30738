@@ -228,6 +228,12 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, AppRoutes.landing);
+          },
+        ),
         actions: const [
           LanguageSelector(iconColor: Colors.white),
           SizedBox(width: 8),

@@ -1711,6 +1711,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Por favor, verifica tu correo antes de continuar.'**
   String get verifyEmailToContinue;
+
+  /// No description provided for @landingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Descubre HostSigchos'**
+  String get landingTitle;
+
+  /// No description provided for @landingSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Encuentra el lugar perfecto para tu próxima aventura en la naturaleza.'**
+  String get landingSubtitle;
+
+  /// No description provided for @noHosteriasFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron hosterías.'**
+  String get noHosteriasFound;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre, ubicación...'**
+  String get searchHint;
 }
 
 class _AppLocalizationsDelegate

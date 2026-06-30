@@ -586,5 +586,13 @@
   "later": "Más tarde",
   "@later": {},
   "verifyEmailToContinue": "Por favor, verifica tu correo antes de continuar.",
-  "@verifyEmailToContinue": {}
+  "@verifyEmailToContinue": {},
+  "landingTitle": "Descubre HostSigchos",
+  "@landingTitle": {},
+  "landingSubtitle": "Encuentra el lugar perfecto para tu próxima aventura en la naturaleza.",
+  "@landingSubtitle": {},
+  "noHosteriasFound": "No se encontraron hosterías.",
+  "@noHosteriasFound": {},
+  "searchHint": "Buscar por nombre, ubicación...",
+  "@searchHint": {}
 }
