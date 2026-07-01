@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/services/stripe_test_service.dart';
 import '../../../domain/entities/pago.dart';
 import '../../../domain/entities/reserva.dart';
 import '../../../themes/esquema_color.dart';
@@ -25,6 +26,7 @@ class _PagoScreenState extends State<PagoScreen> {
   final _tarjetaController = TextEditingController();
   final _fechaController = TextEditingController();
   final _cvvController = TextEditingController();
+  final _stripeTestService = StripeTestService();
 
   String _metodoPago = 'tarjeta';
   List<Reserva>? _reservasAPagar;
@@ -66,7 +68,33 @@ class _PagoScreenState extends State<PagoScreen> {
     final usuarioId = context.read<AuthViewModel>().usuarioActual?.id;
     if (usuarioId == null) return;
 
-    final referencia = 'TRX-${DateTime.now().millisecondsSinceEpoch}';
+    String referencia = 'TRX-${DateTime.now().millisecondsSinceEpoch}';
+
+    if (_metodoPago == 'tarjeta') {
+      final stripeResult = await _stripeTestService.confirmEducationalPayment(
+        amount: _reservasAPagar!.fold<double>(
+          0,
+          (sum, reserva) => sum + reserva.precioTotal,
+        ),
+        cardNumber: _tarjetaController.text,
+        expiry: _fechaController.text,
+        cvc: _cvvController.text,
+      );
+
+      if (!stripeResult.isSuccessful) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(stripeResult.message),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      referencia = stripeResult.reference;
+    }
+
     bool allSuccess = true;
 
     for (final reserva in _reservasAPagar!) {
@@ -75,7 +103,7 @@ class _PagoScreenState extends State<PagoScreen> {
         reservaId: reserva.id,
         usuarioId: usuarioId,
         monto: reserva.precioTotal,
-        metodo: _metodoPago,
+        metodo: _metodoPago == 'tarjeta' ? 'stripe_test' : _metodoPago,
         referencia: referencia,
         fechaPago: DateTime.now(),
       );
@@ -95,7 +123,7 @@ class _PagoScreenState extends State<PagoScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Pago procesado con éxito'),
+            content: Text('Pago procesado exitosamente (pago de prueba)'),
             backgroundColor: Colors.green,
           ),
         );
@@ -320,22 +348,24 @@ class _PagoScreenState extends State<PagoScreen> {
                 const SizedBox(height: 32),
 
                 if (_metodoPago == 'tarjeta') ...[
-                  Text(
-                    l10n.cardDetails,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+
                   CustomTextField(
                     label: l10n.cardNumber,
                     prefixIcon: Icons.credit_card,
                     controller: _tarjetaController,
                     keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value == null || value.length < 16 ? l10n.error : null,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) {
+                      final normalized =
+                          value?.replaceAll(
+                            RegExp(r'\s+'),
+                            '',
+                          ) ??
+                          '';
+                      return normalized.length < 16 ? l10n.error : null;
+                    },
+                    inputFormatters: [
+                      CardNumberFormatter(),
+                    ],
                   ),
                   Row(
                     children: [
@@ -347,6 +377,8 @@ class _PagoScreenState extends State<PagoScreen> {
                           validator: (value) => value == null || value.isEmpty
                               ? l10n.error
                               : null,
+                          keyboardType: TextInputType.datetime,
+                          inputFormatters: [CardExpiryFormatter()],
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -465,6 +497,109 @@ class _PagoScreenState extends State<PagoScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CardExpiryFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String newText = newValue.text.replaceAll('/', '');
+    
+    // Evitar que ingrese más de 4 dígitos (MMYY)
+    if (newText.length > 4) {
+      newText = newText.substring(0, 4);
+    }
+    
+    final buffer = StringBuffer();
+    for (int i = 0; i < newText.length; i++) {
+      buffer.write(newText[i]);
+      if (i == 1 && newText.length > 2) {
+        buffer.write('/');
+      }
+    }
+    
+    final formatted = buffer.toString();
+    
+    // Si acaba de escribir el segundo dígito y no está borrando, añadir '/'
+    if (newText.length == 2 && oldValue.text.replaceAll('/', '').length == 1) {
+      return TextEditingValue(
+        text: '$formatted/',
+        selection: TextSelection.collapsed(offset: formatted.length + 1),
+      );
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Solo permitir dígitos
+    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    if (newText.length > 16) {
+      newText = newText.substring(0, 16);
+    }
+    
+    final buffer = StringBuffer();
+    for (int i = 0; i < newText.length; i++) {
+      buffer.write(newText[i]);
+      if ((i + 1) % 4 == 0 && i + 1 != newText.length) {
+        buffer.write(' ');
+      }
+    }
+    
+    final formatted = buffer.toString();
+    
+    // Lógica para mantener el cursor en el lugar correcto
+    int selectionIndex = newValue.selection.end;
+    
+    // Contar cuántos espacios hay antes del cursor en el texto original
+    int spacesBeforeCursorOld = 0;
+    for (int i = 0; i < oldValue.selection.end && i < oldValue.text.length; i++) {
+      if (oldValue.text[i] == ' ') spacesBeforeCursorOld++;
+    }
+    
+    // Contar cuántos espacios hay antes del cursor en el texto nuevo (sin formato)
+    int spacesBeforeCursorNew = 0;
+    for (int i = 0; i < newValue.selection.end && i < newValue.text.length; i++) {
+      if (newValue.text[i] == ' ') spacesBeforeCursorNew++;
+    }
+    
+    // Ajustar el índice base restando los espacios que el usuario escribió o borró
+    int baseIndex = newValue.selection.end - spacesBeforeCursorNew;
+    
+    // Añadir los espacios generados por nuestro formato
+    int finalIndex = baseIndex;
+    int spacesToAdd = baseIndex ~/ 4;
+    if (baseIndex % 4 == 0 && baseIndex > 0 && baseIndex != 16) {
+      // Si el cursor está justo después del 4to dígito, también debe saltar el espacio
+      // a menos que estemos borrando
+      if (oldValue.text.length > newValue.text.length && oldValue.text.endsWith(' ')) {
+        // Borrando, no saltamos
+        spacesToAdd--;
+      }
+    }
+    
+    finalIndex += spacesToAdd;
+
+    if (finalIndex < 0) finalIndex = 0;
+    if (finalIndex > formatted.length) finalIndex = formatted.length;
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: finalIndex),
     );
   }
 }

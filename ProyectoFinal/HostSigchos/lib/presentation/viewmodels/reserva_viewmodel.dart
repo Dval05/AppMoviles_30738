@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -40,17 +41,27 @@ class ReservaViewModel extends ChangeNotifier {
   Future<bool> crearReserva(Reserva reserva) async {
     _setLoading(true);
     try {
-      _reservaActual = await _crearReservaUseCase(reserva);
+      // Agregamos timeout para que si la BD no responde, no se quede colgado
+      _reservaActual = await _crearReservaUseCase(reserva).timeout(const Duration(seconds: 10));
       
-      // Simular envío de notificación real al usuario
-      await FirebaseFirestore.instance.collection('notificaciones').add({
-        'usuarioId': reserva.usuarioId,
-        'titulo': '¡Reserva Confirmada!',
-        'mensaje': 'Tu reserva para el ${reserva.fechaCheckIn.day}/${reserva.fechaCheckIn.month} ha sido procesada con éxito.',
-        'fecha': FieldValue.serverTimestamp(),
-        'leida': false,
-        'tipo': 'reserva',
-      });
+      try {
+        // Simular envío de notificación real al usuario
+        // Agregamos timeout a Firestore por si la instancia por defecto no responde
+        await FirebaseFirestore.instanceFor(
+          app: Firebase.app(),
+          databaseId: 'hostsigchos',
+        ).collection('notificaciones').add({
+          'usuarioId': reserva.usuarioId,
+          'titulo': '¡Reserva Confirmada!',
+          'mensaje': 'Tu reserva para el ${reserva.fechaCheckIn.day}/${reserva.fechaCheckIn.month} ha sido procesada con éxito.',
+          'fecha': FieldValue.serverTimestamp(),
+          'leida': false,
+          'tipo': 'reserva',
+        }).timeout(const Duration(seconds: 5));
+      } catch (e) {
+        debugPrint('Error al enviar notificación simulada: $e');
+        // No bloqueamos el flujo si la notificación falla
+      }
 
       _errorMessage = null;
       return true;

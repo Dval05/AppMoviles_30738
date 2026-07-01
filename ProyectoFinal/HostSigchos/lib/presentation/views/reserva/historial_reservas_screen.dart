@@ -181,12 +181,20 @@ class _HistorialReservasScreenState extends State<HistorialReservasScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(
+                                onPressed: () async {
+                                  final result = await Navigator.pushNamed(
                                     context,
                                     AppRoutes.pago,
                                     arguments: reserva.id,
                                   );
+                                  
+                                  // Recargar historial después de que el pago termina
+                                  if (context.mounted) {
+                                    final user = context.read<AuthViewModel>().usuarioActual;
+                                    if (user != null) {
+                                      await context.read<ReservaViewModel>().cargarHistorial(user.id);
+                                    }
+                                  }
                                 },
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: ColorSchemeApp.primaryGreen,

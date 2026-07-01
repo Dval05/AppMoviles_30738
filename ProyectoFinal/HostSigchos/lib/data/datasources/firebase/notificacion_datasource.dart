@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../../../domain/entities/notificacion.dart';
 
 class NotificacionDataSource {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instanceFor(
+    app: Firebase.app(),
+    databaseId: 'hostsigchos',
+  );
 
   Stream<List<NotificacionApp>> getNotificacionesStream(String usuarioId) {
     return _firestore

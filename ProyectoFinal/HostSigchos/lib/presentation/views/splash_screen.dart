@@ -39,7 +39,16 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    final user = await FirebaseAuth.instance.authStateChanges().first;
+    User? user;
+    try {
+      user = await FirebaseAuth.instance.authStateChanges().first.timeout(
+        const Duration(seconds: 5),
+      );
+    } catch (e) {
+      debugPrint('Error verificando sesión: $e');
+      if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.landing);
+      return;
+    }
 
     if (!mounted) return;
 
@@ -50,23 +59,29 @@ class _SplashScreenState extends State<SplashScreen>
       const storage = FlutterSecureStorage();
       final keepSessionStr = await storage.read(key: 'keep_session');
       if (keepSessionStr == 'false') {
-        // No quería mantener sesión -> cerramos y vamos a login
+        // No quería mantener sesión -> cerramos y vamos a landing
         await FirebaseAuth.instance.signOut();
-        if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
+        if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.landing);
         return;
       }
 
-      await authViewModel.checkCurrentSession();
+      try {
+        await authViewModel.checkCurrentSession().timeout(
+          const Duration(seconds: 8),
+        );
+      } catch (e) {
+        debugPrint('Error cargando sesión actual: $e');
+      }
       if (!mounted) return;
 
       // Ensure user is verified before allowing to enter if it's email user
       if (user.email != null && !user.email!.endsWith('@hostsigchos.com')) {
-          if (!user.emailVerified) {
-             // Let them go to Login so they see they must verify, or to verify screen
-             await FirebaseAuth.instance.signOut();
-             if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
-             return;
-          }
+        if (!user.emailVerified) {
+          // Let them go to Landing so they see they must verify, or to verify screen
+          await FirebaseAuth.instance.signOut();
+          if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.landing);
+          return;
+        }
       }
 
       if (kIsWeb) {

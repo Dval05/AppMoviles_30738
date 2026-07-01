@@ -30,17 +30,19 @@ class PagoViewModel extends ChangeNotifier {
       await Future.delayed(const Duration(seconds: 2));
 
       // Para métodos que no son tarjeta, el estado es 'en_revision'
-      // Para tarjeta, el estado es 'completado'
+      // Para tarjeta/Stripe Test, el estado es 'completado'
       final String estadoPago;
-      if (pago.metodo == 'tarjeta') {
+      if (pago.metodo == 'tarjeta' || pago.metodo == 'stripe_test') {
         estadoPago = 'completado';
       } else {
         estadoPago = 'en_revision';
       }
 
+      // Agregamos timeout para que no se cuelgue si Firebase no responde
       final pagoProcesado = await procesarPagoUseCase(
         pago.copyWith(estado: estadoPago),
-      );
+      ).timeout(const Duration(seconds: 15));
+      
       _pagos.insert(0, pagoProcesado);
       _errorMessage = null;
       return true;
@@ -96,8 +98,8 @@ class PagoViewModel extends ChangeNotifier {
 
   /// Obtener el estado de pago para mostrar mensaje en UI
   String getMensajeEstadoPago(String metodo) {
-    if (metodo == 'tarjeta') {
-      return 'Pago procesado exitosamente';
+    if (metodo == 'tarjeta' || metodo == 'stripe_test') {
+      return 'Pago de prueba procesado exitosamente con Stripe Test';
     } else {
       return 'Tu pago está en revisión. Será verificado dentro de las próximas 48 horas. Si no se confirma, pasará a estado pendiente.';
     }

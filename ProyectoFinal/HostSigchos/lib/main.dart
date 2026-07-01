@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 
 // Import L10n
@@ -47,11 +48,11 @@ import 'domain/usecases/auth/vincular_password_usecase.dart';
 import 'domain/usecases/chatbot/enviar_audio_usecase.dart';
 import 'domain/usecases/chatbot/enviar_mensaje_usecase.dart';
 import 'domain/usecases/geocoding/get_direccion_usecase.dart';
+import 'domain/usecases/habitacion/actualizar_habitacion_usecase.dart';
+import 'domain/usecases/habitacion/agregar_habitacion_usecase.dart';
 import 'domain/usecases/habitacion/check_disponibilidad_usecase.dart';
 import 'domain/usecases/habitacion/get_habitaciones_usecase.dart';
 import 'domain/usecases/habitacion/get_todas_las_habitaciones_usecase.dart';
-import 'domain/usecases/habitacion/agregar_habitacion_usecase.dart';
-import 'domain/usecases/habitacion/actualizar_habitacion_usecase.dart';
 import 'domain/usecases/hosteria/actualizar_hosteria_usecase.dart';
 import 'domain/usecases/hosteria/crear_hosteria_usecase.dart';
 import 'domain/usecases/hosteria/get_hosteria_detail_usecase.dart';
@@ -92,15 +93,34 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Cargar variables de entorno
-  await dotenv.load(fileName: '.env');
+  try {
+    await dotenv.load(fileName: '.env').timeout(const Duration(seconds: 3));
+  } catch (e) {
+    debugPrint('Error cargando .env: $e');
+  }
+
+  try {
+    final stripeKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+    if (stripeKey.startsWith('pk_test_')) {
+      Stripe.publishableKey = stripeKey;
+      await Stripe.instance.applySettings().timeout(
+        const Duration(seconds: 3),
+      );
+    }
+  } catch (e) {
+    debugPrint('Error inicializando Stripe: $e');
+  }
 
   // Inicialización de Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    );
+    ).timeout(const Duration(seconds: 8));
     if (kIsWeb) {
-      FirebaseFirestore.instance.settings = const Settings(
+      FirebaseFirestore.instanceFor(
+        app: Firebase.app(),
+        databaseId: 'hostsigchos',
+      ).settings = const Settings(
         persistenceEnabled: false,
       );
     }
@@ -110,7 +130,9 @@ void main() async {
 
   // Inicializar servicio de notificaciones
   try {
-    await NotificationService().inicializar();
+    await NotificationService().inicializar().timeout(
+      const Duration(seconds: 3),
+    );
   } catch (e) {
     debugPrint('Error inicializando notificaciones: $e');
   }
@@ -164,7 +186,9 @@ void main() async {
             return HabitacionViewModel(
               getHabitacionesUseCase: GetHabitacionesUseCase(repo),
               checkDisponibilidadUseCase: CheckDisponibilidadUseCase(repo),
-              getTodasLasHabitacionesUseCase: GetTodasLasHabitacionesUseCase(repo),
+              getTodasLasHabitacionesUseCase: GetTodasLasHabitacionesUseCase(
+                repo,
+              ),
               agregarHabitacionUseCase: AgregarHabitacionUseCase(repo),
               actualizarHabitacionUseCase: ActualizarHabitacionUseCase(repo),
             );
@@ -252,7 +276,12 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) {
-            final ds = ResenaDataSource(FirebaseFirestore.instance);
+            final ds = ResenaDataSource(
+              FirebaseFirestore.instanceFor(
+                app: Firebase.app(),
+                databaseId: 'hostsigchos',
+              ),
+            );
             final repo = ResenaRepositoryImpl(ds);
             return ResenaViewModel(
               agregarResenaUseCase: AgregarResenaUseCase(repo),

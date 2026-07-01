@@ -77,10 +77,10 @@ class _PropietarioDashboardScreenState
                 selectedIcon: const Icon(Icons.business_center),
                 label: Text(AppLocalizations.of(context)!.myHostels),
               ),
-              NavigationRailDestination(
-                icon: const Icon(Icons.bed_outlined),
-                selectedIcon: const Icon(Icons.bed),
-                label: const Text('Habitaciones'),
+              const NavigationRailDestination(
+                icon: Icon(Icons.bed_outlined),
+                selectedIcon: Icon(Icons.bed),
+                label: Text('Habitaciones'),
               ),
               NavigationRailDestination(
                 icon: const Icon(Icons.book_online_outlined),
@@ -1312,8 +1312,7 @@ class _HabitacionesAdminView extends StatelessWidget {
 
 class _HabitacionFormDialog extends StatefulWidget {
   const _HabitacionFormDialog({
-    this.habitacion,
-    required this.hosteriasPropietario,
+    required this.hosteriasPropietario, this.habitacion,
   });
 
   final Habitacion? habitacion;
@@ -1443,7 +1442,7 @@ class _HabitacionFormDialogState extends State<_HabitacionFormDialog> {
               children: [
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Hostería *'),
-                  value: _selectedHosteriaId,
+                  initialValue: _selectedHosteriaId,
                   items: widget.hosteriasPropietario.map((h) {
                     return DropdownMenuItem(
                       value: h.id,
@@ -1492,7 +1491,7 @@ class _HabitacionFormDialogState extends State<_HabitacionFormDialog> {
                     Expanded(
                       child: TextFormField(
                         initialValue: _precioPorNoche.toString(),
-                        decoration: const InputDecoration(labelText: 'Precio por Noche (\$) *'),
+                        decoration: const InputDecoration(labelText: r'Precio por Noche ($) *'),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         validator: (v) {
                           if (v!.isEmpty) return 'Requerido';

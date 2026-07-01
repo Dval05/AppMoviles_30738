@@ -25,3 +25,11 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    if (name == "stripe_android") {
+        tasks.matching { it.name.startsWith("lint") }.configureEach {
+            enabled = false
+        }
+    }
+}
