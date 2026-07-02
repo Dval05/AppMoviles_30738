@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/l10n/app_localizations.dart';
-import '../../../core/utils/validators.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -77,15 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginGoogle() async {
     final success = await context.read<AuthViewModel>().loginConGoogle();
     if (success && mounted) {
-      final authVm = context.read<AuthViewModel>();
-      // Si el usuario es solo de Google (sin contraseña), ofrecer vincular contraseña
-      if (authVm.isUsuarioSoloGoogle) {
-        _mostrarDialogoVincularPassword();
-      } else {
-        final usuario = authVm.usuarioActual;
-        if (usuario != null) {
-          _navegarPostLogin();
-        }
+      final usuario = context.read<AuthViewModel>().usuarioActual;
+      if (usuario != null) {
+        _navegarPostLogin();
       }
     }
   }
@@ -98,129 +91,6 @@ class _LoginScreenState extends State<LoginScreen> {
         _navegarPostLogin();
       }
     }
-  }
-
-  void _mostrarDialogoVincularPassword() {
-    final passwordDialogController = TextEditingController();
-    final confirmDialogController = TextEditingController();
-    final dialogFormKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: ColorSchemeApp.primaryGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.lock_outline,
-                color: ColorSchemeApp.primaryGreen,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Crear contraseña', // We keep this hardcoded for now, or translate later if needed, but user specifically asked for sign in, forgot pwd, register
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-          ],
-        ),
-        content: Form(
-          key: dialogFormKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '¿Deseas crear una contraseña para también poder iniciar sesión con tu correo electrónico?',
-                  style: TextStyle(color: ColorSchemeApp.softGray, fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  label: 'Nueva contraseña',
-                  prefixIcon: Icons.lock_outline,
-                  controller: passwordDialogController,
-                  isPassword: true,
-                  validator: Validators.password,
-                ),
-                CustomTextField(
-                  label: 'Confirmar contraseña',
-                  prefixIcon: Icons.lock_outline,
-                  controller: confirmDialogController,
-                  isPassword: true,
-                  validator: (val) => Validators.confirmPassword(
-                    val,
-                    passwordDialogController.text,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              passwordDialogController.dispose();
-              confirmDialogController.dispose();
-              if (mounted) {
-                final usuario = context.read<AuthViewModel>().usuarioActual;
-                if (usuario != null) {
-                  _navegarPostLogin();
-                }
-              }
-            },
-            child: const Text('Omitir'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (dialogFormKey.currentState!.validate()) {
-                final success = await context
-                    .read<AuthViewModel>()
-                    .vincularPassword(
-                      passwordDialogController.text,
-                    );
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-                if (mounted) {
-                  passwordDialogController.dispose();
-                  confirmDialogController.dispose();
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('¡Contraseña vinculada exitosamente!'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                  final usuario = context.read<AuthViewModel>().usuarioActual;
-                  if (usuario != null) {
-                    _navegarPostLogin();
-                  }
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorSchemeApp.primaryGreen,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Crear contraseña'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
