@@ -113,26 +113,42 @@ class AuthDataSource {
         );
         user = userCredential.user;
       } else {
+        // Inicializar Google Sign-In con el Web Client ID
         if (!_isGoogleSignInInitialized) {
+          final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
+          debugPrint('[GoogleAuth] Inicializando con serverClientId: '
+              '${webClientId.isNotEmpty ? '${webClientId.substring(0, 10)}...' : 'VACÍO'}');
           await _googleSignIn.initialize(
-            serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '',
+            serverClientId: webClientId,
           );
           _isGoogleSignInInitialized = true;
-        }
-        final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
-        if (googleUser == null) {
-          throw const AuthFailure('Autenticación con Google cancelada');
+          debugPrint('[GoogleAuth] Inicialización completada');
         }
 
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        // Autenticar con Google
+        debugPrint('[GoogleAuth] Iniciando authenticate()...');
+        final GoogleSignInAccount googleUser;
+        try {
+          googleUser = await _googleSignIn.authenticate();
+        } catch (e) {
+          debugPrint('[GoogleAuth] Error en authenticate(): $e');
+          debugPrint('[GoogleAuth] Tipo de error: ${e.runtimeType}');
+          rethrow;
+        }
+        debugPrint('[GoogleAuth] Autenticación exitosa: ${googleUser.email}');
+
+        // Obtener tokens
+        final GoogleSignInAuthentication googleAuth =
+            googleUser.authentication;
+        debugPrint('[GoogleAuth] idToken presente: ${googleAuth.idToken != null}');
 
         final cred = auth.GoogleAuthProvider.credential(
-          accessToken: null,
           idToken: googleAuth.idToken,
         );
 
         final userCredential = await _firebaseAuth.signInWithCredential(cred);
         user = userCredential.user;
+        debugPrint('[GoogleAuth] Firebase signIn exitoso: ${user?.uid}');
       }
 
       if (user == null) throw const AuthFailure('Error al autenticar usuario');
@@ -161,6 +177,8 @@ class AuthDataSource {
 
       return UsuarioModel.fromFirestore(doc);
     } catch (e) {
+      debugPrint('[GoogleAuth] ERROR FINAL: $e');
+      debugPrint('[GoogleAuth] Tipo: ${e.runtimeType}');
       throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
     }
   }
@@ -289,6 +307,11 @@ class AuthDataSource {
     try {
       final user = _firebaseAuth.currentUser;
       if (user == null) return false;
+
+      // Las cuentas vinculadas con Google ya tienen el email verificado
+      final providers = user.providerData.map((p) => p.providerId).toList();
+      if (providers.contains('google.com')) return true;
+
       await user.reload();
       // Obtener el usuario actualizado después del reload
       final updatedUser = _firebaseAuth.currentUser;

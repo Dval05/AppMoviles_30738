@@ -103,17 +103,17 @@ class AuthViewModel extends ChangeNotifier {
     try {
       _usuarioActual = await loginUseCase(email, password);
 
-      // Require email verification logic
+      // Verificar email (no bloquea el login, solo registra el estado)
       if (!_usuarioActual!.email.endsWith('@hostsigchos.com')) {
          final isVerified = await authRepository.verificarEmailConfirmado();
+         _isEmailVerified = isVerified;
          if (!isVerified) {
-            _errorMessage = 'Por favor verifica tu correo electrónico antes de iniciar sesión.';
-            // En vez de lanzar error, no lo logueamos o lo dejamos pasar para verificar en SplashScreen.
-            // Actually, best to return true but let UI handle it, or we throw Error so UI stays.
-            // Let's sign out to prevent unverified login token persistence.
-            await logoutUseCase();
-            return false;
+            debugPrint('[Auth] Email no verificado para: ${_usuarioActual!.email}');
+            // No bloqueamos el login - el usuario puede usar la app
+            // pero se le recordará verificar su email
          }
+      } else {
+        _isEmailVerified = true;
       }
 
       if (_isBiometricAvailable) {
