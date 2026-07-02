@@ -67,6 +67,20 @@ class ErrorHandler {
           : 'Too many attempts. Please try again later.';
     }
 
+    // Google Sign-In errors
+    if (eString.contains('account reauth failed') ||
+        eString.contains('sign_in_failed') ||
+        eString.contains('googlesigninexception')) {
+      return isSpanish
+          ? 'No se pudo iniciar sesión con Google. Verifica tu conexión e inténtalo de nuevo.'
+          : 'Could not sign in with Google. Check your connection and try again.';
+    }
+    if (eString.contains('canceled') || eString.contains('cancelled')) {
+      return isSpanish
+          ? 'Inicio de sesión cancelado.'
+          : 'Sign-in was cancelled.';
+    }
+
     // Fallback genérico para no exponer errores crudos
     debugPrint('Excepción no mapeada capturada: $error');
     return isSpanish

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/constants/firestore_paths.dart';
@@ -113,15 +114,20 @@ class AuthDataSource {
         user = userCredential.user;
       } else {
         if (!_isGoogleSignInInitialized) {
-          await _googleSignIn.initialize();
+          await _googleSignIn.initialize(
+            serverClientId: dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '',
+          );
           _isGoogleSignInInitialized = true;
         }
-        final GoogleSignInAccount googleUser = await _googleSignIn
-            .authenticate();
+        final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+        if (googleUser == null) {
+          throw const AuthFailure('Autenticación con Google cancelada');
+        }
 
-        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
         final cred = auth.GoogleAuthProvider.credential(
+          accessToken: null,
           idToken: googleAuth.idToken,
         );
 
