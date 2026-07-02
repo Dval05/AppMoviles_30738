@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/l10n/app_localizations.dart';
@@ -61,6 +62,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navegarPostLogin() {
+    // Cierra la sesión de autofill de Android antes de navegar; si el sistema
+    // sigue mostrando el aviso de "guardar contraseña" cuando el árbol de
+    // widgets del login se destruye, Flutter lanza
+    // "_dependents.isEmpty is not true" al desmontar los campos.
+    TextInput.finishAutofillContext();
     if (kIsWeb) {
       Navigator.pushReplacementNamed(context, AppRoutes.propietarioDashboard);
     } else {

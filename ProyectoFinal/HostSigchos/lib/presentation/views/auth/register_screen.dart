@@ -198,6 +198,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (success && mounted) {
+        // Cierra la sesión de autofill antes de navegar: si Android sigue
+        // mostrando el aviso de "guardar contraseña" cuando este árbol de
+        // widgets se destruye, Flutter lanza
+        // "_dependents.isEmpty is not true" al desmontar los campos.
+        TextInput.finishAutofillContext();
         // Navegar a la pantalla de verificación de cuenta
         Navigator.pushNamedAndRemoveUntil(
           context,

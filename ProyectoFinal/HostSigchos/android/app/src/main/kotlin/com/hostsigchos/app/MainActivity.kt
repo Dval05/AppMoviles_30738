@@ -1,4 +1,4 @@
-package com.example.frontend
+package com.hostsigchos.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
