@@ -228,6 +228,7 @@ class _HosteriaDetailScreenState extends State<HosteriaDetailScreen> {
                           imageUrl: url,
                           fit: BoxFit.cover,
                           width: double.infinity,
+                          memCacheWidth: 800,
                           placeholder: (context, url) =>
                               Container(color: Colors.grey[200]),
                         );

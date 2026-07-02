@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -116,14 +115,6 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     ).timeout(const Duration(seconds: 8));
-    if (kIsWeb) {
-      FirebaseFirestore.instanceFor(
-        app: Firebase.app(),
-        databaseId: 'hostsigchos',
-      ).settings = const Settings(
-        persistenceEnabled: false,
-      );
-    }
   } catch (e) {
     debugPrint('Error inicializando Firebase: $e');
   }

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -84,11 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
         }
       }
 
-      if (kIsWeb) {
-        Navigator.pushReplacementNamed(context, AppRoutes.propietarioDashboard);
-      } else {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
-      }
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.landing);
     }

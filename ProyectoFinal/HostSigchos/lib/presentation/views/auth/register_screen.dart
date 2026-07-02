@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final String _selectedRol = kIsWeb ? 'propietario' : 'usuario';
+  final String _selectedRol = 'usuario';
 
   final List<String> _provinciasEcuador = [
     'Azuay', 'Bolívar', 'Cañar', 'Carchi', 'Chimborazo', 'Cotopaxi', 
@@ -175,12 +174,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       var finalEmail = _emailController.text.trim();
       var finalPassword = _passwordController.text;
 
-      if (kIsWeb) {
-        var placeName = _nombreController.text.trim();
-        finalEmail = '${placeName.toLowerCase().replaceAll(' ', '_')}@hostsigchos.com';
-        finalPassword = placeName;
-      }
-
       final success = await context.read<AuthViewModel>().register(
         nombre: _nombreController.text.trim(),
         email: finalEmail,
@@ -256,10 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             alpha: 0.3,
                           ),
                           backgroundImage: _imageFile != null
-                              ? (kIsWeb
-                                    ? NetworkImage(_imageFile!.path)
-                                          as ImageProvider
-                                    : FileImage(File(_imageFile!.path)))
+                              ? FileImage(File(_imageFile!.path))
                               : null,
                           child: _imageFile == null
                               ? const Icon(
@@ -320,7 +310,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                if (!kIsWeb)
                   CustomTextField(
                     label: l10n.email,
                     prefixIcon: Icons.email_outlined,
@@ -547,7 +536,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 const SizedBox(height: 16),
 
-                if (!kIsWeb) ...[
                   CustomTextField(
                     label: l10n.password,
                     prefixIcon: Icons.lock_outline,
@@ -565,7 +553,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Validators.confirmPassword(val, _passwordController.text),
                   ),
                   const SizedBox(height: 16),
-                ],
 
                 const SizedBox(height: 16),
 

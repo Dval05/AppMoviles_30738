@@ -106,13 +106,7 @@ class AuthDataSource {
     try {
       auth.User? user;
 
-      if (kIsWeb) {
-        final googleProvider = auth.GoogleAuthProvider();
-        final userCredential = await _firebaseAuth.signInWithPopup(
-          googleProvider,
-        );
-        user = userCredential.user;
-      } else {
+
         // Inicializar Google Sign-In con el Web Client ID
         if (!_isGoogleSignInInitialized) {
           final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
@@ -149,7 +143,7 @@ class AuthDataSource {
         final userCredential = await _firebaseAuth.signInWithCredential(cred);
         user = userCredential.user;
         debugPrint('[GoogleAuth] Firebase signIn exitoso: ${user?.uid}');
-      }
+        debugPrint('[GoogleAuth] Firebase signIn exitoso: ${user?.uid}');
 
       if (user == null) throw const AuthFailure('Error al autenticar usuario');
 

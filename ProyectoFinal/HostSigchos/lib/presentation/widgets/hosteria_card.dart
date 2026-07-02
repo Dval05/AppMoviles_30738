@@ -55,6 +55,7 @@ class HosteriaCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: hosteria.imagenes.first,
                         fit: BoxFit.cover,
+                        memCacheWidth: 600,
                         placeholder: (context, url) => Container(color: Colors.grey[200]),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[200],
@@ -229,6 +230,7 @@ class HosteriaCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: hosteria.imagenes.first,
                         fit: BoxFit.cover,
+                        memCacheWidth: 600,
                       )
                     : Container(color: Colors.grey[200]),
               ),

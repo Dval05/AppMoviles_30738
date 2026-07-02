@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -36,15 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
       FocusScope.of(context).unfocus();
 
       var input = _emailController.text.trim();
-      var originalInput = input;
-      
-      // Si ingresan el nombre de la hostería, lo convertimos a formato de correo electrónico
-      if (!input.contains('@')) {
-        input = input.toLowerCase().replaceAll(' ', '_');
-        input = '$input@hostsigchos.com';
-      }
-
-      String password = kIsWeb ? originalInput : _passwordController.text;
+      String password = _passwordController.text;
 
       final success = await context.read<AuthViewModel>().login(
         input,
@@ -66,11 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // widgets del login se destruye, Flutter lanza
     // "_dependents.isEmpty is not true" al desmontar los campos.
     TextInput.finishAutofillContext();
-    if (kIsWeb) {
-      Navigator.pushReplacementNamed(context, AppRoutes.propietarioDashboard);
-    } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
-    }
+    Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
   Future<void> _loginGoogle() async {
@@ -197,8 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
 
                         CustomTextField(
-                          label: kIsWeb ? 'Nombre de la Hostería' : l10n.emailOrPlaceName,
-                          prefixIcon: kIsWeb ? Icons.business : Icons.email_outlined,
+                          label: l10n.email,
+                          prefixIcon: Icons.email_outlined,
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (val) {
@@ -209,7 +196,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
 
-                        if (!kIsWeb) ...[
                           CustomTextField(
                             label: l10n.password,
                             prefixIcon: Icons.lock_outline,
@@ -261,10 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                        ],
 
                         GradientButton(
-                          text: kIsWeb ? 'Ingresar' : l10n.login,
+                          text: l10n.login,
                           onPressed: _login,
                         ),
 
