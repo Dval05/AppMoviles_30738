@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/utils/error_handler.dart';
 import '../../domain/entities/habitacion.dart';
-import '../../domain/usecases/habitacion/actualizar_habitacion_usecase.dart';
-import '../../domain/usecases/habitacion/agregar_habitacion_usecase.dart';
 import '../../domain/usecases/habitacion/check_disponibilidad_usecase.dart';
 import '../../domain/usecases/habitacion/get_habitaciones_usecase.dart';
 import '../../domain/usecases/habitacion/get_todas_las_habitaciones_usecase.dart';
@@ -12,14 +11,10 @@ class HabitacionViewModel extends ChangeNotifier {
     required this.getHabitacionesUseCase,
     required this.checkDisponibilidadUseCase,
     required this.getTodasLasHabitacionesUseCase,
-    required this.agregarHabitacionUseCase,
-    required this.actualizarHabitacionUseCase,
   });
   final GetHabitacionesUseCase getHabitacionesUseCase;
   final CheckDisponibilidadUseCase checkDisponibilidadUseCase;
   final GetTodasLasHabitacionesUseCase getTodasLasHabitacionesUseCase;
-  final AgregarHabitacionUseCase agregarHabitacionUseCase;
-  final ActualizarHabitacionUseCase actualizarHabitacionUseCase;
 
   List<Habitacion> _habitaciones = [];
   List<Habitacion> _todasLasHabitaciones = [];
@@ -43,7 +38,7 @@ class HabitacionViewModel extends ChangeNotifier {
       _todasLasHabitaciones = await getTodasLasHabitacionesUseCase();
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -56,7 +51,7 @@ class HabitacionViewModel extends ChangeNotifier {
       _habitaciones = await getHabitacionesUseCase(hosteriaId);
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -79,7 +74,7 @@ class HabitacionViewModel extends ChangeNotifier {
       }
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -88,43 +83,5 @@ class HabitacionViewModel extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
-  }
-
-  Future<bool> agregarHabitacion(Habitacion habitacion) async {
-    _setLoading(true);
-    try {
-      await agregarHabitacionUseCase(habitacion);
-      _errorMessage = null;
-      // Recargar habitaciones después de agregar
-      await cargarTodasLasHabitaciones();
-      if (_habitaciones.isNotEmpty && _habitaciones.first.hosteriaId == habitacion.hosteriaId) {
-         await cargarHabitacionesPorHosteria(habitacion.hosteriaId);
-      }
-      return true;
-    } catch (e) {
-      _errorMessage = e.toString();
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<bool> actualizarHabitacion(Habitacion habitacion) async {
-    _setLoading(true);
-    try {
-      await actualizarHabitacionUseCase(habitacion);
-      _errorMessage = null;
-      // Recargar habitaciones después de actualizar
-      await cargarTodasLasHabitaciones();
-      if (_habitaciones.isNotEmpty && _habitaciones.first.hosteriaId == habitacion.hosteriaId) {
-         await cargarHabitacionesPorHosteria(habitacion.hosteriaId);
-      }
-      return true;
-    } catch (e) {
-      _errorMessage = e.toString();
-      return false;
-    } finally {
-      _setLoading(false);
-    }
   }
 }

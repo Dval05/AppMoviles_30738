@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/utils/error_handler.dart';
 import '../../domain/entities/habitacion.dart';
 import '../../domain/entities/reserva.dart';
 import '../../domain/usecases/habitacion/check_disponibilidad_usecase.dart';
@@ -47,17 +48,11 @@ class ReservaViewModel extends ChangeNotifier {
       try {
         // Simular envío de notificación real al usuario
         // Agregamos timeout a Firestore por si la instancia por defecto no responde
-        await FirebaseFirestore.instanceFor(
-          app: Firebase.app(),
-          databaseId: 'hostsigchos',
-        ).collection('notificaciones').add({
-          'usuarioId': reserva.usuarioId,
-          'titulo': '¡Reserva Confirmada!',
-          'mensaje': 'Tu reserva para el ${reserva.fechaCheckIn.day}/${reserva.fechaCheckIn.month} ha sido procesada con éxito.',
-          'fecha': FieldValue.serverTimestamp(),
-          'leida': false,
-          'tipo': 'reserva',
-        }).timeout(const Duration(seconds: 5));
+        await _enviarNotificacion(
+          reserva.usuarioId,
+          'Reserva Creada Exitosamente',
+          'Tu reserva ha sido creada y está pendiente de confirmación. Revisa los detalles.',
+        );
       } catch (e) {
         debugPrint('Error al enviar notificación simulada: $e');
         // No bloqueamos el flujo si la notificación falla
@@ -66,7 +61,7 @@ class ReservaViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -80,7 +75,7 @@ class ReservaViewModel extends ChangeNotifier {
       await _verificarReservasNoConfirmadas();
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -92,7 +87,7 @@ class ReservaViewModel extends ChangeNotifier {
       _reservas = await _getTodasLasReservasUseCase();
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -109,10 +104,35 @@ class ReservaViewModel extends ChangeNotifier {
       if (_reservaActual?.id == reservaId) {
         _reservaActual = _reservaActual!.copyWith(estado: nuevoEstado);
       }
+      
+      final index = _reservas.indexWhere((r) => r.id == reservaId);
+      if (index != -1) {
+        final nuevaLista = List<Reserva>.from(_reservas);
+        nuevaLista[index] = nuevaLista[index].copyWith(estado: nuevoEstado);
+        _reservas = nuevaLista;
+        
+        // Enviar notificación según el nuevo estado
+        String titulo = 'Actualización de Reserva';
+        String mensaje = 'El estado de tu reserva ha cambiado a $nuevoEstado.';
+        
+        if (nuevoEstado == 'en_revision') {
+          titulo = 'Reserva en revisión';
+          mensaje = 'Estamos revisando tu comprobante y pronto confirmaremos tu reserva.';
+        } else if (nuevoEstado == 'confirmada') {
+          titulo = 'Reserva confirmada';
+          mensaje = '¡Tu reserva ha sido confirmada con éxito! Te esperamos.';
+        } else if (nuevoEstado == 'cancelada') {
+          titulo = 'Reserva cancelada';
+          mensaje = 'Tu reserva ha sido cancelada.';
+        }
+        
+        await _enviarNotificacion(_reservas[index].usuarioId, titulo, mensaje);
+      }
+      
       await cargarTodasLasReservas();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -159,7 +179,7 @@ class ReservaViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -227,7 +247,7 @@ class ReservaViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -237,5 +257,23 @@ class ReservaViewModel extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  Future<void> _enviarNotificacion(String usuarioId, String titulo, String mensaje) async {
+    try {
+      await FirebaseFirestore.instanceFor(
+        app: Firebase.app(),
+        databaseId: 'hostsigchos',
+      ).collection('notificaciones').add({
+        'usuarioId': usuarioId,
+        'titulo': titulo,
+        'mensaje': mensaje,
+        'fecha': FieldValue.serverTimestamp(),
+        'leida': false,
+        'tipo': 'reserva',
+      }).timeout(const Duration(seconds: 5));
+    } catch (e) {
+      debugPrint('Error enviando notificación: $e');
+    }
   }
 }

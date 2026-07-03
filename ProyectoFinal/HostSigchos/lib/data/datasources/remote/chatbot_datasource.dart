@@ -50,10 +50,13 @@ REGLAS IMPORTANTES DEL SISTEMA:
       throw Exception('Falta GROQ_API_KEY en el .env');
     }
 
+    final idiomaApp = contexto['idioma'] == 'en' ? 'INGLÉS (ENGLISH)' : 'ESPAÑOL (SPANISH)';
     final contextStr = jsonEncode(contexto);
     final userMessage = isAudioText
         ? 'Contexto actual del usuario: $contextStr\n\nMensaje del usuario (transcrito de un audio): $mensaje'
         : 'Contexto actual del usuario: $contextStr\n\nMensaje del usuario: $mensaje';
+
+    final promptConIdioma = '$_systemPrompt\n\nMUY IMPORTANTE: EL IDIOMA ACTUAL DE LA APP ES $idiomaApp. DEBES RESPONDER ESTRICTAMENTE EN ESE IDIOMA.';
 
     final response = await http
         .post(
@@ -65,7 +68,7 @@ REGLAS IMPORTANTES DEL SISTEMA:
           body: jsonEncode({
             'model': 'llama-3.3-70b-versatile',
             'messages': [
-              {'role': 'system', 'content': _systemPrompt},
+              {'role': 'system', 'content': promptConIdioma},
               {'role': 'user', 'content': userMessage},
             ],
             'temperature': 0.5,

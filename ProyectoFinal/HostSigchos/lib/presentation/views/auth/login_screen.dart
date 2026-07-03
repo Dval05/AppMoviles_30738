@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/l10n/app_localizations.dart';
+import '../../../core/services/notification_service.dart';
+import '../../../domain/entities/hosteria.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
@@ -57,17 +60,111 @@ class _LoginScreenState extends State<LoginScreen> {
     // widgets del login se destruye, Flutter lanza
     // "_dependents.isEmpty is not true" al desmontar los campos.
     TextInput.finishAutofillContext();
-    Navigator.pushReplacementNamed(context, AppRoutes.home);
+    final hosteria = ModalRoute.of(context)?.settings.arguments;
+    if (hosteria is Hosteria) {
+      // Ponemos el Dashboard como base y luego la página de la hostería
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+      Navigator.pushNamed(context, AppRoutes.hosteriaDetail, arguments: hosteria.id);
+    } else {
+      // Solo limpiamos la pila y vamos al Dashboard
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+    }
+    
+    // Mostrar pop-up / notificacion de exito
+    final authVm = context.read<AuthViewModel>();
+    final nombre = authVm.usuarioActual?.nombre.split(' ').first ?? 'Usuario';
+    NotificationService().mostrarNotificacionLocal(
+      titulo: AppLocalizations.of(context)!.loginSuccessTitle,
+      cuerpo: AppLocalizations.of(context)!.loginSuccessBody(nombre),
+    );
   }
 
   Future<void> _loginGoogle() async {
-    final success = await context.read<AuthViewModel>().loginConGoogle();
+    final authViewModel = context.read<AuthViewModel>();
+    final success = await authViewModel.loginConGoogle();
     if (success && mounted) {
-      final usuario = context.read<AuthViewModel>().usuarioActual;
+      final usuario = authViewModel.usuarioActual;
       if (usuario != null) {
-        _navegarPostLogin();
+        if (authViewModel.isUsuarioSoloGoogle) {
+          _mostrarDialogoCrearPassword(context);
+        } else {
+          _navegarPostLogin();
+        }
       }
     }
+  }
+
+  void _mostrarDialogoCrearPassword(BuildContext context) {
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) {
+          final l10n = AppLocalizations.of(ctx)!;
+          return AlertDialog(
+            title: Text(l10n.createPassword),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.createPasswordDescription),
+                  const SizedBox(height: 16),
+                  CustomTextField(
+                    label: l10n.newPassword,
+                    prefixIcon: Icons.lock_outline,
+                    controller: passwordController,
+                    isPassword: true,
+                    validator: (val) {
+                      if (val == null || val.length < 6) {
+                        return 'Mínimo 6 caracteres';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: isLoading ? null : () {
+                  Navigator.pop(ctx);
+                  _navegarPostLogin();
+                },
+                child: Text(l10n.skip),
+              ),
+              ElevatedButton(
+                onPressed: isLoading ? null : () async {
+                  if (formKey.currentState!.validate()) {
+                    setState(() { isLoading = true; });
+                    final linked = await context.read<AuthViewModel>().vincularPassword(passwordController.text);
+                    if (linked && mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.passwordLinked)),
+                      );
+                      _navegarPostLogin();
+                    } else if (mounted) {
+                      setState(() { isLoading = false; });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.read<AuthViewModel>().errorMessage ?? l10n.error)),
+                      );
+                    }
+                  }
+                },
+                child: isLoading
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : Text(l10n.confirm),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _loginBiometric() async {
@@ -139,9 +236,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Image.asset(
-                          'assets/images/logo.png',
-                          height: 35,
+                        const Icon(
+                          Icons.landscape_rounded,
+                          size: 100, // <-- Aquí puedes modificar el tamaño (dimensiones)
+                          color: ColorSchemeApp.primaryGreen,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -188,6 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: Icons.email_outlined,
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
+                          autofillHints: const [AutofillHints.email],
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) {
                               return l10n.error;
@@ -201,6 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icons.lock_outline,
                             controller: _passwordController,
                             isPassword: true,
+                            autofillHints: const [AutofillHints.password],
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) {
                                 return l10n.error;
@@ -224,9 +324,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () => authViewModel.setKeepSession(value: !authViewModel.keepSession),
-                                  child: Text(
-                                    l10n.keepSession,
-                                    style: const TextStyle(color: ColorSchemeApp.darkText, fontSize: 13),
+                                  child: const Text(
+                                    'Mantener sesión activa',
+                                    style: TextStyle(
+                                      color: ColorSchemeApp.darkText, 
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -366,6 +470,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               child: Text(l10n.registerHere),
+                            ),
+                          ],
+                        ),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                final url = Uri.parse('https://hostsigchos.web.app/terminos.html');
+                                try {
+                                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                                } catch (e) {
+                                  debugPrint('No se pudo abrir Términos y Condiciones');
+                                }
+                              },
+                              child: const Text(
+                                'Términos y Condiciones',
+                                style: TextStyle(
+                                  color: ColorSchemeApp.softGray,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const Text(
+                              '|',
+                              style: TextStyle(color: ColorSchemeApp.softGray, fontSize: 12),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final url = Uri.parse('https://hostsigchos.web.app/politicas.html');
+                                try {
+                                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                                } catch (e) {
+                                  debugPrint('No se pudo abrir Políticas de Privacidad');
+                                }
+                              },
+                              child: const Text(
+                                'Políticas de Privacidad',
+                                style: TextStyle(
+                                  color: ColorSchemeApp.softGray,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
                           ],
                         ),

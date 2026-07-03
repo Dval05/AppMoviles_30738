@@ -49,6 +49,14 @@ class NotificacionViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> borrarTodas(String usuarioId) async {
+    try {
+      await _repository.borrarTodas(usuarioId);
+    } catch (e) {
+      debugPrint('Error al borrar todas las notificaciones: $e');
+    }
+  }
+
   @override
   void dispose() {
     _subscription?.cancel();

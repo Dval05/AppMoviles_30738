@@ -32,6 +32,20 @@
   "@hosterias": {},
   "reservations": "Reservations",
   "@reservations": {},
+  "searchPlaceholder": "Search by name, location...",
+  "@searchPlaceholder": {},
+  "chooseDates": "Choose your dates",
+  "@chooseDates": {},
+  "stop": "Stop",
+  "@stop": {},
+  "followRoute": "Follow Route",
+  "@followRoute": {},
+  "calculatingRoute": "Calculating route...",
+  "@calculatingRoute": {},
+  "routeRecalculated": "Route recalculated automatically",
+  "@routeRecalculated": {},
+  "noPlacesFound": "No places found",
+  "@noPlacesFound": {},
   "map": "Map",
   "@map": {},
   "profile": "Profile",
@@ -593,8 +607,69 @@
   "@landingTitle": {},
   "landingSubtitle": "Find the perfect place for your next nature adventure.",
   "@landingSubtitle": {},
-  "noHosteriasFound": "No lodges found.",
+  "supportInfo": "For technical support, contact:\n\nEmail: andrade.dval@gmail.com\nWhatsApp: +593 93 918 5134",
+  "@supportInfo": {},
+  "chatbotWelcome": "Hello! I am your virtual assistant. Do you prefer text only or also audio? You can turn on the volume at the top. How can I help you today?",
+  "@chatbotWelcome": {},
+  "virtualAssistant": "Virtual Assistant",
+  "@virtualAssistant": {},
+  "loginSuccessTitle": "Login Successful",
+  "@loginSuccessTitle": {},
+  "loginSuccessBody": "Welcome back, {name}!",
+  "@loginSuccessBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingCancelledTitle": "Booking Cancelled",
+  "@bookingCancelledTitle": {},
+  "bookingCancelledBody": "Your booking has been cancelled successfully.",
+  "@bookingCancelledBody": {},
+  "bookingBlockedTitle": "Booking Blocked",
+  "@bookingBlockedTitle": {},
+  "bookingBlockedBody": "Could not complete the booking for {roomType}. {error}",
+  "@bookingBlockedBody": {
+    "placeholders": {
+      "roomType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceMessage": "🎵 Voice message",
+  "@voiceMessage": {},
+  "viewSuggestion": "View Suggestion",
+  "@viewSuggestion": {},
+  "suggestionsForYou": "Suggestions for you",
+  "@suggestionsForYou": {},
+  "noSuggestionsAvailable": "No suggestions available.",
+  "@noSuggestionsAvailable": {},
+  "typeMessage": "Type a message...",
+  "@typeMessage": {},
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {},
+  "markAsRead": "Read",
+  "@markAsRead": {},
+  "deleteAll": "Delete",
+  "@deleteAll": {},
+  "suggestedRooms": "Suggested rooms",
+  "@suggestedRooms": {},
+  "unknownHotel": "Unknown Hotel",
+  "@unknownHotel": {},
+  "addressNotAvailable": "Address not available",
+  "@addressNotAvailable": {},
+  "roomFallback": "Room",
+  "@roomFallback": {},
+  "noHosteriasFound": "No hosterias found.",
   "@noHosteriasFound": {},
   "searchHint": "Search by name, location...",
-  "@searchHint": {}
+  "@searchHint": {},
+  "termsAndConditions": "Terms and Conditions",
+  "@termsAndConditions": {},
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {}
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/validators.dart';
@@ -42,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final String _selectedRol = 'usuario';
+  bool _acceptedTerms = false;
 
   final List<String> _provinciasEcuador = [
     'Azuay', 'Bolívar', 'Cañar', 'Carchi', 'Chimborazo', 'Cotopaxi', 
@@ -162,7 +163,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se pudo abrir el enlace')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al intentar abrir el enlace')),
+        );
+      }
+    }
+  }
+
   Future<void> _register() async {
+    if (!_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes aceptar los Términos y Condiciones y Políticas de Privacidad para registrarte.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       final imageBytes = _imageFile != null
@@ -187,7 +217,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ? '${_customCityController.text.trim()}, $_selectedCountry'
             : null,
         fotoBytes: imageBytes,
-        rol: _selectedRol,
       );
 
       if (success && mounted) {
@@ -552,11 +581,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (val) =>
                         Validators.confirmPassword(val, _passwordController.text),
                   ),
-                  const SizedBox(height: 16),
 
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _acceptedTerms,
+                      onChanged: (val) {
+                        setState(() {
+                          _acceptedTerms = val ?? false;
+                        });
+                      },
+                      activeColor: ColorSchemeApp.primaryGreen,
+                    ),
+                    Expanded(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          const Text('Acepto los ', style: TextStyle(fontSize: 13)),
+                          InkWell(
+                            onTap: () {
+                              _launchUrl('https://hostsigchos.com/terminos');
+                            },
+                            child: const Text(
+                              'Términos y Condiciones',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: ColorSchemeApp.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                          const Text(' y las ', style: TextStyle(fontSize: 13)),
+                          InkWell(
+                            onTap: () {
+                              _launchUrl('https://hostsigchos.com/privacidad');
+                            },
+                            child: const Text(
+                              'Políticas de Privacidad',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: ColorSchemeApp.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
-
-                const SizedBox(height: 32),
 
                 GradientButton(
                   text: l10n.createAccount,

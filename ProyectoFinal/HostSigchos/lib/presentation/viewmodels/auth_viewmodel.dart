@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../core/services/biometric_service.dart';
+import '../../core/utils/error_handler.dart';
 import '../../domain/entities/usuario.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/auth/actualizar_perfil_usecase.dart';
@@ -131,7 +132,7 @@ class AuthViewModel extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -147,7 +148,6 @@ class AuthViewModel extends ChangeNotifier {
     String? telefono,
     String? ubicacion,
     Uint8List? fotoBytes,
-    String rol = 'usuario',
   }) async {
     _setLoading(true);
     try {
@@ -160,7 +160,6 @@ class AuthViewModel extends ChangeNotifier {
         telefono: telefono,
         ubicacion: ubicacion,
         fotoBytes: fotoBytes,
-        rol: rol,
       );
       
       // Enviar correo de verificación automáticamente
@@ -173,7 +172,7 @@ class AuthViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -189,7 +188,7 @@ class AuthViewModel extends ChangeNotifier {
       await _checkIfGoogleOnly();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -207,7 +206,7 @@ class AuthViewModel extends ChangeNotifier {
       // No borramos las credenciales biométricas aquí, así el usuario puede volver a entrar
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }
@@ -236,7 +235,7 @@ class AuthViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -254,7 +253,7 @@ class AuthViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -279,7 +278,7 @@ class AuthViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -294,7 +293,7 @@ class AuthViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -310,7 +309,7 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
       return _isEmailVerified;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -335,7 +334,7 @@ class AuthViewModel extends ChangeNotifier {
       );
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -359,7 +358,7 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
       return _isPhoneVerified;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -416,7 +415,7 @@ class AuthViewModel extends ChangeNotifier {
       if (errorStr.contains('canceled') || errorStr.contains('cancelled')) {
         _errorMessage = null;
       } else {
-        _errorMessage = e.toString();
+        _errorMessage = ErrorHandler.getFriendlyMessage(e);
       }
       _setLoading(false);
       return false;

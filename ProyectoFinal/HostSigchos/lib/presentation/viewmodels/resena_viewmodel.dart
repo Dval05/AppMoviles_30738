@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import '../../core/utils/error_handler.dart';
 import '../../domain/entities/resena.dart';
 import '../../domain/usecases/resena/agregar_resena_usecase.dart';
 import '../../domain/usecases/resena/get_resenas_por_hosteria_usecase.dart';
@@ -32,7 +33,7 @@ class ResenaViewModel extends ChangeNotifier {
         _setLoading(false);
       },
       onError: (e) {
-        _errorMessage = e.toString();
+        _errorMessage = ErrorHandler.getFriendlyMessage(e);
         _setLoading(false);
       },
     );

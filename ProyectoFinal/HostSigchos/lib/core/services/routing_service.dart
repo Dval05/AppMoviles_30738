@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
@@ -31,7 +32,7 @@ class RoutingService {
       }
       return [];
     } catch (e) {
-      print('Error obteniendo la ruta: $e');
+      debugPrint('Error obteniendo la ruta: $e');
       return [];
     }
   }

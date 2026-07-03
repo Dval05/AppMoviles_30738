@@ -73,19 +73,14 @@ class _SplashScreenState extends State<SplashScreen>
       }
       if (!mounted) return;
 
-      // Ensure user is verified before allowing to enter if it's email user
-      if (user.email != null && !user.email!.endsWith('@hostsigchos.com')) {
-        if (!user.emailVerified) {
-          // Let them go to Landing so they see they must verify, or to verify screen
-          await FirebaseAuth.instance.signOut();
-          if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.landing);
-          return;
-        }
+      // Siempre ir a landing, independientemente de si hay sesión o no.
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.landing);
       }
-
-      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.landing);
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.landing);
+      }
     }
   }
 

@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 
+import '../errors/failures.dart';
+
 class ErrorHandler {
   static String getFriendlyMessage(dynamic error) {
     final isSpanish = _isSpanish();
@@ -9,6 +11,10 @@ class ErrorHandler {
       return isSpanish
           ? 'Error desconocido. Inténtalo más tarde.'
           : 'Unknown error. Please try again later.';
+    }
+
+    if (error is Failure) {
+      return error.message;
     }
 
     final String eString = error.toString().toLowerCase();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../themes/esquema_color.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/notificacion_viewmodel.dart';
@@ -64,6 +65,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final notifVm = context.watch<NotificacionViewModel>();
     final notificaciones = notifVm.notificaciones;
     final isLoading = notifVm.isLoading;
@@ -73,12 +75,12 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
     return Scaffold(
       backgroundColor: ColorSchemeApp.pearlWhite,
       appBar: AppBar(
-        title: const Text('Alertas', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.notificationsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: ColorSchemeApp.darkText,
         elevation: 0,
         actions: [
-          if (noLeidas > 0)
+          if (notificaciones.isNotEmpty && noLeidas > 0)
             TextButton(
               onPressed: () {
                 final authVm = context.read<AuthViewModel>();
@@ -86,24 +88,37 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                   notifVm.marcarTodasComoLeidas(authVm.usuarioActual!.id);
                 }
               },
-              child: const Text('Marcar todas como leídas', style: TextStyle(color: ColorSchemeApp.primaryGreen)),
-            )
+              child: Text(l10n.markAsRead, style: const TextStyle(color: ColorSchemeApp.primaryGreen, fontWeight: FontWeight.bold)),
+            ),
+          if (notificaciones.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                final authVm = context.read<AuthViewModel>();
+                if (authVm.usuarioActual != null) {
+                  notifVm.borrarTodas(authVm.usuarioActual!.id);
+                }
+              },
+              child: Text(l10n.deleteAll, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: ColorSchemeApp.primaryGreen))
-          : notificaciones.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey[300]),
-                      const SizedBox(height: 16),
-                      const Text('No tienes alertas nuevas', style: TextStyle(fontSize: 18, color: Colors.grey)),
-                    ],
-                  ),
-                )
-              : ListView.separated(
+      body: Column(
+        children: [
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator(color: ColorSchemeApp.primaryGreen))
+                : notificaciones.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey[300]),
+                            const SizedBox(height: 16),
+                            const Text('No tienes notificaciones', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: notificaciones.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
@@ -228,6 +243,9 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                     );
                   },
                 ),
+          ),
+        ],
+      ),
     );
   }
 }

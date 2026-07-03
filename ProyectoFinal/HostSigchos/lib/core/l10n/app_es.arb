@@ -31,6 +31,13 @@
   "hosterias": "Hosterías",
   "@hosterias": {},
   "reservations": "Reservas",
+  "searchPlaceholder": "Buscar por nombre, ubicación...",
+  "chooseDates": "Elige tus fechas",
+  "stop": "Detener",
+  "followRoute": "Seguir Ruta",
+  "calculatingRoute": "Calculando ruta...",
+  "routeRecalculated": "Ruta recalculada automáticamente",
+  "noPlacesFound": "No se encontraron hosterías",
   "@reservations": {},
   "map": "Mapa",
   "@map": {},
@@ -591,8 +598,69 @@
   "@landingTitle": {},
   "landingSubtitle": "Encuentra el lugar perfecto para tu próxima aventura en la naturaleza.",
   "@landingSubtitle": {},
+  "supportInfo": "Para soporte técnico, contacta a:\n\nEmail: andrade.dval@gmail.com\nWhatsApp: +593 93 918 5134",
+  "@supportInfo": {},
+  "chatbotWelcome": "¡Hola! Soy tu asistente virtual. ¿Prefieres comunicarte solo por texto o también con audio? Puedes activar el volumen arriba. ¿En qué te ayudo hoy?",
+  "@chatbotWelcome": {},
+  "virtualAssistant": "Asistente Virtual",
+  "@virtualAssistant": {},
+  "loginSuccessTitle": "Inicio de sesión exitoso",
+  "@loginSuccessTitle": {},
+  "loginSuccessBody": "¡Bienvenido de vuelta, {name}!",
+  "@loginSuccessBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingCancelledTitle": "Reserva cancelada",
+  "@bookingCancelledTitle": {},
+  "bookingCancelledBody": "Tu reserva ha sido cancelada exitosamente.",
+  "@bookingCancelledBody": {},
+  "bookingBlockedTitle": "Reserva bloqueada",
+  "@bookingBlockedTitle": {},
+  "bookingBlockedBody": "No se pudo completar la reserva para {roomType}. {error}",
+  "@bookingBlockedBody": {
+    "placeholders": {
+      "roomType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceMessage": "🎵 Mensaje de voz",
+  "@voiceMessage": {},
+  "viewSuggestion": "Ver Sugerencia",
+  "@viewSuggestion": {},
+  "suggestionsForYou": "Sugerencias para ti",
+  "@suggestionsForYou": {},
+  "noSuggestionsAvailable": "No hay sugerencias disponibles.",
+  "@noSuggestionsAvailable": {},
+  "typeMessage": "Escribe un mensaje...",
+  "@typeMessage": {},
+  "notificationsTitle": "Notificaciones",
+  "@notificationsTitle": {},
+  "markAsRead": "Leídas",
+  "@markAsRead": {},
+  "deleteAll": "Borrar",
+  "@deleteAll": {},
+  "suggestedRooms": "Habitaciones sugeridas",
+  "@suggestedRooms": {},
+  "unknownHotel": "Hotel Desconocido",
+  "@unknownHotel": {},
+  "addressNotAvailable": "Dirección no disponible",
+  "@addressNotAvailable": {},
+  "roomFallback": "Habitación",
+  "@roomFallback": {},
   "noHosteriasFound": "No se encontraron hosterías.",
   "@noHosteriasFound": {},
   "searchHint": "Buscar por nombre, ubicación...",
-  "@searchHint": {}
+  "@searchHint": {},
+  "termsAndConditions": "Términos y Condiciones",
+  "@termsAndConditions": {},
+  "privacyPolicy": "Políticas de Privacidad",
+  "@privacyPolicy": {}
 }

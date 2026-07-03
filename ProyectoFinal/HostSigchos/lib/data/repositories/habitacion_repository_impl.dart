@@ -35,14 +35,4 @@ class HabitacionRepositoryImpl implements HabitacionRepository {
       cantidadSolicitada,
     );
   }
-
-  @override
-  Future<void> agregarHabitacion(Habitacion habitacion) async {
-    return _dataSource.agregarHabitacion(habitacion);
-  }
-
-  @override
-  Future<void> actualizarHabitacion(Habitacion habitacion) async {
-    return _dataSource.actualizarHabitacion(habitacion);
-  }
 }

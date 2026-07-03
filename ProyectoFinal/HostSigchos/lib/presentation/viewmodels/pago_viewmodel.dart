@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/utils/error_handler.dart';
 import '../../domain/entities/pago.dart';
 import '../../domain/usecases/pago/actualizar_estado_pago_usecase.dart';
 import '../../domain/usecases/pago/get_historial_pagos_usecase.dart';
@@ -47,7 +48,7 @@ class PagoViewModel extends ChangeNotifier {
       _errorMessage = null;
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
       return false;
     } finally {
       _setLoading(false);
@@ -62,7 +63,7 @@ class PagoViewModel extends ChangeNotifier {
       await _verificarPagosExpirados();
       _errorMessage = null;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ErrorHandler.getFriendlyMessage(e);
     } finally {
       _setLoading(false);
     }

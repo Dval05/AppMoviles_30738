@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/resena.dart';
@@ -311,15 +310,18 @@ class _HosteriaDetailScreenState extends State<HosteriaDetailScreen> {
                       width: double.infinity,
                       height: 50,
                       child: OutlinedButton.icon(
-                        onPressed: () async {
-                          final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${hosteria.latitud},${hosteria.longitud}');
-                          try {
-                            await launchUrl(url, mode: LaunchMode.externalApplication);
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.error)));
-                            }
-                          }
+                        onPressed: () {
+                          // Generar la ruta en RoutingService y luego ir a MapaScreen.
+                          // Primero, nos aseguramos que el HosteriaViewModel sea el seleccionado.
+                          context.read<HosteriaViewModel>().cargarHosteriaDetalle(hosteria.id);
+                          
+                          // Regresar al inicio (que tiene el tab 0). 
+                          // Nota: Al usar popUntil('home'), no podemos cambiar el tab del MainScreen directamente a menos 
+                          // que usemos un GlobalKey o Provider para el tabIndex de MainScreen. 
+                          // Por ahora, como es un tab independiente (AppRoutes.mapa se usa en MainScreen), 
+                          // podemos hacer un push a una nueva pantalla MapaScreen con el botón atrás, 
+                          // O simplemente hacer Navigator.pushNamed(context, AppRoutes.mapa).
+                          Navigator.pushNamed(context, AppRoutes.mapa, arguments: hosteria);
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: ColorSchemeApp.primaryGreen,

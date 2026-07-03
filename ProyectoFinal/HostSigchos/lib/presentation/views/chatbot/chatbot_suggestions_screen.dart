@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/hosteria.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
@@ -17,14 +18,14 @@ class ChatbotSuggestionsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ColorSchemeApp.offWhite,
       appBar: AppBar(
-        title: const Text('Sugerencias para ti', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.suggestionsForYou, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: ColorSchemeApp.primaryGreen,
         elevation: 0,
         centerTitle: true,
       ),
       body: suggestions.isEmpty
-          ? const Center(child: Text('No hay sugerencias disponibles.'))
+          ? Center(child: Text(AppLocalizations.of(context)!.noSuggestionsAvailable))
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               itemCount: suggestions.length,
@@ -54,7 +55,7 @@ class ChatbotSuggestionsScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 24),
                     child: _HotelCard(
                       hosteriaId: hosteriaId,
-                      fallbackName: hotelSuggestion['hosteriaNombre'] ?? 'Hotel Desconocido',
+                      fallbackName: hotelSuggestion['hosteriaNombre'] ?? AppLocalizations.of(context)!.unknownHotel,
                       hosteria: hosteria,
                       habitacionesSugeridas: habitaciones,
                     ),
@@ -88,10 +89,11 @@ class _HotelCardState extends State<_HotelCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasImages = widget.hosteria != null && widget.hosteria!.imagenes.isNotEmpty;
     final rating = widget.hosteria?.rating ?? 0.0;
     final nombre = widget.hosteria?.nombre ?? widget.fallbackName;
-    final direccion = widget.hosteria?.direccion ?? 'Dirección no disponible';
+    final direccion = widget.hosteria?.direccion ?? l10n.addressNotAvailable;
 
     return GestureDetector(
       onTap: () {
@@ -275,9 +277,9 @@ class _HotelCardState extends State<_HotelCard> {
                   
                   // Chips de Habitaciones
                   if (widget.habitacionesSugeridas.isNotEmpty) ...[
-                    const Text(
-                      'Habitaciones sugeridas',
-                      style: TextStyle(
+                    Text(
+                      l10n.suggestedRooms,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: ColorSchemeApp.primaryGreen,
@@ -289,7 +291,30 @@ class _HotelCardState extends State<_HotelCard> {
                       runSpacing: 8,
                       children: widget.habitacionesSugeridas.map((h) {
                         final hab = h as Map<String, dynamic>;
-                        final String tipo = hab['tipo'] ?? 'Habitación';
+                        String tipo = hab['tipo'] ?? l10n.roomFallback;
+                        
+                        // Traducción manual básica para los tipos de habitación si estamos en inglés
+                        if (AppLocalizations.of(context)!.localeName == 'en') {
+                          final tipoLower = tipo.toLowerCase();
+                          if (tipoLower.contains('dormitorio compartido')) {
+                            tipo = tipoLower.replaceAll('dormitorio compartido', 'Shared dormitory');
+                          } else if (tipoLower.contains('habitación compartida')) {
+                            tipo = tipoLower.replaceAll('habitación compartida', 'Shared room');
+                          } else if (tipoLower.contains('simple')) {
+                            tipo = tipoLower.replaceAll('simple', 'Single');
+                          } else if (tipoLower.contains('doble')) {
+                            tipo = tipoLower.replaceAll('doble', 'Double');
+                          } else if (tipoLower.contains('familiar')) {
+                            tipo = tipoLower.replaceAll('familiar', 'Family');
+                          } else if (tipoLower.contains('matrimonial')) {
+                            tipo = tipoLower.replaceAll('matrimonial', 'Matrimonial');
+                          }
+                          // Capitalizar primera letra
+                          if (tipo.isNotEmpty) {
+                            tipo = tipo[0].toUpperCase() + tipo.substring(1);
+                          }
+                        }
+                        
                         final double precio = (hab['precio'] as num?)?.toDouble() ?? 0.0;
                         
                         return Container(

@@ -17,7 +17,6 @@ import 'data/datasources/firebase/habitacion_datasource.dart';
 import 'data/datasources/firebase/hosteria_datasource.dart';
 import 'data/datasources/firebase/notificacion_datasource.dart';
 import 'data/datasources/firebase/pago_datasource.dart';
-import 'data/datasources/firebase/promocion_datasource.dart';
 import 'data/datasources/firebase/resena_datasource.dart';
 import 'data/datasources/firebase/reserva_datasource.dart';
 import 'data/datasources/firebase/storage_datasource.dart';
@@ -31,7 +30,6 @@ import 'data/repositories/habitacion_repository_impl.dart';
 import 'data/repositories/hosteria_repository_impl.dart';
 import 'data/repositories/notificacion_repository_impl.dart';
 import 'data/repositories/pago_repository_impl.dart';
-import 'data/repositories/promocion_repository_impl.dart';
 import 'data/repositories/resena_repository_impl.dart';
 import 'data/repositories/reserva_repository_impl.dart';
 import 'domain/usecases/auth/actualizar_perfil_usecase.dart';
@@ -47,21 +45,14 @@ import 'domain/usecases/auth/vincular_password_usecase.dart';
 import 'domain/usecases/chatbot/enviar_audio_usecase.dart';
 import 'domain/usecases/chatbot/enviar_mensaje_usecase.dart';
 import 'domain/usecases/geocoding/get_direccion_usecase.dart';
-import 'domain/usecases/habitacion/actualizar_habitacion_usecase.dart';
-import 'domain/usecases/habitacion/agregar_habitacion_usecase.dart';
 import 'domain/usecases/habitacion/check_disponibilidad_usecase.dart';
 import 'domain/usecases/habitacion/get_habitaciones_usecase.dart';
 import 'domain/usecases/habitacion/get_todas_las_habitaciones_usecase.dart';
-import 'domain/usecases/hosteria/actualizar_hosteria_usecase.dart';
-import 'domain/usecases/hosteria/crear_hosteria_usecase.dart';
 import 'domain/usecases/hosteria/get_hosteria_detail_usecase.dart';
 import 'domain/usecases/hosteria/get_hosterias_usecase.dart';
 import 'domain/usecases/pago/actualizar_estado_pago_usecase.dart';
 import 'domain/usecases/pago/get_historial_pagos_usecase.dart';
 import 'domain/usecases/pago/procesar_pago_usecase.dart';
-import 'domain/usecases/promocion/actualizar_promocion_usecase.dart';
-import 'domain/usecases/promocion/crear_promocion_usecase.dart';
-import 'domain/usecases/promocion/get_promociones_usecase.dart';
 import 'domain/usecases/resena/agregar_resena_usecase.dart';
 import 'domain/usecases/resena/get_resenas_por_hosteria_usecase.dart';
 import 'domain/usecases/reserva/actualizar_estado_reserva_usecase.dart';
@@ -81,7 +72,6 @@ import 'presentation/viewmodels/hosteria_viewmodel.dart';
 import 'presentation/viewmodels/locale_viewmodel.dart';
 import 'presentation/viewmodels/notificacion_viewmodel.dart';
 import 'presentation/viewmodels/pago_viewmodel.dart';
-import 'presentation/viewmodels/promocion_viewmodel.dart';
 import 'presentation/viewmodels/resena_viewmodel.dart';
 import 'presentation/viewmodels/reserva_viewmodel.dart';
 import 'presentation/viewmodels/weather_viewmodel.dart';
@@ -162,8 +152,6 @@ void main() async {
             return HosteriaViewModel(
               getHosteriasUseCase: GetHosteriasUseCase(repo),
               getHosteriaDetailUseCase: GetHosteriaDetailUseCase(repo),
-              crearHosteriaUseCase: CrearHosteriaUseCase(repo),
-              actualizarHosteriaUseCase: ActualizarHosteriaUseCase(repo),
               getHabitacionesUseCase: GetHabitacionesUseCase(
                 HabitacionRepositoryImpl(HabitacionDataSource()),
               ),
@@ -180,8 +168,6 @@ void main() async {
               getTodasLasHabitacionesUseCase: GetTodasLasHabitacionesUseCase(
                 repo,
               ),
-              agregarHabitacionUseCase: AgregarHabitacionUseCase(repo),
-              actualizarHabitacionUseCase: ActualizarHabitacionUseCase(repo),
             );
           },
         ),
@@ -213,17 +199,6 @@ void main() async {
 
         ChangeNotifierProvider(
           create: (_) => CarritoReservaViewModel(),
-        ),
-
-        ChangeNotifierProvider(
-          create: (_) {
-            final repo = PromocionRepositoryImpl(PromocionDataSource());
-            return PromocionViewModel(
-              getPromocionesUseCase: GetPromocionesUseCase(repo),
-              crearPromocionUseCase: CrearPromocionUseCase(repo),
-              actualizarPromocionUseCase: ActualizarPromocionUseCase(repo),
-            );
-          },
         ),
 
         ChangeNotifierProvider(
@@ -297,6 +272,7 @@ class HostSigchosApp extends StatelessWidget {
       title: 'HostSigchos',
       debugShowCheckedModeBanner: false,
       theme: GeneralThemeApp.theme,
+      navigatorKey: AppRoutes.navigatorKey,
 
       // Internacionalización
       locale: localeVm.locale,
