@@ -90,7 +90,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHosterias => 'Search lodges...';
 
   @override
-  String get services => 'Services';
+  String get settings => 'Settings';
+
+  @override
+  String get deleteAccount => 'Delete Account';
 
   @override
   String get location => 'Location';
@@ -493,8 +496,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelError => 'Error cancelling reservation: ';
 
   @override
-  String get supportInfoText =>
-      'For technical support, please contact:\n\nEmail: soporte@hostsigchos.com\nPhone: +593 99 123 4567';
+  String get supportInfoText => 'For technical support, please contact:';
 
   @override
   String get advancedFilters => 'Advanced Filters';
@@ -876,8 +878,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Find the perfect place for your next nature adventure.';
 
   @override
-  String get supportInfo =>
-      'For technical support, contact:\n\nEmail: andrade.dval@gmail.com\nWhatsApp: +593 93 918 5134';
+  String get supportInfo => 'For technical support, contact:';
 
   @override
   String get chatbotWelcome =>

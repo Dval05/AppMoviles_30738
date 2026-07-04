@@ -4,8 +4,6 @@ part 'env.g.dart';
 
 @Envied(path: '.env', obfuscate: true)
 abstract class Env {
-  @EnviedField(varName: 'GOOGLE_MAPS_API_KEY')
-  static final String googleMapsApiKey = _Env.googleMapsApiKey;
 
   @EnviedField(varName: 'GOOGLE_WEB_CLIENT_ID')
   static final String googleWebClientId = _Env.googleWebClientId;
@@ -22,9 +20,10 @@ abstract class Env {
   @EnviedField(varName: 'FIREBASE_API_KEY_IOS')
   static final String firebaseApiKeyIos = _Env.firebaseApiKeyIos;
 
-  @EnviedField(varName: 'STRIPE_PUBLISHABLE_KEY')
-  static final String stripePublishableKey = _Env.stripePublishableKey;
 
-  @EnviedField(varName: 'STRIPE_TEST_MODE')
-  static final String stripeTestMode = _Env.stripeTestMode;
+  @EnviedField(varName: 'SUPPORT_EMAIL', defaultValue: 'andrade.dval@gmail.com')
+  static final String supportEmail = _Env.supportEmail;
+
+  @EnviedField(varName: 'SUPPORT_PHONE', defaultValue: '593939185134')
+  static final String supportPhone = _Env.supportPhone;
 }

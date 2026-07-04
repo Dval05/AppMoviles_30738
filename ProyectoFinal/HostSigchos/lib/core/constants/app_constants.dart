@@ -7,13 +7,12 @@ class AppConstants {
   static const String appTagline = 'Reservas en Sigchos';
 
   // Support & URLs
-  static const String whatsappSupportNumber = '593939185134';
-  static const String supportEmail = 'soporte@hostsigchos.com';
+  static String get whatsappSupportNumber => Env.supportPhone;
+  static String get supportEmail => Env.supportEmail;
   static const String termsUrl = 'https://hostsigchos.web.app/terminos.html';
   static const String privacyUrl = 'https://hostsigchos.web.app/politicas.html';
+  static const String accountDeletionUrl = 'https://hostsigchos.web.app/eliminar_cuenta.html';
 
-  // API Keys (cargadas desde env.dart ofuscado)
-  static String get googleMapsApiKey => Env.googleMapsApiKey;
 
   // Google Geocoding API
   static const String geocodingBaseUrl =

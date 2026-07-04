@@ -36,13 +36,13 @@ import 'domain/repositories/resena_repository.dart';
 import 'domain/repositories/reserva_repository.dart';
 // Import UseCases
 import 'domain/usecases/auth/actualizar_perfil_usecase.dart';
+import 'domain/usecases/auth/eliminar_cuenta_usecase.dart';
 import 'domain/usecases/auth/google_signin_usecase.dart';
 import 'domain/usecases/auth/login_usecase.dart';
 import 'domain/usecases/auth/logout_usecase.dart';
 import 'domain/usecases/auth/recuperar_password_usecase.dart';
 import 'domain/usecases/auth/register_usecase.dart';
 import 'domain/usecases/auth/verificar_email_usecase.dart';
-import 'domain/usecases/auth/verificar_telefono_usecase.dart';
 import 'domain/usecases/auth/vincular_password_usecase.dart';
 import 'domain/usecases/chatbot/enviar_audio_usecase.dart';
 import 'domain/usecases/chatbot/enviar_mensaje_usecase.dart';
@@ -116,8 +116,8 @@ void setupLocator() {
     ..registerLazySingleton(() => ActualizarPerfilUseCase(getIt()))
     ..registerLazySingleton(() => VincularPasswordUseCase(getIt()))
     ..registerLazySingleton(() => VerificarEmailUseCase(getIt()))
-    ..registerLazySingleton(() => VerificarTelefonoUseCase(getIt()))
     ..registerLazySingleton(() => RecuperarPasswordUseCase(getIt()))
+    ..registerLazySingleton(() => EliminarCuentaUseCase(getIt()))
     // Hosteria
     ..registerLazySingleton(() => GetHosteriasUseCase(getIt()))
     ..registerLazySingleton(() => GetHosteriaDetailUseCase(getIt()))
@@ -152,8 +152,8 @@ void setupLocator() {
         actualizarPerfilUseCase: getIt(),
         vincularPasswordUseCase: getIt(),
         verificarEmailUseCase: getIt(),
-        verificarTelefonoUseCase: getIt(),
         recuperarPasswordUseCase: getIt(),
+        eliminarCuentaUseCase: getIt(),
         authRepository: getIt(),
       ),
     )

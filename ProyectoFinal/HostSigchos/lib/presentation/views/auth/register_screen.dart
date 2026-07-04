@@ -392,11 +392,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: (val) =>
                             Validators.identificacion(val, _tipoIdentificacion, _selectedCountry ?? 'Ecuador'),
                         inputFormatters: _tipoIdentificacion == 'Cédula'
-                            ? [FilteringTextInputFormatter.digitsOnly]
+                            ? [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ]
                             : [
                                 FilteringTextInputFormatter.allow(
                                   RegExp('[a-zA-Z0-9]'),
                                 ),
+                                LengthLimitingTextInputFormatter(15),
                               ],
                       ),
                     ),
@@ -462,6 +466,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: Validators.telefono,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                            _selectedPhonePrefix == '+593' ? 10 : 15,
+                          ),
                         ],
                       ),
                     ),

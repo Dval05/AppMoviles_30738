@@ -360,11 +360,15 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                         validator: (val) =>
                             Validators.identificacion(val, _tipoIdentificacion),
                         inputFormatters: _tipoIdentificacion == 'Cédula'
-                            ? [FilteringTextInputFormatter.digitsOnly]
+                            ? [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ]
                             : [
                                 FilteringTextInputFormatter.allow(
                                   RegExp('[a-zA-Z0-9]'),
                                 ),
+                                LengthLimitingTextInputFormatter(15),
                               ],
                       ),
                     ),
@@ -430,6 +434,9 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                         validator: Validators.telefono,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                            _selectedPhonePrefix == '+593' ? 10 : 15,
+                          ),
                         ],
                       ),
                     ),

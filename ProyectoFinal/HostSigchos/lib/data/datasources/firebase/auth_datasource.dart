@@ -312,65 +312,7 @@ class AuthDataSource {
     }
   }
 
-  /// Enviar código SMS al teléfono
-  Future<void> enviarCodigoTelefono({
-    required String telefono,
-    required Function(String verificationId) onCodeSent,
-    required Function(String error) onError,
-  }) async {
-    try {
-      await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: telefono,
-        verificationCompleted: (credential) async {
-          // Auto-verificación en Android (lectura automática de SMS)
-          try {
-            final user = _firebaseAuth.currentUser;
-            if (user != null) {
-              await user.linkWithCredential(credential);
-            }
-          } catch (e) {
-            debugPrint('Error en auto-verificación: $e');
-          }
-        },
-        verificationFailed: (e) {
-          onError(e.message ?? 'Error al enviar código SMS');
-        },
-        codeSent: (verificationId, resendToken) {
-          onCodeSent(verificationId);
-        },
-        codeAutoRetrievalTimeout: (verificationId) {
-          // Timeout de auto-lectura del SMS
-          debugPrint('Timeout de auto-lectura SMS: $verificationId');
-        },
-        timeout: const Duration(seconds: 60),
-      );
-    } catch (e) {
-      throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
-    }
-  }
 
-  /// Verificar código SMS ingresado por el usuario
-  Future<bool> verificarCodigoTelefono({
-    required String verificationId,
-    required String code,
-  }) async {
-    try {
-      final credential = auth.PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: code,
-      );
-
-      final user = _firebaseAuth.currentUser;
-      if (user != null) {
-        // Vincular teléfono al usuario existente
-        await user.linkWithCredential(credential);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
-    }
-  }
 
   /// Verificar si el usuario actual solo tiene proveedor Google (sin password)
   Future<bool> esUsuarioSoloGoogle() async {
@@ -379,5 +321,38 @@ class AuthDataSource {
 
     final providers = user.providerData.map((p) => p.providerId).toList();
     return providers.contains('google.com') && !providers.contains('password');
+  }
+
+  /// Eliminar cuenta (borrado lógico en Firestore y físico en Auth)
+  Future<void> eliminarCuenta() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) throw const AuthFailure('No hay usuario autenticado');
+
+      // 1. Borrado lógico en Firestore
+      final docRef = _firestore.collection(FirestorePaths.usuarios).doc(user.uid);
+      await docRef.update({
+        'nombre': 'Usuario Eliminado',
+        'email': 'eliminado_${user.uid}@hostsigchos.com',
+        'telefono': FieldValue.delete(),
+        'cedula': FieldValue.delete(),
+        'edad': FieldValue.delete(),
+        'fechaNacimiento': FieldValue.delete(),
+        'fotoUrl': FieldValue.delete(),
+        'ubicacion': FieldValue.delete(),
+        'estado': 'eliminado',
+      });
+
+      // 2. Eliminar de Firebase Auth
+      await user.delete();
+
+      // 3. Cerrar sesión en Google Sign In por si acaso
+      _googleSignIn.signOut().catchError((_) => null);
+    } catch (e) {
+      if (e is auth.FirebaseAuthException && e.code == 'requires-recent-login') {
+        throw const AuthFailure('Por seguridad, cierra sesión, vuelve a ingresar e intenta nuevamente.');
+      }
+      throw AuthFailure(ErrorHandler.getFriendlyMessage(e));
+    }
   }
 }

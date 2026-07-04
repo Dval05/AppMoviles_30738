@@ -93,7 +93,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                         } catch (_) {}
                       }
                       
-                      const phone = AppConstants.whatsappSupportNumber;
+                      final phone = AppConstants.whatsappSupportNumber;
                       final message = 'Hola, soy $nombreCliente. Me comunico a través de la aplicación HostSigchos para confirmar mi reserva con el código $reservaId para el hospedaje $hosteria por un total de \$${total.toStringAsFixed(2)}.';
                       final url = Uri.parse('https://wa.me/$phone?text=${Uri.encodeComponent(message)}');
                       

@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:provider/provider.dart';
 
 
@@ -43,6 +44,9 @@ void main() async {
 
   // Inyección de Dependencias (DI)
   setupLocator();
+
+  // Re-inyectar usuario tester (ejecución temporal)
+  _crearTesterDeGoogle();
 
 
   // Inicializar servicio de notificaciones usando GetIt
@@ -101,5 +105,43 @@ class HostSigchosApp extends StatelessWidget {
       initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,
     );
+  }
+}
+
+// FUNCION TEMPORAL
+Future<void> _crearTesterDeGoogle() async {
+  try {
+    const email = 'google.tester@hostsigchos.com';
+    const password = 'Tester12345!';
+    
+    // Crear el usuario en Authentication
+    final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    
+    final newUid = userCredential.user!.uid;
+    
+    await FirebaseFirestore.instanceFor(app: Firebase.app(), databaseId: 'hostsigchos')
+        .collection('usuarios').doc(newUid).set({
+      'nombre': 'Google Tester',
+      'email': email,
+      'cedula': '1700000000',
+      'telefono': '+593999999999',
+      'fechaNacimiento': Timestamp.fromDate(DateTime(1990, 1, 1)),
+      'fechaRegistro': FieldValue.serverTimestamp(),
+      'fotoUrl': null,
+      'ubicacion': 'Google Play',
+      'idioma': 'es',
+    });
+    
+    debugPrint('=== USUARIO TESTER RE-CREADO EXITOSAMENTE ===');
+    debugPrint('Email: $email');
+    debugPrint('Password: $password');
+    debugPrint('UID: $newUid');
+  } on FirebaseAuthException catch (e) {
+    debugPrint('=== ERROR CREANDO TESTER: ${e.code} - ${e.message} ===');
+  } catch (e) {
+    debugPrint('=== ERROR DESCONOCIDO CREANDO TESTER: $e ===');
   }
 }

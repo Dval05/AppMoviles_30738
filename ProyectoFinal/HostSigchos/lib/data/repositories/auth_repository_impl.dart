@@ -97,32 +97,15 @@ class AuthRepositoryImpl implements AuthRepository {
     return _authDataSource.enviarCorreoRecuperacionPassword(email);
   }
 
-  @override
-  Future<void> enviarCodigoTelefono({
-    required String telefono,
-    required Function(String verificationId) onCodeSent,
-    required Function(String error) onError,
-  }) async {
-    return _authDataSource.enviarCodigoTelefono(
-      telefono: telefono,
-      onCodeSent: onCodeSent,
-      onError: onError,
-    );
-  }
 
-  @override
-  Future<bool> verificarCodigoTelefono({
-    required String verificationId,
-    required String code,
-  }) async {
-    return _authDataSource.verificarCodigoTelefono(
-      verificationId: verificationId,
-      code: code,
-    );
-  }
 
   @override
   Future<bool> esUsuarioSoloGoogle() async {
     return _authDataSource.esUsuarioSoloGoogle();
+  }
+
+  @override
+  Future<void> eliminarCuenta() async {
+    return _authDataSource.eliminarCuenta();
   }
 }

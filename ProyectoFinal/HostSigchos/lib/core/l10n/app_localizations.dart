@@ -260,11 +260,17 @@ abstract class AppLocalizations {
   /// **'Buscar hosterías...'**
   String get searchHosterias;
 
-  /// No description provided for @services.
+  /// No description provided for @settings.
   ///
   /// In es, this message translates to:
-  /// **'Servicios'**
-  String get services;
+  /// **'Ajustes'**
+  String get settings;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Cuenta'**
+  String get deleteAccount;
 
   /// No description provided for @location.
   ///
@@ -1043,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportInfoText.
   ///
   /// In es, this message translates to:
-  /// **'Para soporte técnico, contacta a:\n\nEmail: soporte@hostsigchos.com\nTeléfono: +593 99 123 4567'**
+  /// **'Para soporte técnico, contacta a:'**
   String get supportInfoText;
 
   /// No description provided for @advancedFilters.
@@ -1769,7 +1775,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportInfo.
   ///
   /// In es, this message translates to:
-  /// **'Para soporte técnico, contacta a:\n\nEmail: andrade.dval@gmail.com\nWhatsApp: +593 93 918 5134'**
+  /// **'Para soporte técnico, contacta a:'**
   String get supportInfo;
 
   /// No description provided for @chatbotWelcome.

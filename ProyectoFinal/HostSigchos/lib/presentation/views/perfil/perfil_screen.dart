@@ -237,23 +237,23 @@ class PerfilScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(color: Colors.grey.shade200),
                                     ),
-                                    child: const Column(
+                                    child: Column(
                                       children: [
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Icon(Icons.email_outlined, size: 18, color: ColorSchemeApp.primaryGreen),
-                                            SizedBox(width: 8),
-                                            Text(AppConstants.supportEmail, style: TextStyle(fontWeight: FontWeight.w600, color: ColorSchemeApp.primaryGreen)),
+                                            const Icon(Icons.email_outlined, size: 18, color: ColorSchemeApp.primaryGreen),
+                                            const SizedBox(width: 8),
+                                            Text(AppConstants.supportEmail, style: const TextStyle(fontWeight: FontWeight.w600, color: ColorSchemeApp.primaryGreen)),
                                           ],
                                         ),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            Icon(Icons.phone_outlined, size: 18, color: ColorSchemeApp.primaryGreen),
-                                            SizedBox(width: 8),
-                                            Text('+${AppConstants.whatsappSupportNumber}', style: TextStyle(fontWeight: FontWeight.w600, color: ColorSchemeApp.primaryGreen)),
+                                            const Icon(Icons.phone_outlined, size: 18, color: ColorSchemeApp.primaryGreen),
+                                            const SizedBox(width: 8),
+                                            Text('+${AppConstants.whatsappSupportNumber}', style: const TextStyle(fontWeight: FontWeight.w600, color: ColorSchemeApp.primaryGreen)),
                                           ],
                                         ),
                                       ],
@@ -314,6 +314,48 @@ class PerfilScreen extends StatelessWidget {
             
             const SizedBox(height: 32),
             
+            // Botón de Eliminar Cuenta
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  final url = Uri.parse(AppConstants.accountDeletionUrl);
+                  try {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  } catch (e) {
+                    debugPrint('No se pudo abrir Solicitud de Eliminación');
+                  }
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.person_remove_outlined, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.deleteAccount,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.open_in_new, color: Colors.red, size: 18),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
             // Botón de Cerrar Sesión
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

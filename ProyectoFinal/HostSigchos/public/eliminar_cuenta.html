@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Políticas de Privacidad - HostSigchos</title>
+    <title>Eliminación de Cuenta - HostSigchos</title>
     <style>
         :root {
             --primary-green: #2B5E41;
@@ -175,15 +175,6 @@
             margin-bottom: 25px;
         }
 
-        .highlight-box {
-            background: rgba(43, 94, 65, 0.05);
-            border-left: 4px solid var(--primary-green);
-            padding: 20px;
-            border-radius: 0 12px 12px 0;
-            margin: 25px 0;
-            font-style: italic;
-        }
-
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             .container {
@@ -206,8 +197,8 @@
 <body>
     <div class="header-wrapper">
         <div class="header">
-            <h1>Políticas de Privacidad</h1>
-            <p>Última actualización: 2 de Julio de 2026</p>
+            <h1>Solicitud de Eliminación de Cuenta</h1>
+            <p>Procedimiento y políticas de retención de datos</p>
         </div>
     </div>
     
@@ -215,33 +206,43 @@
 
         <div class="shield-icon">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <!-- Icono de usuario con un tachado/escudo -->
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/>
             </svg>
         </div>
 
-        <h2>1. Información que Recopilamos</h2>
-        <p>Valoramos su privacidad. Recopilamos la información que usted nos proporciona directamente de manera consciente cuando se registra en HostSigchos, incluyendo su nombre, dirección de correo electrónico, número de teléfono y fotografía de perfil.</p>
+        <div class="warning-box">
+            <p style="margin: 0; color: #856404;"><strong>Importante:</strong> La eliminación de tu cuenta es una acción irreversible. Perderás el acceso a la aplicación y no podrás recuperar tu perfil.</p>
+        </div>
 
-        <h2>2. Uso Estratégico de la Información</h2>
-        <p>Utilizamos la información recopilada exclusivamente para brindarle la mejor experiencia:</p>
+        <h2>1. Proceso de Eliminación</h2>
+        <p>En HostSigchos respetamos tu derecho a la privacidad y el control sobre tus datos personales. Para solicitar la eliminación definitiva de tu cuenta y los datos asociados a ella, debes seguir estos pasos:</p>
         <ul>
-            <li>Crear y gestionar su perfil de forma segura.</li>
-            <li>Procesar y confirmar sus reservas en las hosterías de Sigchos.</li>
-            <li>Comunicarnos con usted respecto a sus reservas (por ejemplo, vía WhatsApp oficial).</li>
-            <li>Mejorar continuamente nuestros servicios y la experiencia en la aplicación móvil.</li>
+            <li>Envíanos un correo electrónico a la dirección de soporte que indicamos al final de esta página.</li>
+            <li>El asunto del correo debe ser exactamente: <strong>"Solicitud de Eliminación de Cuenta"</strong>.</li>
+            <li>El correo debe enviarse desde la misma dirección de correo electrónico que utilizaste para registrarte en la aplicación de HostSigchos.</li>
         </ul>
 
-        <h2>3. Privacidad y Terceros</h2>
-        <p>Sus datos personales solo se comparten con los administradores de las hosterías en las que usted decide realizar una reserva, con el único propósito de gestionar dicha reserva. <strong>Garantizamos que no vendemos ni alquilamos su información personal a terceros bajo ninguna circunstancia.</strong></p>
+        <h2>2. Tratamiento de tus Datos Personales</h2>
+        <p>Una vez recibida y verificada tu solicitud, procederemos con un proceso de <strong>borrado lógico y ofuscación</strong>. Esto garantiza la protección de tu identidad mientras mantenemos la integridad técnica del sistema:</p>
+        <ul>
+            <li>Tu acceso (credenciales de inicio de sesión) a la aplicación será revocado y destruido permanentemente de nuestro sistema de autenticación (Firebase Auth).</li>
+            <li>Tus datos personales identificables (nombre, correo electrónico, teléfono, cédula y fotografía de perfil) serán borrados o sobrescritos de nuestra base de datos.</li>
+            <li>No recibirás futuras comunicaciones, boletines, notificaciones ni correos promocionales por nuestra parte.</li>
+        </ul>
 
-        <h2>4. Seguridad Avanzada de Datos</h2>
-        <p>Tomamos medidas tecnológicas rigurosas para proteger su información personal. Utilizamos los servicios de Google Firebase, que ofrecen encriptación de extremo a extremo y altos estándares de seguridad en la nube (ISO 27001).</p>
+        <h2>3. Retención de Datos por Seguridad (Borrado Lógico)</h2>
+        <p>Para cumplir con normativas legales, fiscales y de prevención de fraudes de las hosterías asociadas, mantendremos de forma completamente anónima el siguiente historial:</p>
+        <ul>
+            <li>Los registros de transacciones y reservas pasadas que hayas realizado quedarán almacenados bajo un identificador anónimo (ej. "Usuario Eliminado").</li>
+            <li>Esta información retenida no podrá volver a vincularse a ti de ninguna manera.</li>
+        </ul>
 
-        <h2>5. Control Total Sobre Sus Datos</h2>
-        <p>Usted mantiene el control. Puede acceder, actualizar o eliminar la información de su perfil directamente desde la aplicación. Si desea eliminar su cuenta por completo y borrar su huella digital, nuestro sistema procesará su solicitud de manera inmediata y permanente.</p>
+        <h2>4. Tiempos de Respuesta</h2>
+        <p>Nos comprometemos a procesar tu solicitud de eliminación de cuenta en un plazo máximo de <strong>7 a 14 días hábiles</strong> desde la recepción del correo electrónico confirmando tu identidad.</p>
 
-        <h2>6. Contacto Directo</h2>
-        <p>Para dudas sobre cómo manejamos su privacidad, nuestro equipo de soporte está disponible:</p>
+        <h2>5. Solicitar la Eliminación Ahora</h2>
+        <p>Para iniciar el proceso inmediatamente, por favor contáctanos a nuestro equipo de soporte:</p>
         <div style="text-align: center;">
             <span class="contact-email">andrade.dval@gmail.com</span>
         </div>
