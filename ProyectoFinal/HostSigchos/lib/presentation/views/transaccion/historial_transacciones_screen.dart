@@ -6,16 +6,16 @@ import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../themes/esquema_color.dart';
 import '../../viewmodels/auth_viewmodel.dart';
-import '../../viewmodels/pago_viewmodel.dart';
+import '../../viewmodels/reserva_viewmodel.dart';
 
-class HistorialPagosScreen extends StatefulWidget {
-  const HistorialPagosScreen({super.key});
+class HistorialTransaccionesScreen extends StatefulWidget {
+  const HistorialTransaccionesScreen({super.key});
 
   @override
-  State<HistorialPagosScreen> createState() => _HistorialPagosScreenState();
+  State<HistorialTransaccionesScreen> createState() => _HistorialTransaccionesScreenState();
 }
 
-class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
+class _HistorialTransaccionesScreenState extends State<HistorialTransaccionesScreen> {
   final dateFormatter = DateFormat('dd/MM/yyyy HH:mm');
 
   @override
@@ -24,24 +24,27 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final user = context.read<AuthViewModel>().usuarioActual;
       if (user != null) {
-        context.read<PagoViewModel>().cargarHistorial(user.id);
+        context.read<ReservaViewModel>().cargarHistorial(user.id);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<PagoViewModel>();
-
+    final viewModel = context.watch<ReservaViewModel>();
     final l10n = AppLocalizations.of(context)!;
+
+    // Solo mostraremos como "transacciones" a aquellas reservas que no hayan sido canceladas,
+    // o puedes mostrarlas todas con sus respectivos colores. Aquí mostraremos todas.
+    final transacciones = viewModel.reservas;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.paymentHistory),
+        title: Text(l10n.paymentHistory), // 'Historial de Transacciones'
       ),
       body: viewModel.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : viewModel.pagos.isEmpty
+          : transacciones.isEmpty
           ? Center(
               child: Text(
                 l10n.noPaymentHistory,
@@ -57,10 +60,25 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: viewModel.pagos.length,
+                itemCount: transacciones.length,
                 itemBuilder: (context, index) {
-                  final pago = viewModel.pagos[index];
-                  final isSuccess = pago.estado == 'completado';
+                  final transaccion = transacciones[index];
+                  final isSuccess = transaccion.estado == 'confirmada';
+                  final isCancelled = transaccion.estado == 'cancelada';
+
+                  Color statusColor = Colors.orange;
+                  IconData statusIcon = Icons.hourglass_bottom;
+                  String estadoTexto = 'Pendiente';
+
+                  if (isSuccess) {
+                    statusColor = ColorSchemeApp.primaryGreen;
+                    statusIcon = Icons.check_circle;
+                    estadoTexto = 'Confirmada';
+                  } else if (isCancelled) {
+                    statusColor = Colors.red;
+                    statusIcon = Icons.cancel;
+                    estadoTexto = 'Cancelada';
+                  }
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
@@ -71,19 +89,10 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: isSuccess
-                                  ? ColorSchemeApp.lightGreen.withValues(
-                                      alpha: 0.2,
-                                    )
-                                  : Colors.red.withValues(alpha: 0.2),
+                              color: statusColor.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
-                              isSuccess ? Icons.check_circle : Icons.error,
-                              color: isSuccess
-                                  ? ColorSchemeApp.primaryGreen
-                                  : Colors.red,
-                            ),
+                            child: Icon(statusIcon, color: statusColor),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -91,7 +100,7 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${l10n.reference}: ${pago.id.substring(0, 8)}',
+                                  '${l10n.reference}: ${transaccion.id.substring(0, 8).toUpperCase()}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -99,7 +108,7 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  dateFormatter.format(pago.fechaPago),
+                                  dateFormatter.format(transaccion.fechaCreacion),
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontSize: 14,
@@ -107,9 +116,10 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${l10n.method}: ${pago.metodo}',
-                                  style: const TextStyle(
-                                    color: Colors.black54,
+                                  'Estado: $estadoTexto',
+                                  style: TextStyle(
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w600,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -117,7 +127,7 @@ class _HistorialPagosScreenState extends State<HistorialPagosScreen> {
                             ),
                           ),
                           Text(
-                            CurrencyFormatter.formatear(pago.monto),
+                            CurrencyFormatter.formatear(transaccion.precioTotal),
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,

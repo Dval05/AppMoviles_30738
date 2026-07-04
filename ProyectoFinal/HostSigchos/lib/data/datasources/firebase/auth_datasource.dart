@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../core/constants/env.dart';
 import '../../../core/constants/firestore_paths.dart';
 import '../../../core/errors/failures.dart';
 import '../../../core/utils/error_handler.dart';
@@ -107,7 +107,7 @@ class AuthDataSource {
 
         // Inicializar Google Sign-In con el Web Client ID
         if (!_isGoogleSignInInitialized) {
-          final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
+          final webClientId = Env.googleWebClientId;
           debugPrint('[GoogleAuth] Inicializando con serverClientId: '
               '${webClientId.isNotEmpty ? '${webClientId.substring(0, 10)}...' : 'VACÍO'}');
           await _googleSignIn.initialize(

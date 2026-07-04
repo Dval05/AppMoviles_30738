@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/hosteria.dart';
 import '../../../themes/esquema_color.dart';
@@ -177,10 +177,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CircleAvatar(
                             radius: 24,
                             backgroundColor: ColorSchemeApp.primaryGreen.withValues(alpha: 0.1),
-                            backgroundImage: authVm.usuarioActual?.fotoUrl != null
-                                ? NetworkImage(authVm.usuarioActual!.fotoUrl!)
+                            backgroundImage: (authVm.usuarioActual?.fotoUrl != null && authVm.usuarioActual!.fotoUrl!.isNotEmpty)
+                                ? CachedNetworkImageProvider(authVm.usuarioActual!.fotoUrl!)
                                 : null,
-                            child: authVm.usuarioActual?.fotoUrl == null
+                            child: (authVm.usuarioActual?.fotoUrl == null || authVm.usuarioActual!.fotoUrl!.isEmpty)
                                 ? Text(
                                     userName[0].toUpperCase(),
                                     style: const TextStyle(

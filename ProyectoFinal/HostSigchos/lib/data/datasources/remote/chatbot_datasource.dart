@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:http/http.dart' as http;
+
+import '../../../core/constants/env.dart';
 
 class ChatbotDataSource {
   static const String _systemPrompt = r'''
@@ -45,8 +47,8 @@ REGLAS IMPORTANTES DEL SISTEMA:
     Map<String, dynamic> contexto, {
     bool isAudioText = false,
   }) async {
-    final apiKey = dotenv.env['GROQ_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
+    final apiKey = Env.groqApiKey;
+    if (apiKey.isEmpty) {
       throw Exception('Falta GROQ_API_KEY en el .env');
     }
 
@@ -92,8 +94,8 @@ REGLAS IMPORTANTES DEL SISTEMA:
     String filePath,
     Map<String, dynamic> contexto,
   ) async {
-    final apiKey = dotenv.env['GROQ_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
+    final apiKey = Env.groqApiKey;
+    if (apiKey.isEmpty) {
       throw Exception('Falta GROQ_API_KEY en el .env');
     }
 

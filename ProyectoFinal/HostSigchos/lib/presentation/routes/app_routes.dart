@@ -12,8 +12,6 @@ import '../views/landing_screen.dart';
 import '../views/main/main_screen.dart';
 import '../views/mapa/mapa_screen.dart';
 import '../views/notificaciones/notificaciones_screen.dart';
-import '../views/pago/historial_pagos_screen.dart';
-
 import '../views/perfil/editar_perfil_screen.dart';
 import '../views/perfil/perfil_screen.dart';
 import '../views/reserva/checkout_reserva_screen.dart';
@@ -22,6 +20,7 @@ import '../views/reserva/crear_reserva_screen.dart';
 import '../views/reserva/habitaciones_list_screen.dart';
 import '../views/reserva/historial_reservas_screen.dart';
 import '../views/splash_screen.dart';
+import '../views/transaccion/historial_transacciones_screen.dart';
 
 class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -41,7 +40,7 @@ class AppRoutes {
   static const String confirmacion = '/confirmacion';
 
   static const String historialReservas = '/historial-reservas';
-  static const String historialPagos = '/historial-pagos';
+  static const String historialTransacciones = '/historial-transacciones';
   static const String mapa = '/mapa';
   static const String perfil = '/perfil';
   static const String editarPerfil = '/editar-perfil';
@@ -64,7 +63,7 @@ class AppRoutes {
     checkout: (context) => const CheckoutReservaScreen(),
     confirmacion: (context) => const ConfirmacionReservaScreen(),
     historialReservas: (context) => const HistorialReservasScreen(),
-    historialPagos: (context) => const HistorialPagosScreen(),
+    historialTransacciones: (context) => const HistorialTransaccionesScreen(),
 
     mapa: (context) => const MapaScreen(),
     notificaciones: (context) => const NotificacionesScreen(),

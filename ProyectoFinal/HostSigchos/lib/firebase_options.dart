@@ -3,7 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'core/constants/env.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -39,7 +39,7 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_WEB'] ?? '',
+    apiKey: Env.firebaseApiKeyWeb,
     appId: '1:344844210027:web:891214205c4a7d50b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -49,14 +49,14 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get android => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID'] ?? '',
+    apiKey: Env.firebaseApiKeyAndroid,
     appId: '1:344844210027:android:f08802e0a185fd07b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
     storageBucket: 'hostsigchos.firebasestorage.app',
   );
   static FirebaseOptions get ios => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_IOS'] ?? '',
+    apiKey: Env.firebaseApiKeyIos,
     appId: '1:344844210027:ios:c797a49711a50881b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.frontend',
   );
   static FirebaseOptions get macos => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_IOS'] ?? '',
+    apiKey: Env.firebaseApiKeyIos,
     appId: '1:344844210027:ios:c797a49711a50881b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get windows => FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_API_KEY_WEB'] ?? '',
+    apiKey: Env.firebaseApiKeyWeb,
     appId: '1:344844210027:web:bbcf8ca3e19e2054b2c62e',
     messagingSenderId: '344844210027',
     projectId: 'hostsigchos',

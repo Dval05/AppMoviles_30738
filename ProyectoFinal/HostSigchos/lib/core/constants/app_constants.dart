@@ -1,4 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'env.dart';
 
 /// Constantes generales de la aplicación HostSigchos
 class AppConstants {
@@ -6,8 +6,14 @@ class AppConstants {
   static const String appName = 'HostSigchos';
   static const String appTagline = 'Reservas en Sigchos';
 
-  // API Keys (cargadas desde .env)
-  static String get googleMapsApiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+  // Support & URLs
+  static const String whatsappSupportNumber = '593939185134';
+  static const String supportEmail = 'soporte@hostsigchos.com';
+  static const String termsUrl = 'https://hostsigchos.web.app/terminos.html';
+  static const String privacyUrl = 'https://hostsigchos.web.app/politicas.html';
+
+  // API Keys (cargadas desde env.dart ofuscado)
+  static String get googleMapsApiKey => Env.googleMapsApiKey;
 
   // Google Geocoding API
   static const String geocodingBaseUrl =

@@ -247,6 +247,7 @@ class _CheckoutReservaScreenState extends State<CheckoutReservaScreen> {
                           GradientButton(
                             text: AppLocalizations.of(context)!.confirmAllBookings,
                             onPressed: _confirmarLoteReservas,
+                            isLoading: _isProcessing,
                           ),
                         ],
                       ),

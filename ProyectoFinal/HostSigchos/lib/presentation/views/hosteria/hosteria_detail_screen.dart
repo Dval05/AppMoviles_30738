@@ -448,7 +448,7 @@ class _HosteriaDetailScreenState extends State<HosteriaDetailScreen> {
                                       children: [
                                         Text(resena.nombreUsuario, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                         Text(
-                                          r'Hace ${DateTime.now().difference(resena.fecha).inDays} días',
+                                          'Hace ${DateTime.now().difference(resena.fecha).inDays} días',
                                           style: TextStyle(color: Colors.grey[500], fontSize: 12),
                                         ),
                                       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/constants/app_constants.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/reserva.dart';
@@ -92,7 +93,7 @@ class ConfirmacionReservaScreen extends StatelessWidget {
                         } catch (_) {}
                       }
                       
-                      const phone = '593939185134';
+                      const phone = AppConstants.whatsappSupportNumber;
                       final message = 'Hola, soy $nombreCliente. Me comunico a través de la aplicación HostSigchos para confirmar mi reserva con el código $reservaId para el hospedaje $hosteria por un total de \$${total.toStringAsFixed(2)}.';
                       final url = Uri.parse('https://wa.me/$phone?text=${Uri.encodeComponent(message)}');
                       

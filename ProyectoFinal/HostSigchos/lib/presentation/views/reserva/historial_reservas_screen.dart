@@ -9,7 +9,6 @@ import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/hosteria_viewmodel.dart';
-import '../../viewmodels/pago_viewmodel.dart';
 import '../../viewmodels/reserva_viewmodel.dart';
 
 class HistorialReservasScreen extends StatefulWidget {
@@ -28,9 +27,7 @@ class _HistorialReservasScreenState extends State<HistorialReservasScreen> {
       final user = context.read<AuthViewModel>().usuarioActual;
       if (user != null) {
         context.read<ReservaViewModel>().cargarHistorial(user.id);
-        // Cargar historial de pagos para verificar expirados
-        context.read<PagoViewModel>().cargarHistorial(user.id);
-        // Verificar y notificar pagos pendientes
+        // Verificar y notificar reservas pendientes
         _verificarPagosPendientes(user.id);
       }
     });
@@ -81,12 +78,7 @@ class _HistorialReservasScreenState extends State<HistorialReservasScreen> {
                 final user = context.read<AuthViewModel>().usuarioActual;
                 if (user != null) {
                   await viewModel.cargarHistorial(user.id);
-                  // También refrescar pagos para verificar expirados
-                  if (context.mounted) {
-                    await context.read<PagoViewModel>().cargarHistorial(
-                      user.id,
-                    );
-                  }
+
                 }
               },
               child: ListView.builder(
