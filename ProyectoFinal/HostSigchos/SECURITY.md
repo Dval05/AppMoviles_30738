@@ -24,7 +24,7 @@ Esto asegura que los nombres de las clases, métodos y variables en la capa nati
 
 ## 2. Ofuscamiento de Variables de Entorno (API Keys)
 
-Anteriormente, las claves de Firebase, Stripe y Groq estaban en el archivo `.env` que se empaquetaba como un `asset` de texto plano. Esto es un fallo crítico de seguridad porque el APK es un simple archivo `.zip` que puede extraerse fácilmente.
+Anteriormente, las claves de Firebase y Groq estaban en el archivo `.env` que se empaquetaba como un `asset` de texto plano. Esto es un fallo crítico de seguridad porque el APK es un simple archivo `.zip` que puede extraerse fácilmente.
 
 **La Solución Implementada:**
 Implementamos la librería `envied` y `envied_generator`.
@@ -48,3 +48,8 @@ En lugar de mostrar excepciones crudas de bases de datos que revelan informació
 > *"Se ha producido un error interno. Inténtalo en unos minutos."*
 
 Esto cumple el doble propósito de mejorar la Experiencia de Usuario (UX) y mitigar fugas de información técnica (Information Disclosure).
+
+## 5. Prevención de Inserción de Datos Basura (Test Users)
+
+Se ha realizado una revisión y limpieza global del código para evitar la inyección automática de usuarios o datos quemados (como cuentas *tester*) en las bases de datos de producción durante el arranque de la aplicación.
+Toda la información sensible de contacto (correos de soporte y teléfonos) también ha sido extraída de la interfaz y configurada de forma segura a través de `Envied`.

@@ -15,10 +15,24 @@ service cloud.firestore {
 
     // Colección: Usuarios
     match /usuarios/{userId} {
-      // Un usuario solo puede leer y modificar su propio perfil
-      allow read, update, delete: if isOwner(userId);
+      // Un usuario solo puede modificar su propio perfil, pero los propietarios necesitan leerlo para ver reservas
+      allow read: if isAuthenticated();
+      allow update, delete: if isOwner(userId);
       // Cualquiera puede crear un perfil si está autenticado (Registro)
       allow create: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Colección: Propietarios
+    match /propietarios/{propietarioId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(propietarioId);
+    }
+
+    // Colección: Administradores
+    match /administradores/{adminEmail} {
+      allow read: if isAuthenticated();
+      // Solo el Super Admin (por correo) puede crear o eliminar administradores
+      allow write: if isAuthenticated() && request.auth.token.email == 'andrade.dval@gmail.com';
     }
 
     // Colección: Hosterias (Catálogo)
@@ -34,13 +48,17 @@ service cloud.firestore {
       // Disponibles para lectura pública
       allow read: if true;
       
-      // Permitimos actualización de 'ultimaReservaActiva' para las transacciones atómicas
-      allow update: if isAuthenticated() 
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ultimaReservaActiva'])
-                    && request.resource.data.ultimaReservaActiva == request.time;
+      // Permitimos actualización de propietarios y transacciones atómicas
+      allow update: if isAuthenticated();
                     
       // Bloqueamos creación/borrado (solo panel admin)
       allow create, delete: if false;
+    }
+    
+    // Colección: Promociones
+    match /promociones/{promoId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
     }
 
     // Colección: Reservas
@@ -58,9 +76,12 @@ service cloud.firestore {
                     && (request.resource.data.estado == 'Pendiente' || request.resource.data.estado == 'pendiente');
                     
       // Los usuarios pueden actualizar el estado de sus reservas a 'Cancelada' o 'en_revision' (cuando van a WhatsApp)
-      allow update: if isOwner(resource.data.usuarioId)
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado'])
-                    && (request.resource.data.estado == 'Cancelada' || request.resource.data.estado == 'cancelada' || request.resource.data.estado == 'en_revision' || request.resource.data.estado == 'En_revision' || request.resource.data.estado == 'Pendiente' || request.resource.data.estado == 'pendiente');
+      // Los propietarios (quienes existen en la coleccion propietarios) pueden actualizar el estado a 'confirmada' o 'cancelada'
+      allow update: if (isOwner(resource.data.usuarioId)
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado'])
+                        && (request.resource.data.estado == 'Cancelada' || request.resource.data.estado == 'cancelada' || request.resource.data.estado == 'en_revision' || request.resource.data.estado == 'En_revision' || request.resource.data.estado == 'Pendiente' || request.resource.data.estado == 'pendiente'))
+                    || (exists(/databases/$(database)/documents/propietarios/$(request.auth.uid))
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado']));
                     
       // No se pueden borrar las reservas (quedan en historial)
       allow delete: if false;

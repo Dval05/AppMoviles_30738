@@ -1,16 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, AlertCircle } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 import './LoginPage.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, user, role } = useAppContext();
 
-  const handleSubmit = (e) => {
+  // If already logged in, redirect
+  useEffect(() => {
+    if (user) {
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, role, navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+    setLoading(true);
+    
+    const result = await login(email, password);
+    if (result.success) {
+      if (result.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } else {
+      setError(result.error || 'Ocurrió un error al iniciar sesión.');
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -26,15 +55,23 @@ const LoginPage = () => {
             <p>Ingresa para administrar tu hostería</p>
           </div>
 
+          {error && (
+            <div className="error-message" style={{ color: '#dc3545', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', padding: '10px', backgroundColor: 'rgba(220,53,69,0.1)', borderRadius: '8px' }}>
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="login-form">
             <div className="input-group">
-              <label className="input-label">Nombre de la Hostería</label>
+              <label htmlFor="email" className="input-label">Correo Electrónico</label>
               <div className="input-with-icon">
                 <Mail className="input-icon" size={20} />
                 <input 
-                  type="text" 
+                  id="email"
+                  type="email" 
                   className="input-field" 
-                  placeholder="Ej: Hostería San José"
+                  placeholder="Ej: propietario@hosteria.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -43,10 +80,13 @@ const LoginPage = () => {
             </div>
 
             <div className="input-group">
-              <label className="input-label">Contraseña</label>
+              <label htmlFor="password" className="input-label">
+                Contraseña
+              </label>
               <div className="input-with-icon">
                 <Lock className="input-icon" size={20} />
                 <input 
+                  id="password"
                   type="password" 
                   className="input-field" 
                   placeholder="••••••••"
@@ -58,16 +98,16 @@ const LoginPage = () => {
             </div>
 
             <div className="form-actions">
-              <a href="#" className="forgot-password">¿Olvidaste tu contraseña?</a>
+              <button type="button" className="forgot-password">¿Olvidaste tu contraseña?</button>
             </div>
 
-            <button type="submit" className="btn btn-primary login-btn">
-              Iniciar Sesión
+            <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </button>
           </form>
 
           <div className="login-footer">
-            <p>¿No tienes una cuenta? <Link to="/register" className="register-link">Regístrate</Link></p>
+            <p>¿No tienes una cuenta? Contacta con el administrador.</p>
           </div>
         </div>
       </div>

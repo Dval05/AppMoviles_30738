@@ -24,3 +24,12 @@ El proyecto está organizado en 3 capas principales:
 *   **Evitamos lógicas de negocio complejas en las vistas**. Los cálculos de precio, filtrado y sorteo son responsabilidad de los `ViewModels`.
 *   **Corrección de strings directos**: Se corrigieron errores visuales en las vistas (como la `r` raw string que causaba que las fechas se imprimieran mal en pantalla).
 *   **Dependencias de UI**: Promovimos el principio de "Single Responsibility" en las vistas, separando la instanciación de clases como `NotificationService` hacia `get_it`, asegurando el principio de Inversión de Dependencias (Dependency Inversion Principle).
+
+## 4. Internacionalización (i18n)
+
+*   Se implementó el paquete oficial `flutter_localizations` utilizando archivos `.arb` (Application Resource Bundle) estandarizados.
+*   **Separación Textual:** La UI no tiene strings quemados; todo el texto se inyecta mediante `AppLocalizations.of(context)`. Esto facilita la escalabilidad y permite soportar inglés (`en`) y español (`es`) dinámicamente.
+
+## 5. Mapas Libres e Independencia de Proveedores
+
+*   Se eliminó la dependencia cerrada de Google Maps API y Stripe, optando por proveedores abiertos como **OpenStreetMap (OSM)**, lo que reduce costos operativos y mejora el control arquitectónico del sistema.
