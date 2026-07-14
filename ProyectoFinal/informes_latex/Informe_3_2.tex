@@ -1,0 +1,224 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb,textcomp,textpos,mathtools}
+\usepackage{setspace}
+\usepackage{subcaption,caption}
+\usepackage{geometry}
+\usepackage{tikz}
+\usepackage{booktabs,array,tabularx}
+\usepackage{xurl}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{tcolorbox}
+\usepackage{multicol}
+\tcbuselibrary{listings,skins,breakable}
+
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{codeframe}{RGB}{200,200,200}
+\definecolor{verdeC}{RGB}{65,199,23}
+\definecolor{verdeO}{RGB}{28,168,31}
+
+\tcbset{colback=codebg,colframe=codeframe,arc=6pt,boxrule=0.8pt,breakable,left=6pt,right=6pt,top=6pt,bottom=6pt}
+
+\lstset{language=Java,basicstyle=\ttfamily\small,keywordstyle=\color{blue},commentstyle=\color{green!50!black},stringstyle=\color{red},showstringspaces=false,tabsize=2,breaklines=true,xleftmargin=15pt,framexleftmargin=15pt,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1}
+
+\setlength{\headheight}{14.5pt}
+
+\begin{document}
+
+% ═══════════════ PORTADA ═══════════════
+\begin{titlepage}
+\thispagestyle{empty}
+\newgeometry{left=2cm, right=1cm, top=2cm, bottom=2cm}
+\begin{tikzpicture}[overlay, fill opacity=0.7]
+    \fill[verdeC] (15,-27) rectangle (18,4);
+      \rotatebox{-90}{\fill[verdeO] (0,-9) rectangle (2,20);}
+\end{tikzpicture}
+\begin{spacing}{1.5}
+{\huge \bfseries UNIVERSIDAD DE LAS FUERZAS ARMADAS}\\[10pt]
+\centering
+\end{spacing}
+\vspace{1cm}
+\begin{minipage}{2cm}
+\hspace{0.5cm}\rotatebox{90}{\huge INGENIERIA EN SOFTWARE}
+\end{minipage}\hfill
+\begin{minipage}{9cm}
+    % \includegraphics[scale=0.5]{ImagenesLab1/1.png}
+\end{minipage}\hfill
+\begin{minipage}{3cm}
+\hspace{1cm}
+\vspace{1.cm}
+\begin{spacing}{4}
+ {\color{white}\fontsize{60}{70}\selectfont\bfseries 2\\0\\2\\6}
+\end{spacing}
+\end{minipage}
+
+\vspace{4cm}
+\begin{flushleft}
+{\LARGE
+\textbf{Estudiantes:}\\
+\hspace{1cm} Andrade Danna, Lainez Ricardo, \\
+\hspace{1cm} Santi Jeancarlo, Tufiño Erick\\[10pt]
+\textbf{Asignatura:} Desarrollo de Aplicaciones Móviles\\
+\textbf{Tema:} Informe 3.2 -- Avance Técnico de HostSigchos\\
+\textbf{NRC:} 30738\\
+\textbf{Docente:} Doris Karina Chicaiza Angamarca\\
+\textbf{Fecha:} \today\\}
+\end{flushleft}
+\end{titlepage}
+\restoregeometry
+\newpage
+
+\vspace{-2cm}
+\begin{minipage}[t]{0.6\textwidth}
+  \raggedright
+  \textbf{\LARGE Informe 3.2: Avance Técnico}
+\end{minipage}
+\begin{minipage}[ht]{0.2\textwidth}
+  \raggedleft
+  % \includegraphics[width=0.7\textwidth]{ImagenesLab1/selloCarrera.jpeg}
+\end{minipage}\vspace{-1cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Informe 3.2 -- Avance de Proyecto}}
+\fancyhead[R]{\small\textit{Andrade, Lainez, Santi, Tufiño}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\tableofcontents
+\newpage
+
+% ═══════════════ 1. AVANCE TÉCNICO ═══════════════
+\section{Avance técnico}
+A la fecha actual, el desarrollo del proyecto HostSigchos ha completado exitosamente su fase iterativa principal, logrando la estabilización de los siguientes módulos:
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Módulo de Autenticación:} Integración completa de Firebase Auth. Soporta inicio de sesión mediante Email/Contraseña, SSO con Google Sign-In, y validación biométrica local (Huella Dactilar y FaceID) usando Secure Storage.
+    \item \textbf{Exploración Turística:} Integración del mapa con OpenStreetMap y \textit{Reverse Geocoding}, permitiendo a los usuarios visualizar el catálogo de hosterías mediante marcadores de geolocalización.
+    \item \textbf{Flujo de Reservas:} Funcionalidad ``End-to-End'' habilitada, permitiendo al turista seleccionar fechas, habitaciones, agregar solicitudes al carrito y emitir una orden que queda con estado \texttt{pendiente}.
+    \item \textbf{Panel Web (Sincronización):} Los propietarios pueden visualizar de manera instantánea (en vivo) las nuevas órdenes de reserva que se emiten desde la aplicación móvil.
+\end{itemize}
+
+% ═══════════════ 2. ARQUITECTURA APLICADA ═══════════════
+\section{Arquitectura aplicada}
+Para asegurar un ciclo de vida extenso y facilitar el trabajo colaborativo del equipo, se implementó rigurosamente \textbf{Clean Architecture} en conjunto con el patrón \textbf{Model-View-ViewModel (MVVM)}. 
+
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Dominio Aislado:} Las reglas de negocio (Entidades puras y Casos de Uso) no tienen dependencias externas. Esto significa que los \texttt{UseCases} (ej. \texttt{CrearReservaUseCase}) no conocen si la base de datos es Firebase, SQL o una API REST.
+    \item \textbf{Patrón Repository:} Actúa como un ``puente'' entre la capa de Dominio (que define la interfaz) y la capa de Datos (que la implementa conectándose a Firebase). 
+    \item \textbf{Inyección de Dependencias:} Empleando el paquete \texttt{GetIt}, se inyectan las instancias de los \texttt{Repositories} a los \texttt{UseCases}, y estos a los \texttt{ViewModels}. Esto es vital para poder realizar pruebas de simulación (Mocks) en el futuro.
+\end{itemize}
+
+\vspace{0.5cm}
+\begin{center}
+    % ========================================================
+    % ⬇️ DIAGRAMA DE REPOSITORIES (PUENTE) ⬇️
+    % \includegraphics[width=0.9\textwidth]{../diagramas_plantuml/movil/04_puente_repository_pattern.png}
+    % ========================================================
+    \textit{[Espacio para: Diagrama Patrón Repository (04\_puente\_repository\_pattern.png)]}
+\end{center}
+
+% ═══════════════ 3. ESTRUCTURA DEL PROYECTO ═══════════════
+\section{Estructura del proyecto}
+El proyecto se dividió físicamente y de forma funcional en dos frentes, cada uno enfocado en un actor específico:
+
+\begin{enumerate}
+    \item \textbf{Aplicación Móvil (Flutter):} Consolidada en el directorio raíz. Contiene todo el front-end y lógica móvil dirigida exclusivamente al \textit{Turista}. Genera archivos .apk y .ipa.
+    \item \textbf{Plataforma Web (React JS):} Alojada en un directorio separado (\texttt{HostSigchos-Web/}). Dirigida al \textit{Propietario} y al \textit{Administrador del Sistema}. Implementa un \texttt{AppContext} global que escucha los sockets de Firebase.
+\end{enumerate}
+
+Ambos frentes de desarrollo son totalmente independientes en código, pero comparten la misma instancia y base de datos (Backend as a Service) en la nube mediante \texttt{Firebase Cloud Firestore}.
+
+\vspace{0.5cm}
+\begin{center}
+    % ========================================================
+    % ⬇️ DIAGRAMA DE COMPONENTES ⬇️
+    % \includegraphics[width=0.9\textwidth]{../diagramas_plantuml/general/01_arquitectura_componentes.png}
+    % ========================================================
+    \textit{[Espacio para: Estructura de Componentes (01\_arquitectura\_componentes.png)]}
+\end{center}
+
+% ═══════════════ 4. PANTALLAS DESARROLLADAS ═══════════════
+\section{Pantallas desarrolladas}
+Se completaron de forma satisfactoria más de 20 pantallas en la app móvil. Entre las más destacadas se encuentran:
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Splash \& Landing:} Verificación silenciosa de sesión previa (Auto-Login).
+    \item \textbf{Auth Flow:} Pantallas de registro completo, inicio con biometría (FaceID/Huella), y verificación OTP.
+    \item \textbf{Home (BottomNavigationBar):} Punto central que consolida el mapa, catálogo de búsqueda y el acceso al chat.
+    \item \textbf{HosteriaDetailScreen:} Visualizador multimedia de infraestructura, visualizador de \textit{amenities} y el panel de reseñas en tiempo real.
+    \item \textbf{HabitacionesList \& Checkout:} Selector dinámico de inventario con comprobación de solapamiento de fechas, y pantalla del carrito de reservas.
+    \item \textbf{Chatbot IA:} Interfaz conversacional con soporte de mensajería de voz mediante Speech-to-Text integrado y respuesta por altavoz.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    % ========================================================
+    % ⬇️ TUS SCREENSHOTS ⬇️
+    % \includegraphics[width=0.3\textwidth]{ruta/pantalla_chatbot.png}
+    % \includegraphics[width=0.3\textwidth]{ruta/pantalla_resumen.png}
+    % ========================================================
+    \textit{[Inserta capturas de pantallas desarrolladas recientemente (Chatbot, Mapa, Checkout)]}
+\end{figure}
+
+% ═══════════════ 5. CÓDIGO PRINCIPAL EXPLICADO ═══════════════
+\section{Código principal explicado}
+Dos algoritmos principales sostienen la estabilidad de la herramienta:
+
+\subsection{1. Algoritmo de Verificación de Disponibilidad (Solapamientos)}
+El código más crítico se ejecuta en el \texttt{CheckDisponibilidadUseCase}. Cuando un usuario selecciona fechas (ej. 10 de Mayo al 15 de Mayo), el caso de uso realiza una consulta (query) a Firestore trayendo todas las reservas confirmadas o pendientes para una habitación. 
+Luego, evalúa localmente el \textbf{solapamiento de intervalos}:
+$$ \text{Se solapan si: } (CheckIn_{\text{nuevo}} < CheckOut_{\text{existente}}) \land (CheckOut_{\text{nuevo}} > CheckIn_{\text{existente}}) $$
+Si la sumatoria de habitaciones ocupadas por reservas que se solapan excede la \texttt{cantidadTotal} de la habitación, el algoritmo la bloquea en la interfaz, previniendo el \textit{Overbooking}.
+
+\subsection{2. Listeners Síncronos y Reactivos (Sockets)}
+Para las notificaciones y el historial de reservas, no se usan consultas HTTP tradicionales (Pull). Se emplea la función \texttt{onSnapshot()} de Firestore a nivel de los repositorios. Esto abre un \textit{WebSocket} que escucha las actualizaciones del servidor, de modo que si un Propietario aprueba una reserva en la web, el documento muta en la nube e inmediatamente dispara la regeneración (notifyListeners) en el \texttt{ReservaViewModel} del celular del Turista, actualizando la pantalla sin intervención humana.
+
+\vspace{0.5cm}
+\begin{center}
+    % ========================================================
+    % ⬇️ DIAGRAMA DE ACTIVIDAD DISPONIBILIDAD O SECUENCIA ⬇️
+    % \includegraphics[width=0.9\textwidth]{../diagramas_plantuml/movil/32_actividad_verificar_disponibilidad.png}
+    % ========================================================
+    \textit{[Espacio para: Actividad de Verificación (32\_actividad\_verificar\_disponibilidad.png)]}
+\end{center}
+
+% ═══════════════ 6. BASE DE DATOS UTILIZADA ═══════════════
+\section{Base de datos utilizada}
+Para apalancar los requerimientos de tiempo real (Real-Time), se seleccionó \textbf{Cloud Firestore} provisto por Google Firebase. 
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Estructura NoSQL:} Los datos se organizan en ``Colecciones'' (ej. \textit{reservas}) y ``Documentos'' (JSON objects).
+    \item \textbf{Seguridad Cero-Confianza (Zero-Trust):} Mediante el archivo \texttt{firestore.rules} se programaron políticas obligatorias donde un turista (usuario móvil) \textit{solo puede leer} y \textit{crear} reservas cuyo \texttt{usuarioId} coincida con su token JWT. Únicamente los administradores y propietarios tienen permisos de actualización de inventarios (precios, descripciones, cancelaciones masivas).
+\end{itemize}
+
+% ═══════════════ 7. EVIDENCIA DE FUNCIONAMIENTO ═══════════════
+\section{Evidencia de funcionamiento}
+\textit{[Agregar aquí capturas del emulador de Android interactuando en vivo, o reportes fotográficos de una pantalla web junto al emulador demostrando el envío y recepción en milisegundos de una reserva.]}
+
+% ═══════════════ 8. PROBLEMAS ENCONTRADOS ═══════════════
+\section{Problemas encontrados}
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Limitaciones de Geocoding y Mapas:} El uso excesivo de \textit{Reverse Geocoding} generó conflictos de cuota (Rate Limits) al momento de cargar el catálogo de hosterías. Se requirió implementar \textit{debouncers} e inicialización diferida (Lazy loading) para el mapa de OpenStreetMap.
+    \item \textbf{Sincronización de Estado Complejo:} Durante el flujo de Checkout de múltiples habitaciones en el carrito, se detectaron excepciones asíncronas cuando se interrumpía abruptamente la conexión a la red antes de finalizar los registros \textit{batch} en Firestore, dejando reservas huérfanas. 
+    \item \textbf{Reglas de Seguridad Estrictas:} Tuvimos múltiples errores de permisos denegados (Access Denied) en la fase inicial debido a que la interfaz web de propietarios no enviaba el JWT de autorización correctamente al intentar mutar inventario.
+\end{itemize}
+
+% ═══════════════ 9. MEJORAS PENDIENTES ═══════════════
+\section{Mejoras pendientes}
+\begin{itemize}[label=\small\color{verdeO}$\blacksquare$]
+    \item \textbf{Automatización E2E:} Según la estrategia definida en la documentación del proyecto (\texttt{ESTRATEGIA\_PRUEBAS.md}), está pendiente la creación de Scripts E2E automatizados con \texttt{Patrol} para validar que ninguna actualización de interfaz rompa el proceso crítico de cobro.
+    \item \textbf{Caché Offline-First:} Implementar la persistencia offline de Firestore, permitiendo a los turistas explorar las descripciones de hosterías y habitaciones que visitaron previamente, incluso sin señal de internet en zonas rurales de Sigchos.
+    \item \textbf{Limpieza (Garbage Collection):} Refinar la función cron (Cloud Function) que depura las reservas abandonadas con más de 48 horas de antigüedad.
+\end{itemize}
+
+\end{document}
