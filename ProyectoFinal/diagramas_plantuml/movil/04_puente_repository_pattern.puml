@@ -1,4 +1,8 @@
-@startuml Patron_Bridge_Repository
+@startuml @
+skinparam dpi 300
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50 Patron_Bridge_Repository
 title Patrón Bridge / Repository — HostSigchos
 caption Separación Interfaz Abstracta (Domain) ↔ Implementación Concreta (Data)
 
@@ -11,140 +15,98 @@ skinparam class {
 package "domain/repositories/ (Abstracción)" #C8E6C9 {
 
     abstract class AuthRepository <<interface>> {
-        + {abstract} loginConEmail(email, password): Future<Usuario>
-        + {abstract} registrarse(nombre, email, password, cedula...): Future<Usuario>
-        + {abstract} loginConGoogle(): Future<Usuario>
-        + {abstract} cerrarSesion(): Future<void>
-        + {abstract} getUsuarioActual(): Future<Usuario?>
-        + {abstract} authStateChanges: Stream<Usuario?>
-        + {abstract} actualizarPerfil(uid, nombre...): Future<Usuario>
-        + {abstract} vincularPasswordAGoogle(password): Future<void>
-        + {abstract} enviarVerificacionEmail(): Future<void>
-        + {abstract} verificarEmailConfirmado(): Future<bool>
-        + {abstract} enviarCorreoRecuperacionPassword(email): Future<void>
-        + {abstract} esUsuarioSoloGoogle(): Future<bool>
-        + {abstract} eliminarCuenta(): Future<void>
     }
 
     abstract class ReservaRepository <<interface>> {
-        + {abstract} crearReserva(reserva): Future<Reserva>
-        + {abstract} getTodasLasReservas(): Future<List<Reserva>>
-        + {abstract} getReservasPorUsuario(usuarioId): Future<List<Reserva>>
-        + {abstract} getReservasPorHabitacion(habitacionId): Future<List<Reserva>>
-        + {abstract} getReservaById(id): Future<Reserva>
-        + {abstract} cancelarReserva(reservaId): Future<void>
-        + {abstract} actualizarEstado(reservaId, nuevoEstado): Future<void>
     }
 
-    abstract class HosteriaRepository <<interface>> {
-        + {abstract} getHosterias(): Future<List<Hosteria>>
-        + {abstract} getHosteriaById(id): Future<Hosteria>
+        abstract class HosteriaRepository <<interface>> {
     }
 
     abstract class HabitacionRepository <<interface>> {
-        + {abstract} getHabitacionesPorHosteria(hosteriaId): Future<List<Habitacion>>
-        + {abstract} getTodasLasHabitaciones(): Future<List<Habitacion>>
-        + {abstract} getReservasPorHabitacion(habitacionId): Future<List<Reserva>>
     }
 
-    abstract class NotificacionRepository <<interface>> {
-        + {abstract} getNotificacionesStream(usuarioId): Stream<List<NotificacionApp>>
-        + {abstract} marcarLeida(id): Future<void>
-        + {abstract} marcarTodasComoLeidas(usuarioId): Future<void>
-        + {abstract} borrarTodas(usuarioId): Future<void>
+        abstract class NotificacionRepository <<interface>> {
     }
 
     abstract class ResenaRepository <<interface>> {
-        + {abstract} agregarResena(resena): Future<void>
-        + {abstract} getResenasPorHosteria(hosteriaId): Stream<List<Resena>>
     }
 
-    abstract class ChatbotRepository <<interface>> {
-        + {abstract} enviarMensaje(text, contexto): Future<ChatMessage>
-        + {abstract} enviarAudio(filePath, contexto): Future<ChatMessage>
+        abstract class ChatbotRepository <<interface>> {
     }
 
     abstract class GeocodingRepository <<interface>> {
-        + {abstract} getDireccion(lat, lng): Future<String>
     }
+
+    AuthRepository -[hidden]down-> HosteriaRepository
+    HosteriaRepository -[hidden]down-> NotificacionRepository
+    NotificacionRepository -[hidden]down-> ChatbotRepository
+
+    ReservaRepository -[hidden]down-> HabitacionRepository
+    HabitacionRepository -[hidden]down-> ResenaRepository
+    ResenaRepository -[hidden]down-> GeocodingRepository
+
+    AuthRepository -[hidden]right-> ReservaRepository
 }
 
 package "data/repositories/ (Implementación Concreta)" #FFE0B2 {
 
     class AuthRepositoryImpl {
-        - authDataSource: AuthDataSource
-        + loginConEmail(email, password): Future<Usuario>
-        + registrarse(...): Future<Usuario>
-        + loginConGoogle(): Future<Usuario>
-        + cerrarSesion(): Future<void>
-        .. otros métodos ..
     }
 
     class ReservaRepositoryImpl {
-        - reservaDataSource: ReservaDataSource
-        + crearReserva(reserva): Future<Reserva>
-        + getTodasLasReservas(): Future<List<Reserva>>
-        + cancelarReserva(reservaId): Future<void>
-        .. otros métodos ..
     }
 
-    class HosteriaRepositoryImpl {
-        - hosteriaDataSource: HosteriaDataSource
-        + getHosterias(): Future<List<Hosteria>>
-        + getHosteriaById(id): Future<Hosteria>
+        class HosteriaRepositoryImpl {
     }
 
     class HabitacionRepositoryImpl {
-        - habitacionDataSource: HabitacionDataSource
-        + getHabitacionesPorHosteria(hosteriaId): Future<List<Habitacion>>
-        + getTodasLasHabitaciones(): Future<List<Habitacion>>
     }
 
-    class NotificacionRepositoryImpl {
-        - notificacionDataSource: NotificacionDataSource
-        + getNotificacionesStream(usuarioId): Stream<List<NotificacionApp>>
-        + marcarLeida(id): Future<void>
+        class NotificacionRepositoryImpl {
     }
 
     class ResenaRepositoryImpl {
-        - resenaDataSource: ResenaDataSource
-        + agregarResena(resena): Future<void>
-        + getResenasPorHosteria(hosteriaId): Stream<List<Resena>>
     }
 
-    class ChatbotRepositoryImpl {
-        - chatbotDataSource: ChatbotDataSource
-        + enviarMensaje(text, contexto): Future<ChatMessage>
-        + enviarAudio(filePath, contexto): Future<ChatMessage>
+        class ChatbotRepositoryImpl {
     }
 
     class GeocodingRepositoryImpl {
-        - geocodingDataSource: GeocodingDataSource
-        + getDireccion(lat, lng): Future<String>
     }
+
+    AuthRepositoryImpl -[hidden]down-> HosteriaRepositoryImpl
+    HosteriaRepositoryImpl -[hidden]down-> NotificacionRepositoryImpl
+    NotificacionRepositoryImpl -[hidden]down-> ChatbotRepositoryImpl
+
+    ReservaRepositoryImpl -[hidden]down-> HabitacionRepositoryImpl
+    HabitacionRepositoryImpl -[hidden]down-> ResenaRepositoryImpl
+    ResenaRepositoryImpl -[hidden]down-> GeocodingRepositoryImpl
+
+    AuthRepositoryImpl -[hidden]right-> ReservaRepositoryImpl
 }
 
 package "data/datasources/ (Fuente de Datos Real)" #E1BEE7 {
     class AuthDataSource {
-        - firestore: FirebaseFirestore
-        - firebaseAuth: FirebaseAuth
-        - storageDataSource: StorageDataSource
     }
     class ReservaDataSource {
-        - firestore: FirebaseFirestore
     }
-    class HosteriaDataSource {
-        - firestore: FirebaseFirestore
+        class HosteriaDataSource {
     }
     class HabitacionDataSource {
-        - firestore: FirebaseFirestore
     }
-    class ChatbotDataSource {
-        - httpClient: Client
+        class ChatbotDataSource {
     }
     class GeocodingDataSource {
-        - httpClient: Client
     }
+
+    AuthDataSource -[hidden]down-> HosteriaDataSource
+    HosteriaDataSource -[hidden]down-> ChatbotDataSource
+
+    ReservaDataSource -[hidden]down-> HabitacionDataSource
+    HabitacionDataSource -[hidden]down-> GeocodingDataSource
+
+    AuthDataSource -[hidden]right-> ReservaDataSource
 }
 
 ' ===== BRIDGE: Interface ← Impl =====
@@ -184,4 +146,6 @@ note right of AuthRepositoryImpl
 end note
 
 @enduml
+
+
 

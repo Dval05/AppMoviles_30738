@@ -1,7 +1,12 @@
 @startuml Clases_Web_Context
+skinparam dpi 300
 title Diagrama de Clases — Panel Web React (AppContext)
 caption Estructura del estado global del panel web y sus funciones
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #C8E6C9
@@ -126,3 +131,4 @@ note right of AppContext
 end note
 
 @enduml
+

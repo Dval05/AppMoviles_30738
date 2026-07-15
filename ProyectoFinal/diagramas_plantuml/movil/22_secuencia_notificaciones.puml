@@ -1,6 +1,10 @@
 @startuml Secuencia_Notificaciones
+skinparam dpi 300
 title Diagrama de Secuencia — Sistema de Notificaciones en Tiempo Real
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 participant "ReservaViewModel\n(Generador)" as RVM

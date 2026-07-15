@@ -1,7 +1,12 @@
 @startuml Clases_DataSources
+skinparam dpi 300
 title Diagrama de Clases — DataSources y Models (data/)
 caption Capa de acceso a datos: Firebase, APIs REST y Models de serialización
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #FFE0B2
@@ -183,3 +188,4 @@ ReservaDataSource --> ReservaModel : "produce"
 AuthDataSource --> StorageDataSource : "usa"
 
 @enduml
+

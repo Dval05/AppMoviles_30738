@@ -1,6 +1,10 @@
 @startuml Secuencia_Biometria
+skinparam dpi 300
 title Diagrama de Secuencia — Login con Biometría (Huella / Face ID)
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

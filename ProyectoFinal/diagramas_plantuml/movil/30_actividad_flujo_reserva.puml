@@ -1,7 +1,11 @@
 @startuml Actividad_Flujo_Reserva
+skinparam dpi 300
 title Diagrama de Actividad — Proceso Completo de Reserva
 caption Desde la exploración hasta la confirmación
 
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 40
 skinparam backgroundColor #FAFAFA
 skinparam activity {
     BackgroundColor #E3F2FD

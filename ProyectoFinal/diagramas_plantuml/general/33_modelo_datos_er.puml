@@ -1,7 +1,11 @@
 @startuml Modelo_Datos_ER
+skinparam dpi 300
 title Diagrama Entidad-Relación — Cloud Firestore
 caption Colecciones y relaciones del backend de HostSigchos
 
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 40
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #FFF9C4
@@ -129,6 +133,13 @@ entity "administradores" as ADM {
 }
 
 ' Relaciones (Aunque es NoSQL, representamos la lógica relacional por FKs)
+U -[hidden]down-> H
+H -[hidden]down-> HAB
+HAB -[hidden]down-> R
+N -[hidden]down-> RES
+RES -[hidden]down-> PROM
+U -[hidden]right-> N
+
 U ||--o{ R : realiza
 U ||--o{ N : recibe
 U ||--o{ RES : escribe

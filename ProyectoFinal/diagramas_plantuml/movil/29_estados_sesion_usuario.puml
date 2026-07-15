@@ -1,7 +1,11 @@
 @startuml Estados_Sesion_Usuario
+skinparam dpi 300
 title Diagrama de Estados — Sesión del Usuario
 caption Estados de autenticación del usuario en la app móvil
 
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 40
 skinparam backgroundColor #FAFAFA
 skinparam state {
     BackgroundColor #E3F2FD

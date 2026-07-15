@@ -1,4 +1,9 @@
 @startuml Paquetes_Clean_Architecture
+skinparam dpi 300
+left to right direction
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 title Diagrama de Paquetes — Clean Architecture (Flutter App)
 caption Organización de capas y dependencias en lib/
 

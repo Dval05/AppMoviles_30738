@@ -1,7 +1,12 @@
 @startuml Clases_Repositories
+skinparam dpi 300
 title Diagrama de Clases — Repositories (Interfaces + Implementaciones)
 caption Patrón Repository: Domain define la interfaz, Data la implementa
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #E3F2FD
@@ -143,3 +148,4 @@ ChatbotRepository <|.. ChatbotRepositoryImpl : implements
 GeocodingRepository <|.. GeocodingRepositoryImpl : implements
 
 @enduml
+

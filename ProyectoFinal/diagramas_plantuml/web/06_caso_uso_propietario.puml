@@ -1,4 +1,5 @@
 @startuml Caso_Uso_Propietario
+skinparam dpi 300
 title Diagrama de Casos de Uso — Actor: Propietario de Hostería
 caption Funcionalidades del panel web para propietarios
 
@@ -9,6 +10,8 @@ skinparam usecase {
 }
 
 left to right direction
+skinparam nodesep 40
+skinparam ranksep 40
 
 actor "Propietario\nde Hostería" as P #FFE0B2
 

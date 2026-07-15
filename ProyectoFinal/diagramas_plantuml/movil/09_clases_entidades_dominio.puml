@@ -1,7 +1,12 @@
 @startuml Clases_Entidades_Dominio
+skinparam dpi 300
 title Diagrama de Clases — Entidades del Dominio (domain/entities/)
 caption Clases puras de negocio sin dependencias externas
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #C8E6C9
@@ -138,14 +143,15 @@ class ChatMessage {
 }
 
 ' === Relaciones ===
-Usuario "1" -- "*" Reserva : "realiza >"
-Usuario "1" -- "*" NotificacionApp : "recibe >"
-Usuario "1" -- "*" Resena : "escribe >"
+Usuario "1" -down- "*" Reserva : "realiza >"
+Usuario "1" -down- "*" NotificacionApp : "recibe >"
+Usuario "1" -down- "*" Resena : "escribe >"
 
-Hosteria "1" -- "*" Habitacion : "tiene >"
-Hosteria "1" -- "*" Reserva : "recibe >"
-Hosteria "1" -- "*" Resena : "tiene >"
+Hosteria "1" -down- "*" Habitacion : "tiene >"
+Hosteria "1" -down- "*" Reserva : "recibe >"
+Hosteria "1" -down- "*" Resena : "tiene >"
 
-Habitacion "1" -- "*" Reserva : "es reservada >"
+Habitacion "1" -down- "*" Reserva : "es reservada >"
 
 @enduml
+

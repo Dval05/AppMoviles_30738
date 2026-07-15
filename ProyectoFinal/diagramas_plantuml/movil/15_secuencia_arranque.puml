@@ -1,7 +1,11 @@
 @startuml Secuencia_Arranque
+skinparam dpi 300
 title Diagrama de Secuencia — Arranque e Inicialización de la App
 caption Desde main() hasta la primera pantalla visible
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 skinparam sequence {
     ArrowColor #1565C0

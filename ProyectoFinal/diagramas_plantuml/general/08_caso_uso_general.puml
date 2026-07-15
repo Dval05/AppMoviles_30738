@@ -1,4 +1,5 @@
 @startuml Caso_Uso_General
+skinparam dpi 300
 title Diagrama General de Casos de Uso — Todos los Actores
 caption Vista panorámica de todos los actores y sus interacciones con el sistema
 
@@ -9,6 +10,8 @@ skinparam usecase {
 }
 
 left to right direction
+skinparam nodesep 40
+skinparam ranksep 40
 
 actor "Turista\n(App Móvil)" as T #C8E6C9
 actor "Propietario\n(Panel Web)" as P #FFE0B2

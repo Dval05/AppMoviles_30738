@@ -1,6 +1,10 @@
 @startuml Secuencia_Cancelacion
+skinparam dpi 300
 title Diagrama de Secuencia — Cancelación de Reserva (Manual + Auto 48h)
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

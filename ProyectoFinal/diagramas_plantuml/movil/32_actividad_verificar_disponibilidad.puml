@@ -1,7 +1,11 @@
 @startuml Actividad_Verificar_Disponibilidad
+skinparam dpi 300
 title Diagrama de Actividad — Verificación de Disponibilidad de Habitaciones
 caption Algoritmo de solapamiento de fechas para determinar disponibilidad
 
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 40
 skinparam backgroundColor #FAFAFA
 
 start

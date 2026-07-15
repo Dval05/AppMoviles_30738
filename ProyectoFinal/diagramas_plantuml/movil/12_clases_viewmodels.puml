@@ -1,7 +1,12 @@
 @startuml Clases_ViewModels
+skinparam dpi 300
 title Diagrama de Clases — ViewModels (presentation/viewmodels/)
 caption Gestores de estado reactivo usando ChangeNotifier (Provider)
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #BBDEFB
@@ -218,5 +223,20 @@ class ItemCarrito {
 
 HosteriaViewModel --> OrdenHosterias : "usa"
 CarritoReservaViewModel --> ItemCarrito : "contiene *"
+
+' === LAYOUT INVISIBLE GRID ===
+AuthViewModel -[hidden]right-> HosteriaViewModel
+HosteriaViewModel -[hidden]right-> HabitacionViewModel
+
+AuthViewModel -[hidden]down-> ReservaViewModel
+HosteriaViewModel -[hidden]down-> CarritoReservaViewModel
+HabitacionViewModel -[hidden]down-> ChatbotViewModel
+
+ReservaViewModel -[hidden]down-> NotificacionViewModel
+CarritoReservaViewModel -[hidden]down-> ResenaViewModel
+ChatbotViewModel -[hidden]down-> GeocodingViewModel
+
+NotificacionViewModel -[hidden]right-> LocaleViewModel
+LocaleViewModel -[hidden]right-> WeatherViewModel
 
 @enduml

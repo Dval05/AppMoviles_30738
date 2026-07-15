@@ -1,6 +1,10 @@
 @startuml Secuencia_Promociones
+skinparam dpi 300
 title Diagrama de Secuencia — Gestión de Promociones (Panel Web)
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Propietario" as P

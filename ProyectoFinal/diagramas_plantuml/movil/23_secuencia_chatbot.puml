@@ -1,6 +1,10 @@
 @startuml Secuencia_Chatbot
+skinparam dpi 300
 title Diagrama de Secuencia — Chatbot IA (Texto y Audio)
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

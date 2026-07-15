@@ -1,7 +1,11 @@
 @startuml Secuencia_Registro
+skinparam dpi 300
 title Diagrama de Secuencia — Registro de Usuario Nuevo
 caption Flujo completo: formulario → Firebase Auth → Firestore → verificación email
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

@@ -1,6 +1,10 @@
 @startuml Secuencia_Web_Login
+skinparam dpi 300
 title Diagrama de Secuencia — Login del Panel Web (Propietario/Admin)
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Propietario/Admin" as P

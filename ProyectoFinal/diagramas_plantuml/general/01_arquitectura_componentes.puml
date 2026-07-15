@@ -1,4 +1,9 @@
 @startuml Arquitectura_Componentes_HostSigchos
+skinparam dpi 300
+left to right direction
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 title Diagrama de Componentes — Sistema HostSigchos
 caption Arquitectura general del ecosistema: App Móvil + Panel Web + Backend Firebase
 

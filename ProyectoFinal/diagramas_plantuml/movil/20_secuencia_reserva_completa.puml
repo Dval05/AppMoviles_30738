@@ -1,7 +1,11 @@
 @startuml Secuencia_Reserva_Completa
+skinparam dpi 300
 title Diagrama de Secuencia — Flujo Completo de Reserva
 caption Crear → Carrito → Checkout → Confirmar → Notificación
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

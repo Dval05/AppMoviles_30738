@@ -1,7 +1,11 @@
 @startuml Estados_Reserva
+skinparam dpi 300
 title Diagrama de Estados — Ciclo de Vida de una Reserva
 caption Transiciones de estados con condiciones y acciones
 
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 40
 skinparam backgroundColor #FAFAFA
 skinparam state {
     BackgroundColor #E3F2FD

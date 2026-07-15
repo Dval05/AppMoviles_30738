@@ -1,7 +1,11 @@
 @startuml Secuencia_Login_Email
+skinparam dpi 300
 title Diagrama de Secuencia — Login con Email y Contraseña
 caption Flujo completo desde la UI hasta Firebase y de vuelta
 
+skinparam maxMessageSize 150
+skinparam nodesep 50
+skinparam participantPadding 30
 skinparam backgroundColor #FAFAFA
 
 actor "Usuario" as U

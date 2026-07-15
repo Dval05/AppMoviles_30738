@@ -1,7 +1,12 @@
 @startuml Clases_UseCases
+skinparam dpi 300
 title Diagrama de Clases — Casos de Uso (domain/usecases/)
 caption Cada UseCase ejecuta una única acción de negocio (Single Responsibility)
 
+
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 skinparam backgroundColor #FAFAFA
 skinparam class {
     BackgroundColor #FFF9C4
@@ -168,3 +173,4 @@ note bottom of LoginUseCase
 end note
 
 @enduml
+
