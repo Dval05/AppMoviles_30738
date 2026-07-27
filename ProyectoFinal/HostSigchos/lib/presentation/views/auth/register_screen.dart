@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/utils/validators.dart';
@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final String _selectedRol = kIsWeb ? 'propietario' : 'usuario';
+  bool _acceptedTerms = false;
 
   final List<String> _provinciasEcuador = [
     'Azuay', 'Bolívar', 'Cañar', 'Carchi', 'Chimborazo', 'Cotopaxi', 
@@ -163,7 +163,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future<void> _launchUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (!await launchUrl(url)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se pudo abrir el enlace')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al intentar abrir el enlace')),
+        );
+      }
+    }
+  }
+
   Future<void> _register() async {
+    if (!_acceptedTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Debes aceptar los Términos y Condiciones y Políticas de Privacidad para registrarte.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       final imageBytes = _imageFile != null
@@ -174,12 +203,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       var finalEmail = _emailController.text.trim();
       var finalPassword = _passwordController.text;
-
-      if (kIsWeb) {
-        var placeName = _nombreController.text.trim();
-        finalEmail = '${placeName.toLowerCase().replaceAll(' ', '_')}@hostsigchos.com';
-        finalPassword = placeName;
-      }
 
       final success = await context.read<AuthViewModel>().register(
         nombre: _nombreController.text.trim(),
@@ -194,10 +217,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ? '${_customCityController.text.trim()}, $_selectedCountry'
             : null,
         fotoBytes: imageBytes,
-        rol: _selectedRol,
       );
 
       if (success && mounted) {
+        // Cierra la sesión de autofill antes de navegar: si Android sigue
+        // mostrando el aviso de "guardar contraseña" cuando este árbol de
+        // widgets se destruye, Flutter lanza
+        // "_dependents.isEmpty is not true" al desmontar los campos.
+        TextInput.finishAutofillContext();
         // Navegar a la pantalla de verificación de cuenta
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -251,10 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             alpha: 0.3,
                           ),
                           backgroundImage: _imageFile != null
-                              ? (kIsWeb
-                                    ? NetworkImage(_imageFile!.path)
-                                          as ImageProvider
-                                    : FileImage(File(_imageFile!.path)))
+                              ? FileImage(File(_imageFile!.path))
                               : null,
                           child: _imageFile == null
                               ? const Icon(
@@ -315,7 +339,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
 
-                if (!kIsWeb)
                   CustomTextField(
                     label: l10n.email,
                     prefixIcon: Icons.email_outlined,
@@ -369,11 +392,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: (val) =>
                             Validators.identificacion(val, _tipoIdentificacion, _selectedCountry ?? 'Ecuador'),
                         inputFormatters: _tipoIdentificacion == 'Cédula'
-                            ? [FilteringTextInputFormatter.digitsOnly]
+                            ? [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(10),
+                              ]
                             : [
                                 FilteringTextInputFormatter.allow(
                                   RegExp('[a-zA-Z0-9]'),
                                 ),
+                                LengthLimitingTextInputFormatter(15),
                               ],
                       ),
                     ),
@@ -439,6 +466,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: Validators.telefono,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                            _selectedPhonePrefix == '+593' ? 10 : 15,
+                          ),
                         ],
                       ),
                     ),
@@ -542,7 +572,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 const SizedBox(height: 16),
 
-                if (!kIsWeb) ...[
                   CustomTextField(
                     label: l10n.password,
                     prefixIcon: Icons.lock_outline,
@@ -559,12 +588,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: (val) =>
                         Validators.confirmPassword(val, _passwordController.text),
                   ),
-                  const SizedBox(height: 16),
-                ],
 
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: _acceptedTerms,
+                      onChanged: (val) {
+                        setState(() {
+                          _acceptedTerms = val ?? false;
+                        });
+                      },
+                      activeColor: ColorSchemeApp.primaryGreen,
+                    ),
+                    Expanded(
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          const Text('Acepto los ', style: TextStyle(fontSize: 13)),
+                          InkWell(
+                            onTap: () {
+                              _launchUrl('https://hostsigchos.com/terminos');
+                            },
+                            child: const Text(
+                              'Términos y Condiciones',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: ColorSchemeApp.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                          const Text(' y las ', style: TextStyle(fontSize: 13)),
+                          InkWell(
+                            onTap: () {
+                              _launchUrl('https://hostsigchos.com/privacidad');
+                            },
+                            child: const Text(
+                              'Políticas de Privacidad',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: ColorSchemeApp.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
-
-                const SizedBox(height: 32),
 
                 GradientButton(
                   text: l10n.createAccount,

@@ -21,4 +21,9 @@ class NotificacionRepositoryImpl implements NotificacionRepository {
   Future<void> marcarTodasComoLeidas(String usuarioId) {
     return _dataSource.marcarTodasComoLeidas(usuarioId);
   }
+
+  @override
+  Future<void> borrarTodas(String usuarioId) {
+    return _dataSource.borrarTodas(usuarioId);
+  }
 }

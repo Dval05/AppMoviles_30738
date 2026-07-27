@@ -50,4 +50,18 @@ class NotificacionDataSource {
 
     await batch.commit();
   }
+
+  Future<void> borrarTodas(String usuarioId) async {
+    final batch = _firestore.batch();
+    final snapshot = await _firestore
+        .collection('notificaciones')
+        .where('usuarioId', isEqualTo: usuarioId)
+        .get();
+
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
+  }
 }

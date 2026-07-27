@@ -194,6 +194,48 @@ abstract class AppLocalizations {
   /// **'Reservas'**
   String get reservations;
 
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre, ubicación...'**
+  String get searchPlaceholder;
+
+  /// No description provided for @chooseDates.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige tus fechas'**
+  String get chooseDates;
+
+  /// No description provided for @stop.
+  ///
+  /// In es, this message translates to:
+  /// **'Detener'**
+  String get stop;
+
+  /// No description provided for @followRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguir Ruta'**
+  String get followRoute;
+
+  /// No description provided for @calculatingRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Calculando ruta...'**
+  String get calculatingRoute;
+
+  /// No description provided for @routeRecalculated.
+  ///
+  /// In es, this message translates to:
+  /// **'Ruta recalculada automáticamente'**
+  String get routeRecalculated;
+
+  /// No description provided for @noPlacesFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron hosterías'**
+  String get noPlacesFound;
+
   /// No description provided for @map.
   ///
   /// In es, this message translates to:
@@ -218,11 +260,17 @@ abstract class AppLocalizations {
   /// **'Buscar hosterías...'**
   String get searchHosterias;
 
-  /// No description provided for @services.
+  /// No description provided for @settings.
   ///
   /// In es, this message translates to:
-  /// **'Servicios'**
-  String get services;
+  /// **'Ajustes'**
+  String get settings;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar Cuenta'**
+  String get deleteAccount;
 
   /// No description provided for @location.
   ///
@@ -1001,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportInfoText.
   ///
   /// In es, this message translates to:
-  /// **'Para soporte técnico, contacta a:\n\nEmail: soporte@hostsigchos.com\nTeléfono: +593 99 123 4567'**
+  /// **'Para soporte técnico, contacta a:'**
   String get supportInfoText;
 
   /// No description provided for @advancedFilters.
@@ -1724,6 +1772,132 @@ abstract class AppLocalizations {
   /// **'Encuentra el lugar perfecto para tu próxima aventura en la naturaleza.'**
   String get landingSubtitle;
 
+  /// No description provided for @supportInfo.
+  ///
+  /// In es, this message translates to:
+  /// **'Para soporte técnico, contacta a:'**
+  String get supportInfo;
+
+  /// No description provided for @chatbotWelcome.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Hola! Soy tu asistente virtual. ¿Prefieres comunicarte solo por texto o también con audio? Puedes activar el volumen arriba. ¿En qué te ayudo hoy?'**
+  String get chatbotWelcome;
+
+  /// No description provided for @virtualAssistant.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistente Virtual'**
+  String get virtualAssistant;
+
+  /// No description provided for @loginSuccessTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio de sesión exitoso'**
+  String get loginSuccessTitle;
+
+  /// No description provided for @loginSuccessBody.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Bienvenido de vuelta, {name}!'**
+  String loginSuccessBody(String name);
+
+  /// No description provided for @bookingCancelledTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reserva cancelada'**
+  String get bookingCancelledTitle;
+
+  /// No description provided for @bookingCancelledBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu reserva ha sido cancelada exitosamente.'**
+  String get bookingCancelledBody;
+
+  /// No description provided for @bookingBlockedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reserva bloqueada'**
+  String get bookingBlockedTitle;
+
+  /// No description provided for @bookingBlockedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo completar la reserva para {roomType}. {error}'**
+  String bookingBlockedBody(String roomType, String error);
+
+  /// No description provided for @voiceMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'🎵 Mensaje de voz'**
+  String get voiceMessage;
+
+  /// No description provided for @viewSuggestion.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver Sugerencia'**
+  String get viewSuggestion;
+
+  /// No description provided for @suggestionsForYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Sugerencias para ti'**
+  String get suggestionsForYou;
+
+  /// No description provided for @noSuggestionsAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay sugerencias disponibles.'**
+  String get noSuggestionsAvailable;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un mensaje...'**
+  String get typeMessage;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones'**
+  String get notificationsTitle;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In es, this message translates to:
+  /// **'Leídas'**
+  String get markAsRead;
+
+  /// No description provided for @deleteAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar'**
+  String get deleteAll;
+
+  /// No description provided for @suggestedRooms.
+  ///
+  /// In es, this message translates to:
+  /// **'Habitaciones sugeridas'**
+  String get suggestedRooms;
+
+  /// No description provided for @unknownHotel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hotel Desconocido'**
+  String get unknownHotel;
+
+  /// No description provided for @addressNotAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Dirección no disponible'**
+  String get addressNotAvailable;
+
+  /// No description provided for @roomFallback.
+  ///
+  /// In es, this message translates to:
+  /// **'Habitación'**
+  String get roomFallback;
+
   /// No description provided for @noHosteriasFound.
   ///
   /// In es, this message translates to:
@@ -1735,6 +1909,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Buscar por nombre, ubicación...'**
   String get searchHint;
+
+  /// No description provided for @termsAndConditions.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos y Condiciones'**
+  String get termsAndConditions;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In es, this message translates to:
+  /// **'Políticas de Privacidad'**
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate

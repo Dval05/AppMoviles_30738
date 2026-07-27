@@ -1,13 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/l10n/app_localizations.dart';
 import '../../../domain/entities/hosteria.dart';
 import '../../../themes/esquema_color.dart';
 import '../../routes/app_routes.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../viewmodels/hosteria_viewmodel.dart';
+import '../../viewmodels/notificacion_viewmodel.dart';
 import '../../viewmodels/weather_viewmodel.dart';
 import '../../widgets/hosteria_card.dart';
 
@@ -28,6 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HosteriaViewModel>().cargarHosterias();
       context.read<WeatherViewModel>().fetchWeather(); // Fetch weather on load
+      final authVm = context.read<AuthViewModel>();
+      if (authVm.usuarioActual != null) {
+        context.read<NotificacionViewModel>().listenToNotificaciones(authVm.usuarioActual!.id);
+      }
     });
   }
 
@@ -135,10 +140,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.notifications_outlined, color: ColorSchemeApp.darkText),
-                          onPressed: () {
-                            Navigator.pushNamed(context, AppRoutes.notificaciones);
+                        Consumer<NotificacionViewModel>(
+                          builder: (context, notifVm, _) {
+                            final noLeidas = notifVm.notificaciones.where((n) => !n.leida).length;
+                            return Stack(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.notifications_outlined, color: ColorSchemeApp.darkText),
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, AppRoutes.notificaciones);
+                                  },
+                                ),
+                                if (noLeidas > 0)
+                                  Positioned(
+                                    right: 12,
+                                    top: 12,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: const BoxDecoration(
+                                        color: ColorSchemeApp.primaryGreen,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
                           },
                         ),
                         const SizedBox(width: 8),
@@ -150,10 +177,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CircleAvatar(
                             radius: 24,
                             backgroundColor: ColorSchemeApp.primaryGreen.withValues(alpha: 0.1),
-                            backgroundImage: authVm.usuarioActual?.fotoUrl != null
-                                ? NetworkImage(authVm.usuarioActual!.fotoUrl!)
+                            backgroundImage: (authVm.usuarioActual?.fotoUrl != null && authVm.usuarioActual!.fotoUrl!.isNotEmpty)
+                                ? CachedNetworkImageProvider(authVm.usuarioActual!.fotoUrl!)
                                 : null,
-                            child: authVm.usuarioActual?.fotoUrl == null
+                            child: (authVm.usuarioActual?.fotoUrl == null || authVm.usuarioActual!.fotoUrl!.isEmpty)
                                 ? Text(
                                     userName[0].toUpperCase(),
                                     style: const TextStyle(
@@ -229,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   hosteriaVm.filtroFechas != null
                                       ? '${DateFormat('d MMM').format(hosteriaVm.filtroFechas!.start)} - ${DateFormat('d MMM').format(hosteriaVm.filtroFechas!.end)}'
-                                      : 'Elige tus fechas',
+                                      : l10n.chooseDates,
                                   style: const TextStyle(
                                     color: ColorSchemeApp.primaryGreen,
                                     fontWeight: FontWeight.w600,

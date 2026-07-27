@@ -1,4 +1,5 @@
 # Miscellaneous
+.env
 *.class
 *.log
 *.pyc
@@ -47,3 +48,11 @@ app.*.map.json
 
 # Firebase secrets
 android/app/google-services.json
+
+# Release signing secrets
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+
+# Local Claude Code instructions, not for the repo
+/CLAUDE.md

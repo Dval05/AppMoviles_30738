@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/l10n/app_localizations.dart';
+import '../../domain/entities/hosteria.dart';
 import '../../themes/esquema_color.dart';
 import '../routes/app_routes.dart';
+import '../viewmodels/auth_viewmodel.dart';
 import '../viewmodels/hosteria_viewmodel.dart';
 import '../widgets/hosteria_card.dart';
 import '../widgets/language_selector.dart';
@@ -36,13 +38,23 @@ class _LandingScreenState extends State<LandingScreen> {
     super.dispose();
   }
 
-  void _navigateToLogin() {
-    Navigator.pushReplacementNamed(context, AppRoutes.login);
+  void _navigateToLogin([Hosteria? hosteria]) {
+    final isLoggedIn = context.read<AuthViewModel>().usuarioActual != null;
+    if (isLoggedIn) {
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
+      if (hosteria != null) {
+        Navigator.pushNamed(context, AppRoutes.hosteriaDetail, arguments: hosteria.id);
+      }
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.login, arguments: hosteria);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<HosteriaViewModel>();
+    final authViewModel = context.watch<AuthViewModel>();
+    final isLoggedIn = authViewModel.usuarioActual != null;
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
@@ -67,7 +79,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      l10n?.login ?? 'Ingresar',
+                      isLoggedIn ? (l10n?.home ?? 'Inicio') : (l10n?.login ?? 'Ingresar'),
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -155,7 +167,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                   : null,
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                              contentPadding: EdgeInsets.zero,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
                                 borderSide: BorderSide.none,
@@ -222,7 +234,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       return HosteriaCard(
                         hosteria: hosteria,
                         isGrid: true,
-                        onTap: _navigateToLogin,
+                        onTap: () => _navigateToLogin(hosteria),
                       );
                     },
                     childCount: viewModel.hosterias.length,
@@ -241,7 +253,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         child: HosteriaCard(
                           hosteria: hosteria,
                           isGrid: false,
-                          onTap: _navigateToLogin,
+                          onTap: () => _navigateToLogin(hosteria),
                         ),
                       );
                     },

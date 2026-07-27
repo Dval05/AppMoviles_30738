@@ -57,6 +57,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reservations => 'Reservations';
 
   @override
+  String get searchPlaceholder => 'Search by name, location...';
+
+  @override
+  String get chooseDates => 'Choose your dates';
+
+  @override
+  String get stop => 'Stop';
+
+  @override
+  String get followRoute => 'Follow Route';
+
+  @override
+  String get calculatingRoute => 'Calculating route...';
+
+  @override
+  String get routeRecalculated => 'Route recalculated automatically';
+
+  @override
+  String get noPlacesFound => 'No places found';
+
+  @override
   String get map => 'Map';
 
   @override
@@ -69,7 +90,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHosterias => 'Search lodges...';
 
   @override
-  String get services => 'Services';
+  String get settings => 'Settings';
+
+  @override
+  String get deleteAccount => 'Delete Account';
 
   @override
   String get location => 'Location';
@@ -472,8 +496,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelError => 'Error cancelling reservation: ';
 
   @override
-  String get supportInfoText =>
-      'For technical support, please contact:\n\nEmail: soporte@hostsigchos.com\nPhone: +593 99 123 4567';
+  String get supportInfoText => 'For technical support, please contact:';
 
   @override
   String get advancedFilters => 'Advanced Filters';
@@ -855,8 +878,83 @@ class AppLocalizationsEn extends AppLocalizations {
       'Find the perfect place for your next nature adventure.';
 
   @override
-  String get noHosteriasFound => 'No lodges found.';
+  String get supportInfo => 'For technical support, contact:';
+
+  @override
+  String get chatbotWelcome =>
+      'Hello! I am your virtual assistant. Do you prefer text only or also audio? You can turn on the volume at the top. How can I help you today?';
+
+  @override
+  String get virtualAssistant => 'Virtual Assistant';
+
+  @override
+  String get loginSuccessTitle => 'Login Successful';
+
+  @override
+  String loginSuccessBody(String name) {
+    return 'Welcome back, $name!';
+  }
+
+  @override
+  String get bookingCancelledTitle => 'Booking Cancelled';
+
+  @override
+  String get bookingCancelledBody =>
+      'Your booking has been cancelled successfully.';
+
+  @override
+  String get bookingBlockedTitle => 'Booking Blocked';
+
+  @override
+  String bookingBlockedBody(String roomType, String error) {
+    return 'Could not complete the booking for $roomType. $error';
+  }
+
+  @override
+  String get voiceMessage => '🎵 Voice message';
+
+  @override
+  String get viewSuggestion => 'View Suggestion';
+
+  @override
+  String get suggestionsForYou => 'Suggestions for you';
+
+  @override
+  String get noSuggestionsAvailable => 'No suggestions available.';
+
+  @override
+  String get typeMessage => 'Type a message...';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get markAsRead => 'Read';
+
+  @override
+  String get deleteAll => 'Delete';
+
+  @override
+  String get suggestedRooms => 'Suggested rooms';
+
+  @override
+  String get unknownHotel => 'Unknown Hotel';
+
+  @override
+  String get addressNotAvailable => 'Address not available';
+
+  @override
+  String get roomFallback => 'Room';
+
+  @override
+  String get noHosteriasFound => 'No hosterias found.';
 
   @override
   String get searchHint => 'Search by name, location...';
+
+  @override
+  String get termsAndConditions => 'Terms and Conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }

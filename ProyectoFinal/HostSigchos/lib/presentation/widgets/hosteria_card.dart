@@ -55,6 +55,7 @@ class HosteriaCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: hosteria.imagenes.first,
                         fit: BoxFit.cover,
+                        memCacheWidth: 600,
                         placeholder: (context, url) => Container(color: Colors.grey[200]),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[200],
@@ -83,20 +84,7 @@ class HosteriaCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Favorito Icono (Ejemplo Visual)
-              Positioned(
-                top: 20,
-                right: 20,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
-                  ),
-                  child: const Icon(Icons.favorite_border, color: Colors.white, size: 24),
-                ),
-              ),
+
               // Información Inferior
               Positioned(
                 bottom: 24,
@@ -229,6 +217,7 @@ class HosteriaCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: hosteria.imagenes.first,
                         fit: BoxFit.cover,
+                        memCacheWidth: 600,
                       )
                     : Container(color: Colors.grey[200]),
               ),

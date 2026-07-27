@@ -45,6 +45,8 @@ El proyecto sigue los principios de **Clean Architecture**, dividiendo la aplica
 
 > 💡 **Documentación Detallada de Archivos:** Para entender de forma exhaustiva el rol de cada archivo, qué datos recibe, qué información devuelve, y cómo viaja la información entre estas capas (desde la UI hasta Firebase), hemos preparado una [Documentación Detallada de Archivos y Flujo de Datos](DOCUMENTACION_ARCHIVOS.md). Te recomendamos revisarla para dominar la lógica interna del proyecto.
 
+> 📊 **Diagramas de Flujos Completos del Sistema:** Para una visión completa con diagramas Mermaid de todos los flujos del sistema (Autenticación, Reservas, Notificaciones, Chatbot IA, Panel Web, Modelo de Datos, Seguridad, Despliegue y más), consulta la [Documentación Completa de Flujos del Sistema](FLUJOS_DEL_SISTEMA.md).
+
 ---
 
 ## 💻 Requisitos del Sistema

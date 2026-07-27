@@ -35,11 +35,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           );
       
       if (success && mounted) {
-        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-            content: Text(l10n.success), // Or a specific message like "Email sent"
+           const SnackBar(
+            content: Text('Si el correo está registrado, recibirás un enlace para restablecer tu contraseña. Revisa también tu bandeja de spam.'), 
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 5),
           ),
         );
         Navigator.pop(context);
@@ -151,6 +151,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               validator: Validators.email,
+                              autofillHints: const [AutofillHints.email],
                             ),
                             const SizedBox(height: 32),
                             GradientButton(

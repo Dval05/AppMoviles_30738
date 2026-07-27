@@ -17,10 +17,4 @@ abstract class HabitacionRepository {
     DateTime checkOut,
     int cantidadSolicitada,
   );
-
-  /// Agregar una nueva habitación
-  Future<void> agregarHabitacion(Habitacion habitacion);
-
-  /// Actualizar una habitación existente
-  Future<void> actualizarHabitacion(Habitacion habitacion);
 }

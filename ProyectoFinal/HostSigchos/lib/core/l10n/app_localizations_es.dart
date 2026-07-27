@@ -57,6 +57,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reservations => 'Reservas';
 
   @override
+  String get searchPlaceholder => 'Buscar por nombre, ubicación...';
+
+  @override
+  String get chooseDates => 'Elige tus fechas';
+
+  @override
+  String get stop => 'Detener';
+
+  @override
+  String get followRoute => 'Seguir Ruta';
+
+  @override
+  String get calculatingRoute => 'Calculando ruta...';
+
+  @override
+  String get routeRecalculated => 'Ruta recalculada automáticamente';
+
+  @override
+  String get noPlacesFound => 'No se encontraron hosterías';
+
+  @override
   String get map => 'Mapa';
 
   @override
@@ -69,7 +90,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get searchHosterias => 'Buscar hosterías...';
 
   @override
-  String get services => 'Servicios';
+  String get settings => 'Ajustes';
+
+  @override
+  String get deleteAccount => 'Eliminar Cuenta';
 
   @override
   String get location => 'Ubicación';
@@ -472,8 +496,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancelError => 'Error al cancelar: ';
 
   @override
-  String get supportInfoText =>
-      'Para soporte técnico, contacta a:\n\nEmail: soporte@hostsigchos.com\nTeléfono: +593 99 123 4567';
+  String get supportInfoText => 'Para soporte técnico, contacta a:';
 
   @override
   String get advancedFilters => 'Filtros Avanzados';
@@ -859,8 +882,83 @@ class AppLocalizationsEs extends AppLocalizations {
       'Encuentra el lugar perfecto para tu próxima aventura en la naturaleza.';
 
   @override
+  String get supportInfo => 'Para soporte técnico, contacta a:';
+
+  @override
+  String get chatbotWelcome =>
+      '¡Hola! Soy tu asistente virtual. ¿Prefieres comunicarte solo por texto o también con audio? Puedes activar el volumen arriba. ¿En qué te ayudo hoy?';
+
+  @override
+  String get virtualAssistant => 'Asistente Virtual';
+
+  @override
+  String get loginSuccessTitle => 'Inicio de sesión exitoso';
+
+  @override
+  String loginSuccessBody(String name) {
+    return '¡Bienvenido de vuelta, $name!';
+  }
+
+  @override
+  String get bookingCancelledTitle => 'Reserva cancelada';
+
+  @override
+  String get bookingCancelledBody =>
+      'Tu reserva ha sido cancelada exitosamente.';
+
+  @override
+  String get bookingBlockedTitle => 'Reserva bloqueada';
+
+  @override
+  String bookingBlockedBody(String roomType, String error) {
+    return 'No se pudo completar la reserva para $roomType. $error';
+  }
+
+  @override
+  String get voiceMessage => '🎵 Mensaje de voz';
+
+  @override
+  String get viewSuggestion => 'Ver Sugerencia';
+
+  @override
+  String get suggestionsForYou => 'Sugerencias para ti';
+
+  @override
+  String get noSuggestionsAvailable => 'No hay sugerencias disponibles.';
+
+  @override
+  String get typeMessage => 'Escribe un mensaje...';
+
+  @override
+  String get notificationsTitle => 'Notificaciones';
+
+  @override
+  String get markAsRead => 'Leídas';
+
+  @override
+  String get deleteAll => 'Borrar';
+
+  @override
+  String get suggestedRooms => 'Habitaciones sugeridas';
+
+  @override
+  String get unknownHotel => 'Hotel Desconocido';
+
+  @override
+  String get addressNotAvailable => 'Dirección no disponible';
+
+  @override
+  String get roomFallback => 'Habitación';
+
+  @override
   String get noHosteriasFound => 'No se encontraron hosterías.';
 
   @override
   String get searchHint => 'Buscar por nombre, ubicación...';
+
+  @override
+  String get termsAndConditions => 'Términos y Condiciones';
+
+  @override
+  String get privacyPolicy => 'Políticas de Privacidad';
 }
